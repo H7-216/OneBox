@@ -3,509 +3,285 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Génération 2025 - Agenda de Malade</title>
+    <title>Gen2025 Connect - Réseau de la Génération 2025</title>
     <style>
         :root {
             --primary: #6a11cb;
             --secondary: #2575fc;
             --accent: #ff3e9d;
-            --light: #f8f9fa;
-            --dark: #212529;
-            --success: #28a745;
-            --warning: #ffc107;
-            --danger: #dc3545;
-            --info: #17a2b8;
+            --text: #121212;
+            --bg: #f8f9fa;
+            --card: #ffffff;
+            --border: rgba(0, 0, 0, 0.1);
         }
-        
+
+        .dark-mode {
+            --primary: #8a2be2;
+            --secondary: #00b4d8;
+            --accent: #ff7096;
+            --text: #f8f9fa;
+            --bg: #121212;
+            --card: #1e1e1e;
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background 0.3s, color 0.3s;
         }
-        
+
         body {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            background-color: var(--bg);
+            color: var(--text);
             min-height: 100vh;
-            color: var(--light);
-            padding: 20px;
         }
-        
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            background-color: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            padding: 20px;
         }
-        
+
+        /* Header */
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border);
             margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
         }
-        
+
         .logo {
-            font-size: 2.5rem;
+            font-size: 2rem;
             font-weight: 800;
-            background: linear-gradient(to right, var(--accent), #ff8a00);
+            background: linear-gradient(to right, var(--primary), var(--accent));
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
         }
-        
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background-color: var(--accent);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 1.2rem;
-        }
-        
-        .main-content {
-            display: grid;
-            grid-template-columns: 300px 1fr;
-            gap: 30px;
-        }
-        
-        .sidebar {
-            background-color: rgba(0, 0, 0, 0.2);
-            border-radius: 15px;
-            padding: 20px;
-        }
-        
-        .nav-menu {
-            list-style: none;
-            margin-top: 20px;
-        }
-        
-        .nav-menu li {
-            margin-bottom: 15px;
-        }
-        
-        .nav-menu a {
-            color: var(--light);
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px;
-            border-radius: 10px;
-            transition: all 0.3s;
-        }
-        
-        .nav-menu a:hover, .nav-menu a.active {
-            background-color: rgba(255, 255, 255, 0.2);
-            transform: translateX(5px);
-        }
-        
-        .nav-menu i {
-            font-size: 1.2rem;
-        }
-        
-        .agenda-content {
-            background-color: rgba(0, 0, 0, 0.2);
-            border-radius: 15px;
-            padding: 20px;
-        }
-        
-        .agenda-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        
-        .month-navigation {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .month-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-            min-width: 200px;
-            text-align: center;
-        }
-        
-        .btn {
-            padding: 8px 15px;
-            border: none;
-            border-radius: 8px;
-            background-color: var(--accent);
-            color: white;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        }
-        
-        .btn-secondary {
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-        
-        .btn-secondary:hover {
-            background-color: rgba(255, 255, 255, 0.3);
-        }
-        
-        .calendar {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        
-        .calendar th {
-            padding: 15px;
-            text-align: center;
-            font-weight: 600;
-            color: rgba(255, 255, 255, 0.7);
-        }
-        
-        .calendar td {
-            height: 100px;
-            padding: 10px;
-            vertical-align: top;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .calendar td:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-        
-        .day-number {
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-        
-        .event {
-            font-size: 0.8rem;
-            padding: 3px 6px;
-            border-radius: 5px;
-            margin-bottom: 3px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        
-        .event.work {
-            background-color: var(--info);
-        }
-        
-        .event.personal {
-            background-color: var(--success);
-        }
-        
-        .event.school {
-            background-color: var(--warning);
-            color: var(--dark);
-        }
-        
-        .event.social {
-            background-color: var(--accent);
-        }
-        
-        .other-month {
-            color: rgba(255, 255, 255, 0.3);
-        }
-        
-        .today {
-            background-color: rgba(255, 255, 255, 0.1);
-            position: relative;
-        }
-        
-        .today::after {
-            content: '';
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            width: 8px;
-            height: 8px;
-            background-color: var(--accent);
-            border-radius: 50%;
-        }
-        
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            opacity: 0;
-            pointer-events: none;
-            transition: all 0.3s;
-        }
-        
-        .modal.active {
-            opacity: 1;
-            pointer-events: all;
-        }
-        
-        .modal-content {
-            background: linear-gradient(135deg, #1a1a2e, #16213e);
-            border-radius: 15px;
-            padding: 30px;
-            width: 500px;
-            max-width: 90%;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-            transform: translateY(-50px);
-            transition: all 0.3s;
-        }
-        
-        .modal.active .modal-content {
-            transform: translateY(0);
-        }
-        
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        
-        .modal-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-        }
-        
-        .close-btn {
-            background: none;
-            border: none;
-            color: var(--light);
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-        }
-        
-        .form-control {
-            width: 100%;
-            padding: 12px 15px;
-            background-color: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
-            color: var(--light);
-            font-size: 1rem;
-        }
-        
-        .form-control:focus {
-            outline: none;
-            border-color: var(--accent);
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-        
-        .radio-group {
+
+        .nav-links {
             display: flex;
             gap: 20px;
         }
-        
-        .radio-option {
+
+        .nav-links a {
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 600;
+            padding: 8px 15px;
+            border-radius: 20px;
+        }
+
+        .nav-links a:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .dark-mode .nav-links a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .user-actions {
             display: flex;
             align-items: center;
-            gap: 8px;
-        }
-        
-        .radio-option input {
-            accent-color: var(--accent);
-        }
-        
-        .modal-footer {
-            display: flex;
-            justify-content: flex-end;
             gap: 15px;
-            margin-top: 30px;
         }
-        
-        .events-list {
-            margin-top: 30px;
+
+        .btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
         }
-        
-        .events-list h3 {
+
+        .btn-primary {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text);
+        }
+
+        /* Stories */
+        .stories {
+            display: flex;
+            gap: 15px;
+            padding: 15px 0;
+            margin-bottom: 30px;
+            overflow-x: auto;
+        }
+
+        .story {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            padding: 3px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .story-inner {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background-color: var(--card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .story img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Posts */
+        .posts {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .post {
+            background-color: var(--card);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s;
+        }
+
+        .dark-mode .post {
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .post:hover {
+            transform: translateY(-5px);
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
             margin-bottom: 15px;
-            font-size: 1.2rem;
         }
-        
-        .event-item {
-            background-color: rgba(255, 255, 255, 0.1);
-            padding: 15px;
+
+        .post-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .post-user {
+            font-weight: 600;
+        }
+
+        .post-time {
+            font-size: 0.8rem;
+            color: #777;
+        }
+
+        .post-content {
+            margin-bottom: 15px;
+        }
+
+        .post-image {
+            width: 100%;
             border-radius: 10px;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            max-height: 500px;
+            object-fit: cover;
+        }
+
+        .post-actions {
+            display: flex;
+            gap: 20px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border);
+        }
+
+        .post-action {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+        }
+
+        .post-action:hover {
+            color: var(--accent);
+        }
+
+        /* New Post */
+        .new-post {
+            background-color: var(--card);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .post-input {
+            width: 100%;
+            border: none;
+            background-color: transparent;
+            color: var(--text);
+            font-size: 1rem;
+            margin-bottom: 15px;
+            resize: none;
+            min-height: 80px;
+        }
+
+        .post-input:focus {
+            outline: none;
+        }
+
+        .post-options {
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        
-        .event-info h4 {
-            margin-bottom: 5px;
-            font-size: 1rem;
-        }
-        
-        .event-info p {
-            font-size: 0.9rem;
-            opacity: 0.8;
-        }
-        
-        .event-actions {
+
+        .media-options {
             display: flex;
-            gap: 10px;
-        }
-        
-        .action-btn {
-            background: none;
-            border: none;
-            color: var(--light);
-            cursor: pointer;
-            font-size: 1rem;
-            opacity: 0.7;
-            transition: all 0.3s;
-        }
-        
-        .action-btn:hover {
-            opacity: 1;
-        }
-        
-        .edit-btn {
-            color: var(--warning);
-        }
-        
-        .delete-btn {
-            color: var(--danger);
-        }
-        
-        .quick-actions {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
             gap: 15px;
-            margin-top: 30px;
         }
-        
-        .quick-action {
-            background-color: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .quick-action:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-            transform: translateY(-3px);
-        }
-        
-        .quick-action i {
+
+        .media-option {
             font-size: 1.5rem;
-            color: var(--accent);
+            color: var(--primary);
+            cursor: pointer;
         }
-        
-        .quick-action span {
-            font-size: 0.9rem;
-            text-align: center;
-        }
-        
-        .stats {
-            margin-top: 30px;
-        }
-        
-        .stats h3 {
-            margin-bottom: 15px;
-            font-size: 1.2rem;
-        }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-        }
-        
-        .stat-card {
-            background-color: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            padding: 15px;
-            text-align: center;
-        }
-        
-        .stat-value {
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-bottom: 5px;
-        }
-        
-        .stat-label {
-            font-size: 0.9rem;
-            opacity: 0.8;
-        }
-        
-        @media (max-width: 992px) {
-            .main-content {
-                grid-template-columns: 1fr;
-            }
-            
-            .calendar td {
-                height: 70px;
-            }
-        }
-        
+
+        /* Responsive */
         @media (max-width: 768px) {
-            .calendar th, .calendar td {
-                padding: 5px;
-                font-size: 0.8rem;
-            }
-            
-            .day-number {
-                font-size: 0.9rem;
-            }
-            
-            .event {
+            .nav-links {
                 display: none;
             }
             
-            .quick-actions {
-                grid-template-columns: 1fr;
-            }
-            
-            .stats-grid {
-                grid-template-columns: 1fr;
+            .logo {
+                font-size: 1.5rem;
             }
         }
     </style>
@@ -514,414 +290,191 @@
 <body>
     <div class="container">
         <header>
-            <div class="logo">Génération 2025</div>
-            <div class="user-info">
-                <div class="avatar">JD</div>
-                <span>John Doe</span>
+            <div class="logo">Gen2025</div>
+            <div class="nav-links">
+                <a href="#"><i class="fas fa-home"></i> Accueil</a>
+                <a href="#"><i class="fas fa-compass"></i> Explorer</a>
+                <a href="#"><i class="fas fa-bell"></i> Notifications</a>
+                <a href="#"><i class="fas fa-envelope"></i> Messages</a>
+            </div>
+            <div class="user-actions">
+                <button class="theme-toggle" id="theme-toggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <button class="btn btn-outline">Profil</button>
             </div>
         </header>
-        
-        <div class="main-content">
-            <div class="sidebar">
-                <div class="search-box">
-                    <input type="text" class="form-control" placeholder="Rechercher...">
+
+        <div class="new-post">
+            <textarea class="post-input" placeholder="Quoi de neuf, Génération 2025 ?"></textarea>
+            <div class="post-options">
+                <div class="media-options">
+                    <div class="media-option"><i class="fas fa-image"></i></div>
+                    <div class="media-option"><i class="fas fa-video"></i></div>
+                    <div class="media-option"><i class="fas fa-smile"></i></div>
                 </div>
-                
-                <ul class="nav-menu">
-                    <li><a href="#" class="active"><i class="fas fa-calendar-alt"></i> Agenda</a></li>
-                    <li><a href="#"><i class="fas fa-tasks"></i> Tâches</a></li>
-                    <li><a href="#"><i class="fas fa-sticky-note"></i> Notes</a></li>
-                    <li><a href="#"><i class="fas fa-users"></i> Contacts</a></li>
-                    <li><a href="#"><i class="fas fa-chart-line"></i> Statistiques</a></li>
-                    <li><a href="#"><i class="fas fa-cog"></i> Paramètres</a></li>
-                </ul>
-                
-                <div class="quick-actions">
-                    <div class="quick-action" id="quick-add-event">
-                        <i class="fas fa-plus"></i>
-                        <span>Ajouter un événement</span>
-                    </div>
-                    <div class="quick-action">
-                        <i class="fas fa-bell"></i>
-                        <span>Rappels</span>
-                    </div>
-                    <div class="quick-action">
-                        <i class="fas fa-share-alt"></i>
-                        <span>Partager</span>
-                    </div>
-                    <div class="quick-action">
-                        <i class="fas fa-file-export"></i>
-                        <span>Exporter</span>
+                <button class="btn btn-primary">Publier</button>
+            </div>
+        </div>
+
+        <div class="stories">
+            <div class="story">
+                <div class="story-inner">
+                    <i class="fas fa-plus"></i>
+                </div>
+            </div>
+            <div class="story">
+                <div class="story-inner">
+                    <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Story">
+                </div>
+            </div>
+            <div class="story">
+                <div class="story-inner">
+                    <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Story">
+                </div>
+            </div>
+            <div class="story">
+                <div class="story-inner">
+                    <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Story">
+                </div>
+            </div>
+            <div class="story">
+                <div class="story-inner">
+                    <img src="https://randomuser.me/api/portraits/men/75.jpg" alt="Story">
+                </div>
+            </div>
+            <div class="story">
+                <div class="story-inner">
+                    <img src="https://randomuser.me/api/portraits/women/25.jpg" alt="Story">
+                </div>
+            </div>
+        </div>
+
+        <div class="posts">
+            <div class="post">
+                <div class="post-header">
+                    <img src="https://randomuser.me/api/portraits/women/44.jpg" class="post-avatar" alt="User">
+                    <div>
+                        <div class="post-user">Sarah K.</div>
+                        <div class="post-time">Il y a 2 heures</div>
                     </div>
                 </div>
-                
-                <div class="stats">
-                    <h3>Statistiques</h3>
-                    <div class="stats-grid">
-                        <div class="stat-card">
-                            <div class="stat-value">24</div>
-                            <div class="stat-label">Événements</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-value">8</div>
-                            <div class="stat-label">Tâches</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-value">5</div>
-                            <div class="stat-label">Notes</div>
-                        </div>
+                <div class="post-content">
+                    Le dernier projet de promo est trop malade ! Qui est chaud pour travailler ensemble ce week-end ? 🚀
+                </div>
+                <img src="https://source.unsplash.com/random/800x400/?university,project" class="post-image" alt="Post">
+                <div class="post-actions">
+                    <div class="post-action like-btn">
+                        <i class="far fa-heart"></i> <span>24</span>
+                    </div>
+                    <div class="post-action">
+                        <i class="far fa-comment"></i> <span>8</span>
+                    </div>
+                    <div class="post-action">
+                        <i class="fas fa-share"></i>
                     </div>
                 </div>
             </div>
-            
-            <div class="agenda-content">
-                <div class="agenda-header">
-                    <div class="month-navigation">
-                        <button class="btn btn-secondary" id="prev-month"><i class="fas fa-chevron-left"></i></button>
-                        <div class="month-title">Juillet 2025</div>
-                        <button class="btn btn-secondary" id="next-month"><i class="fas fa-chevron-right"></i></button>
+
+            <div class="post">
+                <div class="post-header">
+                    <img src="https://randomuser.me/api/portraits/men/32.jpg" class="post-avatar" alt="User">
+                    <div>
+                        <div class="post-user">Thomas L.</div>
+                        <div class="post-time">Il y a 5 heures</div>
                     </div>
-                    <button class="btn" id="add-event"><i class="fas fa-plus"></i> Ajouter</button>
                 </div>
-                
-                <table class="calendar">
-                    <thead>
-                        <tr>
-                            <th>Lundi</th>
-                            <th>Mardi</th>
-                            <th>Mercredi</th>
-                            <th>Jeudi</th>
-                            <th>Vendredi</th>
-                            <th>Samedi</th>
-                            <th>Dimanche</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="other-month">
-                                <div class="day-number">30</div>
-                            </td>
-                            <td class="other-month">
-                                <div class="day-number">1</div>
-                            </td>
-                            <td>
-                                <div class="day-number">2</div>
-                                <div class="event personal">Anniversaire</div>
-                            </td>
-                            <td>
-                                <div class="day-number">3</div>
-                            </td>
-                            <td>
-                                <div class="day-number">4</div>
-                                <div class="event work">Réunion 10h</div>
-                            </td>
-                            <td class="today">
-                                <div class="day-number">5</div>
-                                <div class="event school">Examen</div>
-                                <div class="event social">Soirée</div>
-                            </td>
-                            <td>
-                                <div class="day-number">6</div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="day-number">7</div>
-                                <div class="event work">Départ en vacances</div>
-                            </td>
-                            <td>
-                                <div class="day-number">8</div>
-                            </td>
-                            <td>
-                                <div class="day-number">9</div>
-                            </td>
-                            <td>
-                                <div class="day-number">10</div>
-                                <div class="event personal">RDV médecin</div>
-                            </td>
-                            <td>
-                                <div class="day-number">11</div>
-                            </td>
-                            <td>
-                                <div class="day-number">12</div>
-                            </td>
-                            <td>
-                                <div class="day-number">13</div>
-                                <div class="event social">Barbecue</div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="day-number">14</div>
-                                <div class="event work">Rapport à rendre</div>
-                            </td>
-                            <td>
-                                <div class="day-number">15</div>
-                            </td>
-                            <td>
-                                <div class="day-number">16</div>
-                            </td>
-                            <td>
-                                <div class="day-number">17</div>
-                            </td>
-                            <td>
-                                <div class="day-number">18</div>
-                                <div class="event personal">Courses</div>
-                            </td>
-                            <td>
-                                <div class="day-number">19</div>
-                            </td>
-                            <td>
-                                <div class="day-number">20</div>
-                                <div class="event social">Cinéma</div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="day-number">21</div>
-                            </td>
-                            <td>
-                                <div class="day-number">22</div>
-                                <div class="event work">Entretien</div>
-                            </td>
-                            <td>
-                                <div class="day-number">23</div>
-                            </td>
-                            <td>
-                                <div class="day-number">24</div>
-                            </td>
-                            <td>
-                                <div class="day-number">25</div>
-                                <div class="event school">Rendu projet</div>
-                            </td>
-                            <td>
-                                <div class="day-number">26</div>
-                            </td>
-                            <td>
-                                <div class="day-number">27</div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class="day-number">28</div>
-                                <div class="event personal">Fête nationale</div>
-                            </td>
-                            <td>
-                                <div class="day-number">29</div>
-                            </td>
-                            <td>
-                                <div class="day-number">30</div>
-                            </td>
-                            <td>
-                                <div class="day-number">31</div>
-                            </td>
-                            <td class="other-month">
-                                <div class="day-number">1</div>
-                            </td>
-                            <td class="other-month">
-                                <div class="day-number">2</div>
-                            </td>
-                            <td class="other-month">
-                                <div class="day-number">3</div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                
-                <div class="events-list">
-                    <h3><i class="fas fa-list"></i> Événements à venir</h3>
-                    
-                    <div class="event-item">
-                        <div class="event-info">
-                            <h4>Examen final</h4>
-                            <p>5 juillet 2025 - 09:00 | École</p>
-                        </div>
-                        <div class="event-actions">
-                            <button class="action-btn edit-btn"><i class="fas fa-edit"></i></button>
-                            <button class="action-btn delete-btn"><i class="fas fa-trash"></i></button>
-                        </div>
+                <div class="post-content">
+                    Je viens de finir mon portfolio pour les stages, dites-moi ce que vous en pensez ! 🔥
+                    <br><br>
+                    #design #portfolio #stage
+                </div>
+                <div class="post-actions">
+                    <div class="post-action like-btn">
+                        <i class="far fa-heart"></i> <span>42</span>
                     </div>
-                    
-                    <div class="event-item">
-                        <div class="event-info">
-                            <h4>Soirée d'été</h4>
-                            <p>5 juillet 2025 - 20:00 | Chez Marc</p>
-                        </div>
-                        <div class="event-actions">
-                            <button class="action-btn edit-btn"><i class="fas fa-edit"></i></button>
-                            <button class="action-btn delete-btn"><i class="fas fa-trash"></i></button>
-                        </div>
+                    <div class="post-action">
+                        <i class="far fa-comment"></i> <span>15</span>
                     </div>
-                    
-                    <div class="event-item">
-                        <div class="event-info">
-                            <h4>Rendez-vous médecin</h4>
-                            <p>10 juillet 2025 - 14:30 | Cabinet Dr. Smith</p>
-                        </div>
-                        <div class="event-actions">
-                            <button class="action-btn edit-btn"><i class="fas fa-edit"></i></button>
-                            <button class="action-btn delete-btn"><i class="fas fa-trash"></i></button>
-                        </div>
+                    <div class="post-action">
+                        <i class="fas fa-share"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="post">
+                <div class="post-header">
+                    <img src="https://randomuser.me/api/portraits/women/68.jpg" class="post-avatar" alt="User">
+                    <div>
+                        <div class="post-user">Léa M.</div>
+                        <div class="post-time">Hier</div>
+                    </div>
+                </div>
+                <div class="post-content">
+                    Soirée intégration 2025 était légendaire ! 🎉 Qui a des photos à partager ?
+                </div>
+                <img src="https://source.unsplash.com/random/800x400/?party,students" class="post-image" alt="Post">
+                <div class="post-actions">
+                    <div class="post-action like-btn">
+                        <i class="far fa-heart"></i> <span>89</span>
+                    </div>
+                    <div class="post-action">
+                        <i class="far fa-comment"></i> <span>32</span>
+                    </div>
+                    <div class="post-action">
+                        <i class="fas fa-share"></i>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    
-    <!-- Modal pour ajouter/modifier un événement -->
-    <div class="modal" id="event-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">Ajouter un événement</h3>
-                <button class="close-btn" id="close-modal">&times;</button>
-            </div>
-            
-            <form id="event-form">
-                <div class="form-group">
-                    <label for="event-title">Titre</label>
-                    <input type="text" id="event-title" class="form-control" placeholder="Titre de l'événement" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="event-date">Date</label>
-                    <input type="date" id="event-date" class="form-control" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="event-time">Heure</label>
-                    <input type="time" id="event-time" class="form-control">
-                </div>
-                
-                <div class="form-group">
-                    <label for="event-location">Lieu</label>
-                    <input type="text" id="event-location" class="form-control" placeholder="Où ça se passe?">
-                </div>
-                
-                <div class="form-group">
-                    <label for="event-description">Description</label>
-                    <textarea id="event-description" class="form-control" rows="3" placeholder="Détails..."></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label>Type d'événement</label>
-                    <div class="radio-group">
-                        <div class="radio-option">
-                            <input type="radio" id="type-work" name="event-type" value="work" checked>
-                            <label for="type-work">Travail</label>
-                        </div>
-                        <div class="radio-option">
-                            <input type="radio" id="type-personal" name="event-type" value="personal">
-                            <label for="type-personal">Personnel</label>
-                        </div>
-                        <div class="radio-option">
-                            <input type="radio" id="type-school" name="event-type" value="school">
-                            <label for="type-school">École</label>
-                        </div>
-                        <div class="radio-option">
-                            <input type="radio" id="type-social" name="event-type" value="social">
-                            <label for="type-social">Social</label>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" id="cancel-event">Annuler</button>
-                    <button type="submit" class="btn">Enregistrer</button>
-                </div>
-            </form>
-        </div>
-    </div>
-    
+
     <script>
-        // Gestion du modal
-        const eventModal = document.getElementById('event-modal');
-        const addEventBtn = document.getElementById('add-event');
-        const quickAddEventBtn = document.getElementById('quick-add-event');
-        const closeModalBtn = document.getElementById('close-modal');
-        const cancelEventBtn = document.getElementById('cancel-event');
-        const eventForm = document.getElementById('event-form');
-        
-        // Ouvrir le modal
-        function openModal() {
-            eventModal.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-        
-        // Fermer le modal
-        function closeModal() {
-            eventModal.classList.remove('active');
-            document.body.style.overflow = '';
-            eventForm.reset();
-        }
-        
-        // Événements
-        addEventBtn.addEventListener('click', openModal);
-        quickAddEventBtn.addEventListener('click', openModal);
-        closeModalBtn.addEventListener('click', closeModal);
-        cancelEventBtn.addEventListener('click', closeModal);
-        
-        // Fermer en cliquant en dehors du modal
-        eventModal.addEventListener('click', (e) => {
-            if (e.target === eventModal) {
-                closeModal();
+        // Dark Mode Toggle
+        const themeToggle = document.getElementById('theme-toggle');
+        const body = document.body;
+
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+            
+            if (body.classList.contains('dark-mode')) {
+                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            } else {
+                themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
             }
         });
+
+        // Like Button
+        const likeButtons = document.querySelectorAll('.like-btn');
         
-        // Gestion du formulaire
-        eventForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            
-            // Ici, vous ajouteriez le code pour enregistrer l'événement
-            // Par exemple, ajouter à un tableau ou envoyer à un serveur
-            
-            alert('Événement enregistré! (Fonctionnalité à implémenter)');
-            closeModal();
-        });
-        
-        // Navigation entre les mois
-        const prevMonthBtn = document.getElementById('prev-month');
-        const nextMonthBtn = document.getElementById('next-month');
-        const monthTitle = document.querySelector('.month-title');
-        
-        // Cette fonction serait plus complexe dans une vraie application
-        // pour gérer correctement le changement de mois
-        prevMonthBtn.addEventListener('click', () => {
-            alert('Aller au mois précédent (Fonctionnalité à implémenter)');
-        });
-        
-        nextMonthBtn.addEventListener('click', () => {
-            alert('Aller au mois suivant (Fonctionnalité à implémenter)');
-        });
-        
-        // Sélection d'un jour dans le calendrier
-        const calendarDays = document.querySelectorAll('.calendar td:not(.other-month)');
-        
-        calendarDays.forEach(day => {
-            day.addEventListener('click', () => {
-                const dayNumber = day.querySelector('.day-number').textContent;
-                alert(`Jour sélectionné : ${dayNumber} (Fonctionnalité à implémenter)`);
-            });
-        });
-        
-        // Gestion des événements existants
-        const editButtons = document.querySelectorAll('.edit-btn');
-        const deleteButtons = document.querySelectorAll('.delete-btn');
-        
-        editButtons.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                alert('Modifier un événement (Fonctionnalité à implémenter)');
-            });
-        });
-        
-        deleteButtons.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                if (confirm('Supprimer cet événement?')) {
-                    // Code pour supprimer l'événement
-                    alert('Événement supprimé! (Fonctionnalité à implémenter)');
+        likeButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const icon = button.querySelector('i');
+                const count = button.querySelector('span');
+                
+                if (icon.classList.contains('far')) {
+                    icon.classList.remove('far');
+                    icon.classList.add('fas');
+                    icon.style.color = '#ff3e9d';
+                    count.textContent = parseInt(count.textContent) + 1;
+                } else {
+                    icon.classList.remove('fas');
+                    icon.classList.add('far');
+                    icon.style.color = '';
+                    count.textContent = parseInt(count.textContent) - 1;
                 }
             });
+        });
+
+        // New Post
+        const postInput = document.querySelector('.post-input');
+        const postButton = document.querySelector('.new-post .btn-primary');
+        
+        postButton.addEventListener('click', () => {
+            if (postInput.value.trim() !== '') {
+                alert('Post publié ! (Fonctionnalité complète à implémenter)');
+                postInput.value = '';
+            }
         });
     </script>
 </body>
