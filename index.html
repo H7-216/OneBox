@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GEII 2025 - Agenda Collaboratif</title>
+    <title>GEII 2025 - Espace Collaboratif</title>
     <style>
         :root {
             --primary: #6a11cb;
@@ -132,6 +132,61 @@
             to { transform: rotate(360deg); }
         }
 
+        /* Modal de profil */
+        .profile-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .profile-box {
+            background-color: var(--card);
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .avatar-preview {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            color: white;
+        }
+
+        .color-options {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .color-option {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .color-option.selected {
+            border-color: var(--text);
+        }
+
         /* Main App */
         .container {
             max-width: 1200px;
@@ -167,7 +222,6 @@
             width: 50px;
             height: 50px;
             border-radius: 50%;
-            background: linear-gradient(to right, var(--primary), var(--accent));
             display: flex;
             align-items: center;
             justify-content: center;
@@ -243,7 +297,6 @@
             width: 30px;
             height: 30px;
             border-radius: 50%;
-            background: linear-gradient(to right, var(--primary), var(--accent));
             display: flex;
             align-items: center;
             justify-content: center;
@@ -415,10 +468,32 @@
     <div class="login-container" id="login-container">
         <div class="login-box">
             <div class="logo">GEII 2025</div>
-            <h2 class="login-title">Agenda Collaboratif</h2>
+            <h2 class="login-title">Espace Collaboratif</h2>
             <input type="password" class="login-input" id="access-code" placeholder="Code d'accès (GEII)" maxlength="4">
             <button class="login-btn" id="login-btn">Accéder</button>
             <div class="loader" id="loader"></div>
+        </div>
+    </div>
+
+    <!-- Modal de profil -->
+    <div class="profile-modal" id="profile-modal">
+        <div class="profile-box">
+            <div class="logo">GEII 2025</div>
+            <h2>Créez votre profil</h2>
+            
+            <div class="avatar-preview" id="avatar-preview" style="background-color: #6a11cb;">?</div>
+            
+            <input type="text" id="user-name-input" class="login-input" placeholder="Votre prénom" maxlength="20">
+            
+            <div class="color-options">
+                <div class="color-option selected" style="background-color: #6a11cb;" data-color="#6a11cb"></div>
+                <div class="color-option" style="background-color: #2575fc;" data-color="#2575fc"></div>
+                <div class="color-option" style="background-color: #ff3e9d;" data-color="#ff3e9d"></div>
+                <div class="color-option" style="background-color: #28a745;" data-color="#28a745"></div>
+                <div class="color-option" style="background-color: #ffc107;" data-color="#ffc107"></div>
+            </div>
+            
+            <button class="login-btn" id="save-profile">Enregistrer</button>
         </div>
     </div>
 
@@ -464,34 +539,37 @@
     <script>
         // Base de données locale
         let db = {
-            users: [
-                { id: 1, name: "Admin", role: "Professeur", avatar: "AD" },
-                { id: 2, name: "Jean Dupont", role: "Étudiant", avatar: "JD" },
-                { id: 3, name: "Marie Martin", role: "Étudiant", avatar: "MM" },
-                { id: 4, name: "Pierre Bernard", role: "Étudiant", avatar: "PB" },
-                { id: 5, name: "Sophie Leroy", role: "Étudiant", avatar: "SL" }
-            ],
-            posts: [
-                {
-                    id: 1,
-                    userId: 1,
-                    content: "Bonjour à tous ! Bienvenue sur l'agenda collaboratif de la promo GEII 2025. Postez vos questions ici.",
-                    timestamp: new Date().getTime(),
-                    replies: [
-                        { id: 1, userId: 2, content: "Merci pour la création de cet espace !", timestamp: new Date().getTime() + 1000 },
-                        { id: 2, userId: 3, content: "Quand aura lieu la prochaine séance de TP ?", timestamp: new Date().getTime() + 2000 }
-                    ]
-                },
-                {
-                    id: 2,
-                    userId: 4,
-                    content: "Je cherche un partenaire pour le projet de fin de semestre. Quelqu'un est intéressé ?",
-                    timestamp: new Date().getTime() + 3000,
-                    replies: []
-                }
-            ],
+            users: [],
+            posts: [],
             currentUser: null
         };
+
+        // Charger les données depuis le localStorage
+        function loadFromLocalStorage() {
+            const savedUsers = localStorage.getItem('geii2025_users');
+            const savedPosts = localStorage.getItem('geii2025_posts');
+            
+            if (savedUsers) db.users = JSON.parse(savedUsers);
+            if (savedPosts) db.posts = JSON.parse(savedPosts);
+            
+            // Créer l'admin s'il n'existe pas
+            if (!db.users.some(u => u.isAdmin)) {
+                db.users.push({
+                    id: 1,
+                    name: "Admin",
+                    role: "Professeur",
+                    avatar: "AD",
+                    color: "#6a11cb",
+                    isAdmin: true
+                });
+            }
+        }
+
+        // Sauvegarder les données dans le localStorage
+        function saveToLocalStorage() {
+            localStorage.setItem('geii2025_users', JSON.stringify(db.users));
+            localStorage.setItem('geii2025_posts', JSON.stringify(db.posts));
+        }
 
         // DOM Elements
         const loginContainer = document.getElementById('login-container');
@@ -499,8 +577,11 @@
         const accessCodeInput = document.getElementById('access-code');
         const loginBtn = document.getElementById('login-btn');
         const loader = document.getElementById('loader');
+        const profileModal = document.getElementById('profile-modal');
+        const saveProfileBtn = document.getElementById('save-profile');
+        const userNameInput = document.getElementById('user-name-input');
+        const avatarPreview = document.getElementById('avatar-preview');
         const themeToggle = document.getElementById('theme-toggle');
-        const body = document.body;
         const userList = document.getElementById('user-list');
         const postsList = document.getElementById('posts-list');
         const postInput = document.getElementById('post-input');
@@ -508,65 +589,111 @@
         const userName = document.getElementById('user-name');
         const userAvatar = document.getElementById('user-avatar');
 
+        // Initialisation
+        loadFromLocalStorage();
+
         // Authentification
         loginBtn.addEventListener('click', () => {
             const code = accessCodeInput.value.toUpperCase();
             
             if (code === "GEII") {
-                // Simulation de chargement
                 loader.style.display = 'block';
                 loginBtn.style.display = 'none';
                 
                 setTimeout(() => {
-                    // Définir l'utilisateur admin
-                    db.currentUser = db.users[0];
-                    userName.textContent = db.currentUser.name;
-                    userAvatar.textContent = db.currentUser.avatar;
+                    // Créer un nouvel utilisateur temporaire
+                    db.currentUser = {
+                        id: Date.now(),
+                        isAdmin: false
+                    };
                     
-                    // Cacher le login et montrer l'app
+                    // Vérifier si c'est l'admin (ID 1)
+                    if (db.users.some(u => u.id === 1 && localStorage.getItem('geii2025_authenticated'))) {
+                        db.currentUser = db.users.find(u => u.id === 1);
+                        startApplication();
+                    } else {
+                        showProfileModal();
+                    }
+                    
+                    // Cacher le login
                     loginContainer.classList.add('hidden');
-                    appContainer.classList.add('show');
-                    
-                    // Charger les données
-                    renderUsers();
-                    renderPosts();
-                    
-                    // Sauvegarder en localStorage
-                    localStorage.setItem('geii2025_authenticated', 'true');
                 }, 1500);
             } else {
                 alert("Code incorrect. Essayez 'GEII'");
             }
         });
 
-        // Vérifier si déjà authentifié
-        if (localStorage.getItem('geii2025_authenticated') === 'true') {
-            loginContainer.classList.add('hidden');
-            db.currentUser = db.users[0];
-            userName.textContent = db.currentUser.name;
-            userAvatar.textContent = db.currentUser.avatar;
-            appContainer.classList.add('show');
-            renderUsers();
-            renderPosts();
+        // Gestion du profil
+        function showProfileModal() {
+            profileModal.style.display = 'flex';
+            updateAvatarPreview();
         }
 
-        // Dark Mode Toggle
-        themeToggle.addEventListener('click', () => {
-            body.classList.toggle('dark-mode');
+        function updateAvatarPreview() {
+            const name = userNameInput.value.trim();
+            const selectedColor = document.querySelector('.color-option.selected').dataset.color;
+            const initials = name ? name.charAt(0).toUpperCase() : '?';
             
-            if (body.classList.contains('dark-mode')) {
-                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-                localStorage.setItem('theme', 'dark');
-            } else {
-                themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
-                localStorage.setItem('theme', 'light');
-            }
+            avatarPreview.textContent = initials;
+            avatarPreview.style.backgroundColor = selectedColor;
+        }
+
+        // Écouteurs pour la modal de profil
+        document.querySelectorAll('.color-option').forEach(option => {
+            option.addEventListener('click', () => {
+                document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('selected'));
+                option.classList.add('selected');
+                updateAvatarPreview();
+            });
         });
 
-        // Vérifier le thème au chargement
-        if (localStorage.getItem('theme') === 'dark') {
-            body.classList.add('dark-mode');
-            themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        userNameInput.addEventListener('input', updateAvatarPreview);
+
+        saveProfileBtn.addEventListener('click', () => {
+            const name = userNameInput.value.trim();
+            const color = document.querySelector('.color-option.selected').dataset.color;
+            
+            if (name.length < 2) {
+                alert("Veuillez entrer un prénom valide (2 caractères minimum)");
+                return;
+            }
+            
+            // Mettre à jour l'utilisateur courant
+            db.currentUser = {
+                ...db.currentUser,
+                name: name,
+                avatar: name.charAt(0).toUpperCase(),
+                color: color,
+                role: "Enseignant"
+            };
+            
+            // Ajouter à la liste des utilisateurs
+            if (!db.users.some(u => u.id === db.currentUser.id)) {
+                db.users.push(db.currentUser);
+            }
+            
+            // Sauvegarder
+            saveToLocalStorage();
+            localStorage.setItem('geii2025_authenticated', 'true');
+            
+            // Démarrer l'application
+            profileModal.style.display = 'none';
+            startApplication();
+        });
+
+        // Démarrer l'application
+        function startApplication() {
+            // Mettre à jour l'UI
+            userName.textContent = db.currentUser.name;
+            userAvatar.textContent = db.currentUser.avatar;
+            userAvatar.style.backgroundColor = db.currentUser.color;
+            
+            // Afficher l'application
+            appContainer.classList.add('show');
+            
+            // Charger les données
+            renderUsers();
+            renderPosts();
         }
 
         // Afficher les utilisateurs
@@ -577,7 +704,7 @@
                 const userItem = document.createElement('li');
                 userItem.className = 'user-item';
                 userItem.innerHTML = `
-                    <div class="user-avatar">${user.avatar}</div>
+                    <div class="user-avatar" style="background: ${user.color}">${user.avatar}</div>
                     <div>
                         <div>${user.name}</div>
                         <small>${user.role}</small>
@@ -595,7 +722,7 @@
             const sortedPosts = [...db.posts].sort((a, b) => b.timestamp - a.timestamp);
             
             sortedPosts.forEach(post => {
-                const user = db.users.find(u => u.id === post.userId);
+                const user = db.users.find(u => u.id === post.userId) || { name: "Inconnu", avatar: "?", color: "#999" };
                 const postElement = document.createElement('div');
                 postElement.className = 'post';
                 postElement.dataset.postId = post.id;
@@ -604,11 +731,11 @@
                 if (post.replies.length > 0) {
                     repliesHtml += `<div class="replies">`;
                     post.replies.forEach(reply => {
-                        const replyUser = db.users.find(u => u.id === reply.userId);
+                        const replyUser = db.users.find(u => u.id === reply.userId) || { name: "Inconnu", avatar: "?", color: "#999" };
                         repliesHtml += `
                             <div class="reply">
                                 <div class="post-header">
-                                    <div class="user-avatar">${replyUser.avatar}</div>
+                                    <div class="user-avatar" style="background: ${replyUser.color}">${replyUser.avatar}</div>
                                     <div>
                                         <div class="post-user">${replyUser.name}</div>
                                         <div class="post-time">${formatDate(reply.timestamp)}</div>
@@ -630,7 +757,7 @@
                 
                 postElement.innerHTML = `
                     <div class="post-header">
-                        <div class="user-avatar">${user.avatar}</div>
+                        <div class="user-avatar" style="background: ${user.color}">${user.avatar}</div>
                         <div>
                             <div class="post-user">${user.name}</div>
                             <div class="post-time">${formatDate(post.timestamp)}</div>
@@ -663,7 +790,7 @@
                 postsList.appendChild(postElement);
             });
             
-            // Gestion des événements
+            // Configurer les événements
             setupPostEvents();
         }
 
@@ -702,6 +829,7 @@
                             };
                             
                             post.replies.push(newReply);
+                            replyInput.value = '';
                             renderPosts();
                             saveToLocalStorage();
                         }
@@ -735,7 +863,7 @@
                 });
             });
             
-            // Éditer un post (à implémenter)
+            // Éditer un post
             document.querySelectorAll('.edit-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const postId = parseInt(e.target.closest('.edit-btn').dataset.postId);
@@ -771,6 +899,25 @@
             }
         });
 
+        // Dark Mode Toggle
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+            
+            if (body.classList.contains('dark-mode')) {
+                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+                localStorage.setItem('theme', 'light');
+            }
+        });
+
+        // Vérifier le thème au chargement
+        if (localStorage.getItem('theme') === 'dark') {
+            body.classList.add('dark-mode');
+            themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        }
+
         // Formater la date
         function formatDate(timestamp) {
             const date = new Date(timestamp);
@@ -782,22 +929,6 @@
                 minute: '2-digit'
             });
         }
-
-        // Sauvegarder dans le localStorage
-        function saveToLocalStorage() {
-            localStorage.setItem('geii2025_posts', JSON.stringify(db.posts));
-        }
-
-        // Charger depuis le localStorage
-        function loadFromLocalStorage() {
-            const savedPosts = localStorage.getItem('geii2025_posts');
-            if (savedPosts) {
-                db.posts = JSON.parse(savedPosts);
-            }
-        }
-
-        // Charger les données au démarrage
-        loadFromLocalStorage();
     </script>
 </body>
 </html>
