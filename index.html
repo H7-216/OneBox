@@ -40,7 +40,6 @@
             overflow-x: hidden;
         }
 
-        /* Page de Login */
         .login-container {
             display: flex;
             justify-content: center;
@@ -132,7 +131,6 @@
             to { transform: rotate(360deg); }
         }
 
-        /* Modal de profil */
         .profile-modal {
             position: fixed;
             top: 0;
@@ -187,7 +185,6 @@
             border-color: var(--text);
         }
 
-        /* Main App */
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -202,7 +199,6 @@
             transform: translateY(0);
         }
 
-        /* Header */
         header {
             display: flex;
             justify-content: space-between;
@@ -255,7 +251,6 @@
             margin-left: 15px;
         }
 
-        /* Main Content */
         .main-content {
             display: grid;
             grid-template-columns: 250px 1fr;
@@ -268,7 +263,6 @@
             }
         }
 
-        /* Sidebar */
         .sidebar {
             background-color: var(--card);
             border-radius: 15px;
@@ -313,7 +307,6 @@
             font-weight: bold;
         }
 
-        /* Posts */
         .posts-container {
             background-color: var(--card);
             border-radius: 15px;
@@ -469,7 +462,6 @@
             background-color: rgba(255, 255, 255, 0.05);
         }
 
-        /* Notification */
         .notification {
             position: fixed;
             bottom: 20px;
@@ -519,7 +511,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-    <!-- Page de Login -->
     <div class="login-container" id="login-container">
         <div class="login-box">
             <div class="logo">GEII 2025</div>
@@ -530,16 +521,12 @@
         </div>
     </div>
 
-    <!-- Modal de profil -->
     <div class="profile-modal" id="profile-modal">
         <div class="profile-box">
             <div class="logo">GEII 2025</div>
             <h2>Créez votre profil</h2>
-            
             <div class="avatar-preview" id="avatar-preview" style="background-color: #6a11cb;">?</div>
-            
             <input type="text" id="user-name-input" class="login-input" placeholder="Votre prénom" maxlength="20">
-            
             <div class="color-options">
                 <div class="color-option selected" style="background-color: #6a11cb;" data-color="#6a11cb"></div>
                 <div class="color-option" style="background-color: #2575fc;" data-color="#2575fc"></div>
@@ -547,12 +534,10 @@
                 <div class="color-option" style="background-color: #28a745;" data-color="#28a745"></div>
                 <div class="color-option" style="background-color: #ffc107;" data-color="#ffc107"></div>
             </div>
-            
             <button class="login-btn" id="save-profile">Enregistrer</button>
         </div>
     </div>
 
-    <!-- Application Principale -->
     <div class="container" id="app-container">
         <header>
             <div class="logo">GEII 2025</div>
@@ -574,9 +559,7 @@
         <div class="main-content">
             <div class="sidebar">
                 <h3 class="sidebar-title">Membres en ligne</h3>
-                <ul class="user-list" id="user-list">
-                    <!-- Liste des utilisateurs chargée par JS -->
-                </ul>
+                <ul class="user-list" id="user-list"></ul>
             </div>
 
             <div class="posts-container">
@@ -587,14 +570,11 @@
                     </div>
                 </div>
 
-                <div class="posts-list" id="posts-list">
-                    <!-- Messages chargés par JS -->
-                </div>
+                <div class="posts-list" id="posts-list"></div>
             </div>
         </div>
     </div>
 
-    <!-- Notification -->
     <div class="notification" id="notification">
         <div class="notification-avatar" id="notification-avatar">?</div>
         <div class="notification-content" id="notification-content">Nouveau message reçu</div>
@@ -604,7 +584,6 @@
     </div>
 
     <script>
-        // Base de données locale
         let db = {
             users: [],
             posts: [],
@@ -612,7 +591,21 @@
             lastUpdate: 0
         };
 
-        // Charger les données depuis le localStorage
+        let connectedUsers = JSON.parse(localStorage.getItem('geii2025_connected_users') || '[]');
+
+        function saveToLocalStorage() {
+            localStorage.setItem('geii2025_users', JSON.stringify(db.users));
+            localStorage.setItem('geii2025_posts', JSON.stringify(db.posts));
+            localStorage.setItem('geii2025_lastUpdate', Date.now().toString());
+            if (db.currentUser) {
+                localStorage.setItem('geii2025_currentUser', JSON.stringify(db.currentUser));
+            }
+        }
+
+        function saveConnectedUsers() {
+            localStorage.setItem('geii2025_connected_users', JSON.stringify(connectedUsers));
+        }
+
         function loadFromLocalStorage() {
             const savedUsers = localStorage.getItem('geii2025_users');
             const savedPosts = localStorage.getItem('geii2025_posts');
@@ -624,7 +617,6 @@
             if (currentUser) db.currentUser = JSON.parse(currentUser);
             if (lastUpdate) db.lastUpdate = parseInt(lastUpdate);
             
-            // Créer l'admin s'il n'existe pas
             if (!db.users.some(u => u.isAdmin)) {
                 db.users.push({
                     id: 1,
@@ -637,17 +629,6 @@
             }
         }
 
-        // Sauvegarder les données dans le localStorage
-        function saveToLocalStorage() {
-            localStorage.setItem('geii2025_users', JSON.stringify(db.users));
-            localStorage.setItem('geii2025_posts', JSON.stringify(db.posts));
-            localStorage.setItem('geii2025_lastUpdate', Date.now().toString());
-            if (db.currentUser) {
-                localStorage.setItem('geii2025_currentUser', JSON.stringify(db.currentUser));
-            }
-        }
-
-        // DOM Elements
         const loginContainer = document.getElementById('login-container');
         const appContainer = document.getElementById('app-container');
         const accessCodeInput = document.getElementById('access-code');
@@ -671,23 +652,26 @@
         const notificationContent = document.getElementById('notification-content');
         const notificationClose = document.getElementById('notification-close');
 
-        // Initialisation
         loadFromLocalStorage();
         checkAuth();
 
-        // Vérifier l'authentification au chargement
         function checkAuth() {
             if (db.currentUser) {
-                // Vérifier si l'utilisateur existe dans la liste
                 const userExists = db.users.some(u => u.id === db.currentUser.id);
                 
                 if (!userExists && !db.currentUser.isAdmin) {
-                    // Nouvel utilisateur non enregistré
                     showProfileModal();
                 } else if (userExists) {
-                    // Mettre à jour les infos de l'utilisateur
                     const userData = db.users.find(u => u.id === db.currentUser.id);
                     db.currentUser = { ...db.currentUser, ...userData };
+                }
+                
+                if (!connectedUsers.some(u => u.id === db.currentUser.id)) {
+                    connectedUsers.push({
+                        id: db.currentUser.id,
+                        lastActive: Date.now()
+                    });
+                    saveConnectedUsers();
                 }
                 
                 startApplication();
@@ -695,7 +679,6 @@
             }
         }
 
-        // Authentification
         loginBtn.addEventListener('click', () => {
             const code = accessCodeInput.value.toUpperCase();
             
@@ -705,7 +688,6 @@
                 
                 setTimeout(() => {
                     if (code === "H7") {
-                        // Connexion admin
                         const admin = db.users.find(u => u.isAdmin) || {
                             id: 1,
                             name: "Admin",
@@ -717,7 +699,6 @@
                         db.currentUser = admin;
                         localStorage.setItem('geii2025_admin_connected', 'true');
                     } else {
-                        // Connexion utilisateur normal
                         db.currentUser = {
                             id: Date.now(),
                             isAdmin: false
@@ -732,7 +713,6 @@
             }
         });
 
-        // Gestion du profil
         function showProfileModal() {
             profileModal.style.display = 'flex';
             updateAvatarPreview();
@@ -747,7 +727,6 @@
             avatarPreview.style.backgroundColor = selectedColor;
         }
 
-        // Écouteurs pour la modal de profil
         document.querySelectorAll('.color-option').forEach(option => {
             option.addEventListener('click', () => {
                 document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('selected'));
@@ -767,7 +746,6 @@
                 return;
             }
             
-            // Mettre à jour l'utilisateur courant
             db.currentUser = {
                 ...db.currentUser,
                 name: name,
@@ -776,43 +754,36 @@
                 role: "Enseignant"
             };
             
-            // Ajouter à la liste des utilisateurs
             if (!db.users.some(u => u.id === db.currentUser.id)) {
                 db.users.push(db.currentUser);
             }
             
-            // Sauvegarder
             saveToLocalStorage();
-            
-            // Démarrer l'application
             profileModal.style.display = 'none';
             startApplication();
         });
 
-        // Démarrer l'application
         function startApplication() {
-            // Mettre à jour l'UI
             userName.textContent = db.currentUser.name;
             userAvatar.textContent = db.currentUser.avatar;
             userAvatar.style.backgroundColor = db.currentUser.color;
             userRole.textContent = db.currentUser.role;
             
-            // Afficher l'application
             appContainer.classList.add('show');
-            
-            // Charger les données
             renderUsers();
             renderPosts();
-            
-            // Vérifier les messages toutes les 1 secondes (simulation temps réel)
             setInterval(checkForNewMessages, 1000);
+            setInterval(updateUserActivity, 10000);
         }
 
-        // Afficher les utilisateurs
         function renderUsers() {
             userList.innerHTML = '';
             
-            db.users.forEach(user => {
+            const activeUsers = db.users.filter(user => 
+                connectedUsers.some(u => u.id === user.id)
+            );
+
+            activeUsers.forEach(user => {
                 const userItem = document.createElement('li');
                 userItem.className = 'user-item';
                 userItem.innerHTML = `
@@ -826,11 +797,9 @@
             });
         }
 
-        // Afficher les posts
         function renderPosts() {
             postsList.innerHTML = '';
             
-            // Trier par date (le plus récent en premier)
             const sortedPosts = [...db.posts].sort((a, b) => b.timestamp - a.timestamp);
             
             sortedPosts.forEach(post => {
@@ -904,13 +873,10 @@
                 postsList.appendChild(postElement);
             });
             
-            // Configurer les événements
             setupPostEvents();
         }
 
-        // Configurer les événements des posts
         function setupPostEvents() {
-            // Bouton Répondre
             document.querySelectorAll('.reply-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const replyForm = e.target.closest('.post').querySelector('.reply-form');
@@ -918,14 +884,12 @@
                 });
             });
             
-            // Annuler la réponse
             document.querySelectorAll('.cancel-reply').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     e.target.closest('.reply-form').style.display = 'none';
                 });
             });
             
-            // Envoyer une réponse
             document.querySelectorAll('.submit-reply').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const postId = parseInt(e.target.closest('.post').dataset.postId);
@@ -952,7 +916,6 @@
                 });
             });
             
-            // Supprimer un post
             document.querySelectorAll('.delete-btn[data-post-id]').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const postId = parseInt(e.target.closest('.delete-btn').dataset.postId);
@@ -965,7 +928,6 @@
                 });
             });
             
-            // Supprimer une réponse
             document.querySelectorAll('.delete-btn[data-reply-id]').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const replyId = parseInt(e.target.closest('.delete-btn').dataset.replyId);
@@ -980,7 +942,6 @@
                 });
             });
             
-            // Éditer un post
             document.querySelectorAll('.edit-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const postId = parseInt(e.target.closest('.edit-btn').dataset.postId);
@@ -998,7 +959,6 @@
             });
         }
 
-        // Vérifier les nouveaux messages
         function checkForNewMessages() {
             const savedPosts = localStorage.getItem('geii2025_posts');
             const savedLastUpdate = localStorage.getItem('geii2025_lastUpdate');
@@ -1006,16 +966,13 @@
             if (savedPosts && savedLastUpdate) {
                 const parsedLastUpdate = parseInt(savedLastUpdate);
                 
-                // Vérifier si de nouveaux messages sont disponibles
                 if (parsedLastUpdate > db.lastUpdate) {
                     const parsedPosts = JSON.parse(savedPosts);
                     
-                    // Trouver les nouveaux messages
                     const newPosts = parsedPosts.filter(p1 => 
                         !db.posts.some(p2 => p2.id === p1.id)
                     );
                     
-                    // Trouver les nouvelles réponses
                     let newReplies = [];
                     parsedPosts.forEach(post => {
                         const existingPost = db.posts.find(p => p.id === post.id);
@@ -1031,21 +988,16 @@
                         }
                     });
                     
-                    // Mettre à jour la base de données locale
                     db.posts = parsedPosts;
                     db.lastUpdate = parsedLastUpdate;
-                    
-                    // Afficher les nouveaux messages
                     renderPosts();
                     
-                    // Notifier des nouveaux messages
                     if (newPosts.length > 0) {
                         const lastPost = newPosts[0];
                         const user = db.users.find(u => u.id === lastPost.userId) || { name: "Inconnu", avatar: "?", color: "#999" };
                         showNotification(`${user.name} a posté : ${lastPost.content.substring(0, 30)}${lastPost.content.length > 30 ? '...' : ''}`, user);
                     }
                     
-                    // Notifier des nouvelles réponses
                     if (newReplies.length > 0) {
                         const lastReply = newReplies[0].reply;
                         const user = db.users.find(u => u.id === lastReply.userId) || { name: "Inconnu", avatar: "?", color: "#999" };
@@ -1055,7 +1007,27 @@
             }
         }
 
-        // Nouveau post
+        function updateUserActivity() {
+            if (db.currentUser) {
+                const userIndex = connectedUsers.findIndex(u => u.id === db.currentUser.id);
+                if (userIndex !== -1) {
+                    connectedUsers[userIndex].lastActive = Date.now();
+                    saveConnectedUsers();
+                }
+                
+                const now = Date.now();
+                const inactiveThreshold = 30000;
+                
+                connectedUsers = connectedUsers.filter(user => {
+                    if (user.id === 1) return true;
+                    return (now - user.lastActive) < inactiveThreshold;
+                });
+                
+                saveConnectedUsers();
+                renderUsers();
+            }
+        }
+
         postBtn.addEventListener('click', () => {
             const content = postInput.value.trim();
             if (content) {
@@ -1072,16 +1044,16 @@
                 renderPosts();
                 saveToLocalStorage();
                 
-                // Pas de notification pour soi-même
                 if (!db.currentUser.isAdmin) {
                     showNotification("Message publié !");
                 }
             }
         });
 
-        // Déconnexion
         logoutBtn.addEventListener('click', () => {
             if (confirm("Voulez-vous vraiment vous déconnecter ?")) {
+                connectedUsers = connectedUsers.filter(u => u.id !== db.currentUser.id);
+                saveConnectedUsers();
                 localStorage.removeItem('geii2025_currentUser');
                 if (db.currentUser.isAdmin) {
                     localStorage.removeItem('geii2025_admin_connected');
@@ -1090,7 +1062,6 @@
             }
         });
 
-        // Dark Mode Toggle
         function applyTheme(isDark) {
             if (isDark) {
                 document.body.classList.add('dark-mode');
@@ -1103,7 +1074,6 @@
             }
         }
 
-        // Vérifier le thème au chargement
         const savedTheme = localStorage.getItem('theme');
         applyTheme(savedTheme === 'dark');
 
@@ -1112,7 +1082,6 @@
             applyTheme(isDark);
         });
 
-        // Afficher une notification
         function showNotification(message, user = null) {
             if (user) {
                 notificationAvatar.textContent = user.avatar;
@@ -1130,12 +1099,10 @@
             }, 5000);
         }
 
-        // Fermer la notification
         notificationClose.addEventListener('click', () => {
             notification.classList.remove('show');
         });
 
-        // Formater la date
         function formatDate(timestamp) {
             const date = new Date(timestamp);
             return date.toLocaleString('fr-FR', {
