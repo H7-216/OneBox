@@ -247,6 +247,14 @@
             color: var(--text);
         }
 
+        .logout-btn {
+            background: none;
+            border: none;
+            color: var(--text);
+            cursor: pointer;
+            margin-left: 15px;
+        }
+
         /* Main Content */
         .main-content {
             display: grid;
@@ -460,6 +468,27 @@
         .dark-mode .reply {
             background-color: rgba(255, 255, 255, 0.05);
         }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--primary);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s;
+        }
+
+        .notification.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
@@ -505,11 +534,14 @@
                 <div class="avatar" id="user-avatar">AD</div>
                 <div>
                     <div class="user-name" id="user-name">Admin</div>
-                    <div class="user-role">Professeur</div>
+                    <div class="user-role" id="user-role">Professeur</div>
                 </div>
             </div>
             <button class="theme-toggle" id="theme-toggle">
                 <i class="fas fa-moon"></i>
+            </button>
+            <button class="logout-btn" id="logout-btn">
+                <i class="fas fa-sign-out-alt"></i>
             </button>
         </header>
 
@@ -536,6 +568,9 @@
         </div>
     </div>
 
+    <!-- Notification -->
+    <div class="notification" id="notification"></div>
+
     <script>
         // Base de données locale
         let db = {
@@ -548,9 +583,11 @@
         function loadFromLocalStorage() {
             const savedUsers = localStorage.getItem('geii2025_users');
             const savedPosts = localStorage.getItem('geii2025_posts');
+            const currentUser = localStorage.getItem('geii2025_currentUser');
             
             if (savedUsers) db.users = JSON.parse(savedUsers);
             if (savedPosts) db.posts = JSON.parse(savedPosts);
+            if (currentUser) db.currentUser = JSON.parse(currentUser);
             
             // Créer l'admin s'il n'existe pas
             if (!db.users.some(u => u.isAdmin)) {
@@ -569,6 +606,9 @@
         function saveToLocalStorage() {
             localStorage.setItem('geii2025_users', JSON.stringify(db.users));
             localStorage.setItem('geii2025_posts', JSON.stringify(db.posts));
+            if (db.currentUser) {
+                localStorage.setItem('geii2025_currentUser', JSON.stringify(db.currentUser));
+            }
         }
 
         // DOM Elements
@@ -582,15 +622,39 @@
         const userNameInput = document.getElementById('user-name-input');
         const avatarPreview = document.getElementById('avatar-preview');
         const themeToggle = document.getElementById('theme-toggle');
+        const logoutBtn = document.getElementById('logout-btn');
         const userList = document.getElementById('user-list');
         const postsList = document.getElementById('posts-list');
         const postInput = document.getElementById('post-input');
         const postBtn = document.getElementById('post-btn');
         const userName = document.getElementById('user-name');
         const userAvatar = document.getElementById('user-avatar');
+        const userRole = document.getElementById('user-role');
+        const notification = document.getElementById('notification');
 
         // Initialisation
         loadFromLocalStorage();
+        checkAuth();
+
+        // Vérifier l'authentification au chargement
+        function checkAuth() {
+            if (db.currentUser) {
+                // Vérifier si l'utilisateur existe dans la liste
+                const userExists = db.users.some(u => u.id === db.currentUser.id);
+                
+                if (!userExists && !db.currentUser.isAdmin) {
+                    // Nouvel utilisateur non enregistré
+                    showProfileModal();
+                } else if (userExists) {
+                    // Mettre à jour les infos de l'utilisateur
+                    const userData = db.users.find(u => u.id === db.currentUser.id);
+                    db.currentUser = { ...db.currentUser, ...userData };
+                }
+                
+                startApplication();
+                loginContainer.classList.add('hidden');
+            }
+        }
 
         // Authentification
         loginBtn.addEventListener('click', () => {
@@ -601,22 +665,26 @@
                 loginBtn.style.display = 'none';
                 
                 setTimeout(() => {
-                    // Créer un nouvel utilisateur temporaire
-                    db.currentUser = {
-                        id: Date.now(),
-                        isAdmin: false
-                    };
+                    // Vérifier si l'admin existe
+                    const admin = db.users.find(u => u.isAdmin);
                     
-                    // Vérifier si c'est l'admin (ID 1)
-                    if (db.users.some(u => u.id === 1 && localStorage.getItem('geii2025_authenticated'))) {
-                        db.currentUser = db.users.find(u => u.id === 1);
-                        startApplication();
+                    if (admin && localStorage.getItem('geii2025_admin_connected')) {
+                        // Connexion admin
+                        db.currentUser = admin;
                     } else {
-                        showProfileModal();
+                        // Nouvel utilisateur
+                        db.currentUser = {
+                            id: Date.now(),
+                            isAdmin: false
+                        };
+                        
+                        if (admin) {
+                            localStorage.setItem('geii2025_admin_connected', 'true');
+                        }
                     }
                     
-                    // Cacher le login
-                    loginContainer.classList.add('hidden');
+                    saveToLocalStorage();
+                    checkAuth();
                 }, 1500);
             } else {
                 alert("Code incorrect. Essayez 'GEII'");
@@ -654,7 +722,7 @@
             const color = document.querySelector('.color-option.selected').dataset.color;
             
             if (name.length < 2) {
-                alert("Veuillez entrer un prénom valide (2 caractères minimum)");
+                showNotification("Veuillez entrer un prénom valide (2 caractères minimum)");
                 return;
             }
             
@@ -674,7 +742,6 @@
             
             // Sauvegarder
             saveToLocalStorage();
-            localStorage.setItem('geii2025_authenticated', 'true');
             
             // Démarrer l'application
             profileModal.style.display = 'none';
@@ -687,6 +754,7 @@
             userName.textContent = db.currentUser.name;
             userAvatar.textContent = db.currentUser.avatar;
             userAvatar.style.backgroundColor = db.currentUser.color;
+            userRole.textContent = db.currentUser.role;
             
             // Afficher l'application
             appContainer.classList.add('show');
@@ -694,6 +762,9 @@
             // Charger les données
             renderUsers();
             renderPosts();
+            
+            // Vérifier les messages toutes les 2 secondes (simulation temps réel)
+            setInterval(checkForNewMessages, 2000);
         }
 
         // Afficher les utilisateurs
@@ -742,7 +813,7 @@
                                     </div>
                                 </div>
                                 <div class="post-content">${reply.content}</div>
-                                ${reply.userId === db.currentUser.id ? `
+                                ${reply.userId === db.currentUser.id || db.currentUser.isAdmin ? `
                                 <div class="post-actions">
                                     <button class="action-btn delete-btn" data-reply-id="${reply.id}">
                                         <i class="fas fa-trash"></i>
@@ -754,6 +825,8 @@
                     });
                     repliesHtml += `</div>`;
                 }
+                
+                const canEditDelete = post.userId === db.currentUser.id || db.currentUser.isAdmin;
                 
                 postElement.innerHTML = `
                     <div class="post-header">
@@ -768,7 +841,7 @@
                         <button class="action-btn reply-btn">
                             <i class="fas fa-reply"></i> Répondre
                         </button>
-                        ${post.userId === db.currentUser.id ? `
+                        ${canEditDelete ? `
                         <button class="action-btn edit-btn" data-post-id="${post.id}">
                             <i class="fas fa-edit"></i>
                         </button>
@@ -832,6 +905,7 @@
                             replyInput.value = '';
                             renderPosts();
                             saveToLocalStorage();
+                            showNotification("Réponse envoyée !");
                         }
                     }
                 });
@@ -845,6 +919,7 @@
                         db.posts = db.posts.filter(p => p.id !== postId);
                         renderPosts();
                         saveToLocalStorage();
+                        showNotification("Message supprimé");
                     }
                 });
             });
@@ -859,6 +934,7 @@
                         });
                         renderPosts();
                         saveToLocalStorage();
+                        showNotification("Réponse supprimée");
                     }
                 });
             });
@@ -874,6 +950,7 @@
                             post.content = newContent;
                             renderPosts();
                             saveToLocalStorage();
+                            showNotification("Message modifié");
                         }
                     }
                 });
@@ -896,6 +973,30 @@
                 postInput.value = '';
                 renderPosts();
                 saveToLocalStorage();
+                showNotification("Message publié !");
+            }
+        });
+
+        // Vérifier les nouveaux messages
+        function checkForNewMessages() {
+            const savedPosts = localStorage.getItem('geii2025_posts');
+            if (savedPosts) {
+                const parsedPosts = JSON.parse(savedPosts);
+                if (parsedPosts.length !== db.posts.length) {
+                    db.posts = parsedPosts;
+                    renderPosts();
+                }
+            }
+        }
+
+        // Déconnexion
+        logoutBtn.addEventListener('click', () => {
+            if (confirm("Voulez-vous vraiment vous déconnecter ?")) {
+                localStorage.removeItem('geii2025_currentUser');
+                if (db.currentUser.isAdmin) {
+                    localStorage.removeItem('geii2025_admin_connected');
+                }
+                location.reload();
             }
         });
 
@@ -916,6 +1017,16 @@
         if (localStorage.getItem('theme') === 'dark') {
             body.classList.add('dark-mode');
             themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        }
+
+        // Afficher une notification
+        function showNotification(message) {
+            notification.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
         }
 
         // Formater la date
