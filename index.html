@@ -483,11 +483,37 @@
             transform: translateY(100px);
             opacity: 0;
             transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .notification.show {
             transform: translateY(0);
             opacity: 1;
+        }
+
+        .notification-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-close {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -498,7 +524,7 @@
         <div class="login-box">
             <div class="logo">GEII 2025</div>
             <h2 class="login-title">Espace Collaboratif</h2>
-            <input type="password" class="login-input" id="access-code" placeholder="Code d'accès (GEII)" maxlength="4">
+            <input type="password" class="login-input" id="access-code" placeholder="Code d'accès" maxlength="4">
             <button class="login-btn" id="login-btn">Accéder</button>
             <div class="loader" id="loader"></div>
         </div>
@@ -569,14 +595,21 @@
     </div>
 
     <!-- Notification -->
-    <div class="notification" id="notification"></div>
+    <div class="notification" id="notification">
+        <div class="notification-avatar" id="notification-avatar">?</div>
+        <div class="notification-content" id="notification-content">Nouveau message reçu</div>
+        <button class="notification-close" id="notification-close">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
 
     <script>
         // Base de données locale
         let db = {
             users: [],
             posts: [],
-            currentUser: null
+            currentUser: null,
+            lastUpdate: 0
         };
 
         // Charger les données depuis le localStorage
@@ -584,10 +617,12 @@
             const savedUsers = localStorage.getItem('geii2025_users');
             const savedPosts = localStorage.getItem('geii2025_posts');
             const currentUser = localStorage.getItem('geii2025_currentUser');
+            const lastUpdate = localStorage.getItem('geii2025_lastUpdate');
             
             if (savedUsers) db.users = JSON.parse(savedUsers);
             if (savedPosts) db.posts = JSON.parse(savedPosts);
             if (currentUser) db.currentUser = JSON.parse(currentUser);
+            if (lastUpdate) db.lastUpdate = parseInt(lastUpdate);
             
             // Créer l'admin s'il n'existe pas
             if (!db.users.some(u => u.isAdmin)) {
@@ -606,6 +641,7 @@
         function saveToLocalStorage() {
             localStorage.setItem('geii2025_users', JSON.stringify(db.users));
             localStorage.setItem('geii2025_posts', JSON.stringify(db.posts));
+            localStorage.setItem('geii2025_lastUpdate', Date.now().toString());
             if (db.currentUser) {
                 localStorage.setItem('geii2025_currentUser', JSON.stringify(db.currentUser));
             }
@@ -631,6 +667,9 @@
         const userAvatar = document.getElementById('user-avatar');
         const userRole = document.getElementById('user-role');
         const notification = document.getElementById('notification');
+        const notificationAvatar = document.getElementById('notification-avatar');
+        const notificationContent = document.getElementById('notification-content');
+        const notificationClose = document.getElementById('notification-close');
 
         // Initialisation
         loadFromLocalStorage();
@@ -660,34 +699,36 @@
         loginBtn.addEventListener('click', () => {
             const code = accessCodeInput.value.toUpperCase();
             
-            if (code === "GEII") {
+            if (code === "H7" || code === "GEII") {
                 loader.style.display = 'block';
                 loginBtn.style.display = 'none';
                 
                 setTimeout(() => {
-                    // Vérifier si l'admin existe
-                    const admin = db.users.find(u => u.isAdmin);
-                    
-                    if (admin && localStorage.getItem('geii2025_admin_connected')) {
+                    if (code === "H7") {
                         // Connexion admin
+                        const admin = db.users.find(u => u.isAdmin) || {
+                            id: 1,
+                            name: "Admin",
+                            role: "Professeur",
+                            avatar: "AD",
+                            color: "#6a11cb",
+                            isAdmin: true
+                        };
                         db.currentUser = admin;
+                        localStorage.setItem('geii2025_admin_connected', 'true');
                     } else {
-                        // Nouvel utilisateur
+                        // Connexion utilisateur normal
                         db.currentUser = {
                             id: Date.now(),
                             isAdmin: false
                         };
-                        
-                        if (admin) {
-                            localStorage.setItem('geii2025_admin_connected', 'true');
-                        }
                     }
                     
                     saveToLocalStorage();
                     checkAuth();
                 }, 1500);
             } else {
-                alert("Code incorrect. Essayez 'GEII'");
+                alert("Code incorrect. Utilisez 'H7' pour admin ou 'GEII' pour les utilisateurs");
             }
         });
 
@@ -763,8 +804,8 @@
             renderUsers();
             renderPosts();
             
-            // Vérifier les messages toutes les 2 secondes (simulation temps réel)
-            setInterval(checkForNewMessages, 2000);
+            // Vérifier les messages toutes les 1 secondes (simulation temps réel)
+            setInterval(checkForNewMessages, 1000);
         }
 
         // Afficher les utilisateurs
@@ -957,6 +998,63 @@
             });
         }
 
+        // Vérifier les nouveaux messages
+        function checkForNewMessages() {
+            const savedPosts = localStorage.getItem('geii2025_posts');
+            const savedLastUpdate = localStorage.getItem('geii2025_lastUpdate');
+            
+            if (savedPosts && savedLastUpdate) {
+                const parsedLastUpdate = parseInt(savedLastUpdate);
+                
+                // Vérifier si de nouveaux messages sont disponibles
+                if (parsedLastUpdate > db.lastUpdate) {
+                    const parsedPosts = JSON.parse(savedPosts);
+                    
+                    // Trouver les nouveaux messages
+                    const newPosts = parsedPosts.filter(p1 => 
+                        !db.posts.some(p2 => p2.id === p1.id)
+                    );
+                    
+                    // Trouver les nouvelles réponses
+                    let newReplies = [];
+                    parsedPosts.forEach(post => {
+                        const existingPost = db.posts.find(p => p.id === post.id);
+                        if (existingPost) {
+                            post.replies.forEach(reply => {
+                                if (!existingPost.replies.some(r => r.id === reply.id)) {
+                                    newReplies.push({
+                                        postId: post.id,
+                                        reply: reply
+                                    });
+                                }
+                            });
+                        }
+                    });
+                    
+                    // Mettre à jour la base de données locale
+                    db.posts = parsedPosts;
+                    db.lastUpdate = parsedLastUpdate;
+                    
+                    // Afficher les nouveaux messages
+                    renderPosts();
+                    
+                    // Notifier des nouveaux messages
+                    if (newPosts.length > 0) {
+                        const lastPost = newPosts[0];
+                        const user = db.users.find(u => u.id === lastPost.userId) || { name: "Inconnu", avatar: "?", color: "#999" };
+                        showNotification(`${user.name} a posté : ${lastPost.content.substring(0, 30)}${lastPost.content.length > 30 ? '...' : ''}`, user);
+                    }
+                    
+                    // Notifier des nouvelles réponses
+                    if (newReplies.length > 0) {
+                        const lastReply = newReplies[0].reply;
+                        const user = db.users.find(u => u.id === lastReply.userId) || { name: "Inconnu", avatar: "?", color: "#999" };
+                        showNotification(`${user.name} a répondu : ${lastReply.content.substring(0, 30)}${lastReply.content.length > 30 ? '...' : ''}`, user);
+                    }
+                }
+            }
+        }
+
         // Nouveau post
         postBtn.addEventListener('click', () => {
             const content = postInput.value.trim();
@@ -973,21 +1071,13 @@
                 postInput.value = '';
                 renderPosts();
                 saveToLocalStorage();
-                showNotification("Message publié !");
-            }
-        });
-
-        // Vérifier les nouveaux messages
-        function checkForNewMessages() {
-            const savedPosts = localStorage.getItem('geii2025_posts');
-            if (savedPosts) {
-                const parsedPosts = JSON.parse(savedPosts);
-                if (parsedPosts.length !== db.posts.length) {
-                    db.posts = parsedPosts;
-                    renderPosts();
+                
+                // Pas de notification pour soi-même
+                if (!db.currentUser.isAdmin) {
+                    showNotification("Message publié !");
                 }
             }
-        }
+        });
 
         // Déconnexion
         logoutBtn.addEventListener('click', () => {
@@ -1005,36 +1095,45 @@
             if (isDark) {
                 document.body.classList.add('dark-mode');
                 themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+                localStorage.setItem('theme', 'dark');
             } else {
                 document.body.classList.remove('dark-mode');
                 themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+                localStorage.setItem('theme', 'light');
             }
         }
 
         // Vérifier le thème au chargement
         const savedTheme = localStorage.getItem('theme');
-        if (savedTheme === 'dark') {
-            applyTheme(true);
-        } else {
-            applyTheme(false);
-        }
+        applyTheme(savedTheme === 'dark');
 
-        // Gestion du clic sur le bouton
         themeToggle.addEventListener('click', () => {
             const isDark = !document.body.classList.contains('dark-mode');
-            localStorage.setItem('theme', isDark ? 'dark' : 'light');
             applyTheme(isDark);
         });
 
         // Afficher une notification
-        function showNotification(message) {
-            notification.textContent = message;
+        function showNotification(message, user = null) {
+            if (user) {
+                notificationAvatar.textContent = user.avatar;
+                notificationAvatar.style.backgroundColor = user.color;
+            } else {
+                notificationAvatar.textContent = db.currentUser.avatar;
+                notificationAvatar.style.backgroundColor = db.currentUser.color;
+            }
+            
+            notificationContent.textContent = message;
             notification.classList.add('show');
             
             setTimeout(() => {
                 notification.classList.remove('show');
-            }, 3000);
+            }, 5000);
         }
+
+        // Fermer la notification
+        notificationClose.addEventListener('click', () => {
+            notification.classList.remove('show');
+        });
 
         // Formater la date
         function formatDate(timestamp) {
