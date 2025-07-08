@@ -14,6 +14,7 @@
             --card: #ffffff;
             --border: rgba(0, 0, 0, 0.1);
         }
+
         .dark-mode {
             --primary: #8a2be2;
             --secondary: #00b4d8;
@@ -23,6 +24,7 @@
             --card: #1e1e1e;
             --border: rgba(255, 255, 255, 0.1);
         }
+
         * {
             margin: 0;
             padding: 0;
@@ -30,12 +32,14 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             transition: background 0.3s, color 0.3s;
         }
+
         body {
             background-color: var(--bg);
             color: var(--text);
             min-height: 100vh;
             overflow-x: hidden;
         }
+
         .login-container {
             display: flex;
             justify-content: center;
@@ -49,10 +53,12 @@
             z-index: 1000;
             transition: opacity 0.5s, visibility 0.5s;
         }
+
         .login-container.hidden {
             opacity: 0;
             visibility: hidden;
         }
+
         .login-box {
             background-color: white;
             padding: 40px;
@@ -62,6 +68,7 @@
             text-align: center;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         }
+
         .logo {
             font-size: 2.5rem;
             font-weight: 800;
@@ -71,11 +78,13 @@
             color: transparent;
             margin-bottom: 20px;
         }
+
         .login-title {
             font-size: 1.5rem;
             margin-bottom: 30px;
             color: var(--text);
         }
+
         .login-input {
             width: 100%;
             padding: 15px;
@@ -84,10 +93,12 @@
             border-radius: 8px;
             font-size: 1rem;
         }
+
         .login-input:focus {
             outline: none;
             border-color: var(--primary);
         }
+
         .login-btn {
             width: 100%;
             padding: 15px;
@@ -100,9 +111,11 @@
             cursor: pointer;
             transition: transform 0.3s;
         }
+
         .login-btn:hover {
             transform: translateY(-3px);
         }
+
         .loader {
             display: none;
             width: 40px;
@@ -113,9 +126,11 @@
             border-top-color: var(--primary);
             animation: spin 1s ease-in-out infinite;
         }
+
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
+
         .profile-modal {
             position: fixed;
             top: 0;
@@ -128,6 +143,7 @@
             align-items: center;
             z-index: 2000;
         }
+
         .profile-box {
             background-color: var(--card);
             padding: 30px;
@@ -136,6 +152,7 @@
             max-width: 400px;
             text-align: center;
         }
+
         .avatar-preview {
             width: 80px;
             height: 80px;
@@ -148,12 +165,14 @@
             font-weight: bold;
             color: white;
         }
+
         .color-options {
             display: flex;
             justify-content: center;
             gap: 10px;
             margin-bottom: 20px;
         }
+
         .color-option {
             width: 30px;
             height: 30px;
@@ -161,9 +180,11 @@
             cursor: pointer;
             border: 2px solid transparent;
         }
+
         .color-option.selected {
             border-color: var(--text);
         }
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -172,10 +193,12 @@
             transform: translateY(20px);
             transition: opacity 0.5s, transform 0.5s;
         }
+
         .container.show {
             opacity: 1;
             transform: translateY(0);
         }
+
         header {
             display: flex;
             justify-content: space-between;
@@ -184,11 +207,13 @@
             border-bottom: 1px solid var(--border);
             margin-bottom: 30px;
         }
+
         .user-info {
             display: flex;
             align-items: center;
             gap: 15px;
         }
+
         .avatar {
             width: 50px;
             height: 50px;
@@ -200,13 +225,16 @@
             font-weight: bold;
             font-size: 1.2rem;
         }
+
         .user-name {
             font-weight: 600;
         }
+
         .user-role {
             font-size: 0.8rem;
             opacity: 0.7;
         }
+
         .theme-toggle {
             background: none;
             border: none;
@@ -214,6 +242,7 @@
             cursor: pointer;
             color: var(--text);
         }
+
         .logout-btn {
             background: none;
             border: none;
@@ -221,33 +250,39 @@
             cursor: pointer;
             margin-left: 15px;
         }
+
         .main-content {
             display: grid;
             grid-template-columns: 250px 1fr;
             gap: 30px;
         }
+
         @media (max-width: 768px) {
             .main-content {
                 grid-template-columns: 1fr;
             }
         }
+
         .sidebar {
             background-color: var(--card);
             border-radius: 15px;
             padding: 20px;
             height: fit-content;
         }
+
         .sidebar-title {
             font-size: 1.2rem;
             margin-bottom: 20px;
             padding-bottom: 10px;
             border-bottom: 1px solid var(--border);
         }
+
         .user-list {
             list-style: none;
             max-height: 300px;
             overflow-y: auto;
         }
+
         .user-item {
             display: flex;
             align-items: center;
@@ -255,9 +290,11 @@
             padding: 10px 0;
             border-bottom: 1px solid var(--border);
         }
+
         .user-item:last-child {
             border-bottom: none;
         }
+
         .user-avatar {
             width: 30px;
             height: 30px;
@@ -269,14 +306,17 @@
             font-size: 0.8rem;
             font-weight: bold;
         }
+
         .posts-container {
             background-color: var(--card);
             border-radius: 15px;
             padding: 20px;
         }
+
         .new-post {
             margin-bottom: 30px;
         }
+
         .post-input {
             width: 100%;
             border: none;
@@ -290,14 +330,17 @@
             border: 1px solid var(--border);
             border-radius: 10px;
         }
+
         .post-input:focus {
             outline: none;
             border-color: var(--primary);
         }
+
         .post-actions {
             display: flex;
             justify-content: flex-end;
         }
+
         .post-btn {
             padding: 10px 20px;
             background: linear-gradient(to right, var(--primary), var(--secondary));
@@ -307,9 +350,11 @@
             font-weight: 600;
             cursor: pointer;
         }
+
         .posts-list {
             margin-top: 30px;
         }
+
         .post {
             background-color: var(--bg);
             border-radius: 10px;
@@ -317,28 +362,34 @@
             margin-bottom: 20px;
             position: relative;
         }
+
         .post-header {
             display: flex;
             align-items: center;
             gap: 10px;
             margin-bottom: 15px;
         }
+
         .post-user {
             font-weight: 600;
         }
+
         .post-time {
             font-size: 0.8rem;
             opacity: 0.7;
         }
+
         .post-content {
             margin-bottom: 15px;
             white-space: pre-wrap;
         }
+
         .post-actions {
             display: flex;
             gap: 10px;
             justify-content: flex-end;
         }
+
         .action-btn {
             background: none;
             border: none;
@@ -347,27 +398,34 @@
             opacity: 0.7;
             transition: opacity 0.3s;
         }
+
         .action-btn:hover {
             opacity: 1;
         }
+
         .reply-btn {
             color: var(--primary);
         }
+
         .edit-btn {
             color: var(--secondary);
         }
+
         .delete-btn {
             color: #dc3545;
         }
+
         .replies {
             margin-top: 20px;
             padding-left: 20px;
             border-left: 3px solid var(--border);
         }
+
         .reply-form {
             margin-top: 15px;
             display: none;
         }
+
         .reply-input {
             width: 100%;
             border: none;
@@ -381,24 +439,29 @@
             border: 1px solid var(--border);
             border-radius: 8px;
         }
+
         .reply-input:focus {
             outline: none;
             border-color: var(--primary);
         }
+
         .reply-actions {
             display: flex;
             justify-content: flex-end;
             gap: 10px;
         }
+
         .reply {
             background-color: rgba(0, 0, 0, 0.05);
             border-radius: 8px;
             padding: 15px;
             margin-bottom: 10px;
         }
+
         .dark-mode .reply {
             background-color: rgba(255, 255, 255, 0.05);
         }
+
         .notification {
             position: fixed;
             bottom: 20px;
@@ -416,10 +479,12 @@
             align-items: center;
             gap: 10px;
         }
+
         .notification.show {
             transform: translateY(0);
             opacity: 1;
         }
+
         .notification-avatar {
             width: 30px;
             height: 30px;
@@ -431,9 +496,11 @@
             font-weight: bold;
             font-size: 0.8rem;
         }
+
         .notification-content {
             flex: 1;
         }
+
         .notification-close {
             background: none;
             border: none;
@@ -442,9 +509,8 @@
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database-compat.js"></script>
 </head>
 <body>
     <div class="login-container" id="login-container">
@@ -529,17 +595,71 @@
             messagingSenderId: "416880087770",
             appId: "1:416880087770:web:47d58872916336673f4be3"
         };
-        
+
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
-        const auth = firebase.auth();
 
-        let appData = {
-            users: {},
-            posts: {},
-            currentUser: null,
-            onlineUsers: {}
+        let db = {
+            users: [],
+            posts: [],
+            currentUser: null
         };
+
+        function saveUser(user) {
+            return database.ref('users/' + user.id).set(user);
+        }
+
+        function savePost(post) {
+            return database.ref('posts/' + post.id).set(post);
+        }
+
+        function deletePost(postId) {
+            return database.ref('posts/' + postId).remove();
+        }
+
+        function saveReply(postId, reply) {
+            return database.ref('posts/' + postId + '/replies/' + reply.id).set(reply);
+        }
+
+        function deleteReply(postId, replyId) {
+            return database.ref('posts/' + postId + '/replies/' + replyId).remove();
+        }
+
+        function updateUserActivity(userId) {
+            return database.ref('activeUsers/' + userId).set({
+                lastActive: Date.now()
+            });
+        }
+
+        function removeUserActivity(userId) {
+            return database.ref('activeUsers/' + userId).remove();
+        }
+
+        function loadUsers(callback) {
+            database.ref('users').on('value', (snapshot) => {
+                const users = snapshot.val() || {};
+                db.users = Object.values(users);
+                if (callback) callback();
+            });
+        }
+
+        function loadPosts(callback) {
+            database.ref('posts').on('value', (snapshot) => {
+                const posts = snapshot.val() || {};
+                db.posts = Object.values(posts).map(post => ({
+                    ...post,
+                    replies: post.replies ? Object.values(post.replies) : []
+                }));
+                if (callback) callback();
+            });
+        }
+
+        function loadActiveUsers(callback) {
+            database.ref('activeUsers').on('value', (snapshot) => {
+                const activeUsers = snapshot.val() || {};
+                if (callback) callback(Object.keys(activeUsers));
+            });
+        }
 
         const loginContainer = document.getElementById('login-container');
         const appContainer = document.getElementById('app-container');
@@ -564,132 +684,70 @@
         const notificationContent = document.getElementById('notification-content');
         const notificationClose = document.getElementById('notification-close');
 
-        auth.signInAnonymously().then(() => {
-            initApp();
-        }).catch((error) => {
-            console.error("Erreur d'authentification:", error);
-        });
+        loadUsers();
+        loadPosts();
+        checkAuth();
 
-        function initApp() {
-            setupAuth();
-            setupDatabaseListeners();
-            setupUIEvents();
+        function checkAuth() {
+            const currentUser = JSON.parse(localStorage.getItem('geii2025_currentUser'));
+            if (currentUser) {
+                db.currentUser = currentUser;
+                
+                loadUsers(() => {
+                    const userExists = db.users.some(u => u.id === db.currentUser.id);
+                    
+                    if (!userExists && !db.currentUser.isAdmin) {
+                        showProfileModal();
+                    } else if (userExists) {
+                        const userData = db.users.find(u => u.id === db.currentUser.id);
+                        db.currentUser = { ...db.currentUser, ...userData };
+                        updateUserActivity(db.currentUser.id);
+                    }
+                    
+                    startApplication();
+                    loginContainer.classList.add('hidden');
+                });
+            }
         }
 
-        function setupAuth() {
-            loginBtn.addEventListener('click', () => {
-                const code = accessCodeInput.value.toUpperCase();
+        loginBtn.addEventListener('click', () => {
+            const code = accessCodeInput.value.toUpperCase();
+            
+            if (code === "H7" || code === "GEII") {
+                loader.style.display = 'block';
+                loginBtn.style.display = 'none';
                 
-                if (code === "H7" || code === "GEII") {
-                    loader.style.display = 'block';
-                    loginBtn.style.display = 'none';
-                    
-                    setTimeout(() => {
-                        if (code === "H7") {
-                            appData.currentUser = {
-                                id: "admin_" + Date.now(),
+                setTimeout(() => {
+                    if (code === "H7") {
+                        loadUsers(() => {
+                            const admin = db.users.find(u => u.isAdmin) || {
+                                id: 1,
                                 name: "Admin",
                                 role: "Professeur",
                                 avatar: "AD",
                                 color: "#6a11cb",
                                 isAdmin: true
                             };
-                        } else {
-                            showProfileModal();
-                            return;
-                        }
-                        
-                        startApplication();
-                    }, 1500);
-                } else {
-                    showNotification("Code incorrect. Utilisez 'H7' pour admin ou 'GEII' pour les utilisateurs");
-                }
-            });
-
-            saveProfileBtn.addEventListener('click', () => {
-                const name = userNameInput.value.trim();
-                const color = document.querySelector('.color-option.selected').dataset.color;
-                
-                if (name.length < 2) {
-                    showNotification("Veuillez entrer un prénom valide (2 caractères minimum)");
-                    return;
-                }
-                
-                appData.currentUser = {
-                    id: "user_" + Date.now(),
-                    name: name,
-                    avatar: name.charAt(0).toUpperCase(),
-                    color: color,
-                    role: "Étudiant",
-                    isAdmin: false
-                };
-                
-                startApplication();
-            });
-        }
-
-        function setupDatabaseListeners() {
-            database.ref('users').on('value', (snapshot) => {
-                appData.users = snapshot.val() || {};
-                renderUsers();
-            });
-
-            database.ref('posts').on('value', (snapshot) => {
-                appData.posts = snapshot.val() || {};
-                renderPosts();
-            });
-
-            database.ref('onlineUsers').on('value', (snapshot) => {
-                appData.onlineUsers = snapshot.val() || {};
-                renderUsers();
-            });
-        }
-
-        function setupUIEvents() {
-            document.querySelectorAll('.color-option').forEach(option => {
-                option.addEventListener('click', () => {
-                    document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('selected'));
-                    option.classList.add('selected');
-                    updateAvatarPreview();
-                });
-            });
-
-            userNameInput.addEventListener('input', updateAvatarPreview);
-
-            postBtn.addEventListener('click', () => {
-                const content = postInput.value.trim();
-                if (content) {
-                    const newPost = {
-                        id: "post_" + Date.now(),
-                        userId: appData.currentUser.id,
-                        content: content,
-                        timestamp: Date.now(),
-                        replies: []
-                    };
-                    
-                    database.ref('posts/' + newPost.id).set(newPost);
-                    postInput.value = '';
-                    showNotification("Message publié !");
-                }
-            });
-
-            themeToggle.addEventListener('click', () => {
-                const isDark = !document.body.classList.contains('dark-mode');
-                applyTheme(isDark);
-            });
-
-            notificationClose.addEventListener('click', () => {
-                notification.classList.remove('show');
-            });
-
-            logoutBtn.addEventListener('click', () => {
-                if (confirm("Voulez-vous vraiment vous déconnecter ?")) {
-                    database.ref('onlineUsers/' + appData.currentUser.id).remove();
-                    auth.signOut();
-                    location.reload();
-                }
-            });
-        }
+                            db.currentUser = admin;
+                            saveUser(admin);
+                            localStorage.setItem('geii2025_currentUser', JSON.stringify(admin));
+                            localStorage.setItem('geii2025_admin_connected', 'true');
+                            updateUserActivity(admin.id);
+                            checkAuth();
+                        });
+                    } else {
+                        db.currentUser = {
+                            id: Date.now(),
+                            isAdmin: false
+                        };
+                        localStorage.setItem('geii2025_currentUser', JSON.stringify(db.currentUser));
+                        checkAuth();
+                    }
+                }, 1500);
+            } else {
+                alert("Code incorrect. Utilisez 'H7' pour admin ou 'GEII' pour les utilisateurs");
+            }
+        });
 
         function showProfileModal() {
             profileModal.style.display = 'flex';
@@ -705,30 +763,63 @@
             avatarPreview.style.backgroundColor = selectedColor;
         }
 
-        function startApplication() {
-            loginContainer.classList.add('hidden');
-            profileModal.style.display = 'none';
-            
-            userName.textContent = appData.currentUser.name;
-            userAvatar.textContent = appData.currentUser.avatar;
-            userAvatar.style.backgroundColor = appData.currentUser.color;
-            userRole.textContent = appData.currentUser.role;
-            
-            database.ref('users/' + appData.currentUser.id).set(appData.currentUser);
-            database.ref('onlineUsers/' + appData.currentUser.id).set({
-                ...appData.currentUser,
-                lastActive: Date.now()
+        document.querySelectorAll('.color-option').forEach(option => {
+            option.addEventListener('click', () => {
+                document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('selected'));
+                option.classList.add('selected');
+                updateAvatarPreview();
             });
+        });
+
+        userNameInput.addEventListener('input', updateAvatarPreview);
+
+        saveProfileBtn.addEventListener('click', () => {
+            const name = userNameInput.value.trim();
+            const color = document.querySelector('.color-option.selected').dataset.color;
             
-            database.ref('onlineUsers/' + appData.currentUser.id).onDisconnect().remove();
+            if (name.length < 2) {
+                showNotification("Veuillez entrer un prénom valide (2 caractères minimum)");
+                return;
+            }
+            
+            db.currentUser = {
+                ...db.currentUser,
+                name: name,
+                avatar: name.charAt(0).toUpperCase(),
+                color: color,
+                role: "Étudiant"
+            };
+            
+            saveUser(db.currentUser).then(() => {
+                localStorage.setItem('geii2025_currentUser', JSON.stringify(db.currentUser));
+                profileModal.style.display = 'none';
+                updateUserActivity(db.currentUser.id);
+                startApplication();
+            });
+        });
+
+        function startApplication() {
+            userName.textContent = db.currentUser.name;
+            userAvatar.textContent = db.currentUser.avatar;
+            userAvatar.style.backgroundColor = db.currentUser.color;
+            userRole.textContent = db.currentUser.role;
             
             appContainer.classList.add('show');
+            renderUsers();
+            renderPosts();
+            
+            loadActiveUsers(renderUsers);
+            loadPosts(renderPosts);
         }
 
-        function renderUsers() {
+        function renderUsers(activeUserIds) {
             userList.innerHTML = '';
             
-            Object.values(appData.onlineUsers).forEach(user => {
+            const activeUsers = db.users.filter(user => 
+                activeUserIds ? activeUserIds.includes(user.id.toString()) : true
+            );
+
+            activeUsers.forEach(user => {
                 const userItem = document.createElement('li');
                 userItem.className = 'user-item';
                 userItem.innerHTML = `
@@ -745,10 +836,10 @@
         function renderPosts() {
             postsList.innerHTML = '';
             
-            const sortedPosts = Object.values(appData.posts).sort((a, b) => b.timestamp - a.timestamp);
+            const sortedPosts = [...db.posts].sort((a, b) => b.timestamp - a.timestamp);
             
             sortedPosts.forEach(post => {
-                const user = appData.users[post.userId] || { name: "Inconnu", avatar: "?", color: "#999" };
+                const user = db.users.find(u => u.id === post.userId) || { name: "Inconnu", avatar: "?", color: "#999" };
                 const postElement = document.createElement('div');
                 postElement.className = 'post';
                 postElement.dataset.postId = post.id;
@@ -756,8 +847,8 @@
                 let repliesHtml = '';
                 if (post.replies && post.replies.length > 0) {
                     repliesHtml += `<div class="replies">`;
-                    Object.values(post.replies).forEach(reply => {
-                        const replyUser = appData.users[reply.userId] || { name: "Inconnu", avatar: "?", color: "#999" };
+                    post.replies.forEach(reply => {
+                        const replyUser = db.users.find(u => u.id === reply.userId) || { name: "Inconnu", avatar: "?", color: "#999" };
                         repliesHtml += `
                             <div class="reply">
                                 <div class="post-header">
@@ -768,9 +859,9 @@
                                     </div>
                                 </div>
                                 <div class="post-content">${reply.content}</div>
-                                ${reply.userId === appData.currentUser.id || appData.currentUser.isAdmin ? `
+                                ${reply.userId === db.currentUser.id || db.currentUser.isAdmin ? `
                                 <div class="post-actions">
-                                    <button class="action-btn delete-btn" data-reply-id="${reply.id}">
+                                    <button class="action-btn delete-btn" data-reply-id="${reply.id}" data-post-id="${post.id}">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </div>
@@ -781,7 +872,7 @@
                     repliesHtml += `</div>`;
                 }
                 
-                const canEditDelete = post.userId === appData.currentUser.id || appData.currentUser.isAdmin;
+                const canEditDelete = post.userId === db.currentUser.id || db.currentUser.isAdmin;
                 
                 postElement.innerHTML = `
                     <div class="post-header">
@@ -842,19 +933,17 @@
                     const content = replyInput.value.trim();
                     
                     if (content) {
-                        const post = appData.posts[postId];
-                        if (post) {
-                            const newReply = {
-                                id: "reply_" + Date.now(),
-                                userId: appData.currentUser.id,
-                                content: content,
-                                timestamp: Date.now()
-                            };
-                            
-                            database.ref('posts/' + postId + '/replies/' + newReply.id).set(newReply);
+                        const newReply = {
+                            id: Date.now(),
+                            userId: db.currentUser.id,
+                            content: content,
+                            timestamp: Date.now()
+                        };
+                        
+                        saveReply(postId, newReply).then(() => {
                             replyInput.value = '';
                             showNotification("Réponse envoyée !");
-                        }
+                        });
                     }
                 });
             });
@@ -863,8 +952,9 @@
                 btn.addEventListener('click', (e) => {
                     const postId = e.target.closest('.delete-btn').dataset.postId;
                     if (confirm("Supprimer ce message ?")) {
-                        database.ref('posts/' + postId).remove();
-                        showNotification("Message supprimé");
+                        deletePost(postId).then(() => {
+                            showNotification("Message supprimé");
+                        });
                     }
                 });
             });
@@ -872,10 +962,11 @@
             document.querySelectorAll('.delete-btn[data-reply-id]').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const replyId = e.target.closest('.delete-btn').dataset.replyId;
-                    const postId = e.target.closest('.post').dataset.postId;
+                    const postId = e.target.closest('.delete-btn').dataset.postId;
                     if (confirm("Supprimer cette réponse ?")) {
-                        database.ref('posts/' + postId + '/replies/' + replyId).remove();
-                        showNotification("Réponse supprimée");
+                        deleteReply(postId, replyId).then(() => {
+                            showNotification("Réponse supprimée");
+                        });
                     }
                 });
             });
@@ -883,34 +974,53 @@
             document.querySelectorAll('.edit-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const postId = e.target.closest('.edit-btn').dataset.postId;
-                    const post = appData.posts[postId];
+                    const post = db.posts.find(p => p.id == postId);
                     if (post) {
                         const newContent = prompt("Modifier le message:", post.content);
                         if (newContent !== null) {
-                            database.ref('posts/' + postId + '/content').set(newContent);
-                            showNotification("Message modifié");
+                            savePost({
+                                ...post,
+                                content: newContent
+                            }).then(() => {
+                                showNotification("Message modifié");
+                            });
                         }
                     }
                 });
             });
         }
 
-        function showNotification(message, user = null) {
-            if (user) {
-                notificationAvatar.textContent = user.avatar;
-                notificationAvatar.style.backgroundColor = user.color;
-            } else {
-                notificationAvatar.textContent = appData.currentUser.avatar;
-                notificationAvatar.style.backgroundColor = appData.currentUser.color;
+        postBtn.addEventListener('click', () => {
+            const content = postInput.value.trim();
+            if (content) {
+                const newPost = {
+                    id: Date.now(),
+                    userId: db.currentUser.id,
+                    content: content,
+                    timestamp: Date.now(),
+                    replies: []
+                };
+                
+                savePost(newPost).then(() => {
+                    postInput.value = '';
+                    if (!db.currentUser.isAdmin) {
+                        showNotification("Message publié !");
+                    }
+                });
             }
-            
-            notificationContent.textContent = message;
-            notification.classList.add('show');
-            
-            setTimeout(() => {
-                notification.classList.remove('show');
-            }, 5000);
-        }
+        });
+
+        logoutBtn.addEventListener('click', () => {
+            if (confirm("Voulez-vous vraiment vous déconnecter ?")) {
+                removeUserActivity(db.currentUser.id).then(() => {
+                    localStorage.removeItem('geii2025_currentUser');
+                    if (db.currentUser.isAdmin) {
+                        localStorage.removeItem('geii2025_admin_connected');
+                    }
+                    location.reload();
+                });
+            }
+        });
 
         function applyTheme(isDark) {
             if (isDark) {
@@ -924,6 +1034,35 @@
             }
         }
 
+        const savedTheme = localStorage.getItem('theme');
+        applyTheme(savedTheme === 'dark');
+
+        themeToggle.addEventListener('click', () => {
+            const isDark = !document.body.classList.contains('dark-mode');
+            applyTheme(isDark);
+        });
+
+        function showNotification(message, user = null) {
+            if (user) {
+                notificationAvatar.textContent = user.avatar;
+                notificationAvatar.style.backgroundColor = user.color;
+            } else {
+                notificationAvatar.textContent = db.currentUser.avatar;
+                notificationAvatar.style.backgroundColor = db.currentUser.color;
+            }
+            
+            notificationContent.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 5000);
+        }
+
+        notificationClose.addEventListener('click', () => {
+            notification.classList.remove('show');
+        });
+
         function formatDate(timestamp) {
             const date = new Date(timestamp);
             return date.toLocaleString('fr-FR', {
@@ -934,9 +1073,6 @@
                 minute: '2-digit'
             });
         }
-
-        const savedTheme = localStorage.getItem('theme');
-        applyTheme(savedTheme === 'dark');
     </script>
 </body>
 </html>
