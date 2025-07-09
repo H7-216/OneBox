@@ -339,6 +339,7 @@
         .post-actions {
             display: flex;
             justify-content: flex-end;
+            gap: 10px;
         }
 
         .post-btn {
@@ -349,6 +350,27 @@
             border-radius: 8px;
             font-weight: 600;
             cursor: pointer;
+        }
+
+        .attachment-btn {
+            padding: 10px 20px;
+            background: var(--bg);
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .attachment-btn:hover {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        .attachment-input {
+            display: none;
         }
 
         .posts-list {
@@ -382,6 +404,30 @@
         .post-content {
             margin-bottom: 15px;
             white-space: pre-wrap;
+        }
+
+        .post-attachment {
+            margin-top: 15px;
+            padding: 10px;
+            border: 1px dashed var(--border);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .attachment-icon {
+            font-size: 1.5rem;
+        }
+
+        .attachment-link {
+            color: var(--primary);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .attachment-link:hover {
+            text-decoration: underline;
         }
 
         .post-actions {
@@ -511,6 +557,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-storage-compat.js"></script>
 </head>
 <body>
     <div class="login-container" id="login-container">
@@ -568,6 +615,10 @@
                 <div class="new-post">
                     <textarea class="post-input" id="post-input" placeholder="Écrivez un message pour la classe..."></textarea>
                     <div class="post-actions">
+                        <input type="file" id="attachment-input" class="attachment-input" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                        <button class="attachment-btn" id="attachment-btn">
+                            <i class="fas fa-paperclip"></i> Pièce jointe
+                        </button>
                         <button class="post-btn" id="post-btn">Publier</button>
                     </div>
                 </div>
@@ -598,6 +649,7 @@
 
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
+        const storage = firebase.storage();
 
         let db = {
             users: [],
@@ -676,6 +728,8 @@
         const postsList = document.getElementById('posts-list');
         const postInput = document.getElementById('post-input');
         const postBtn = document.getElementById('post-btn');
+        const attachmentBtn = document.getElementById('attachment-btn');
+        const attachmentInput = document.getElementById('attachment-input');
         const userName = document.getElementById('user-name');
         const userAvatar = document.getElementById('user-avatar');
         const userRole = document.getElementById('user-role');
@@ -683,6 +737,8 @@
         const notificationAvatar = document.getElementById('notification-avatar');
         const notificationContent = document.getElementById('notification-content');
         const notificationClose = document.getElementById('notification-close');
+
+        let currentAttachment = null;
 
         loadUsers();
         loadPosts();
@@ -812,6 +868,24 @@
             loadPosts(renderPosts);
         }
 
+        attachmentBtn.addEventListener('click', () => {
+            attachmentInput.click();
+        });
+
+        attachmentInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                currentAttachment = e.target.files[0];
+                showNotification("Fichier prêt à être envoyé: " + currentAttachment.name);
+            }
+        });
+
+        function uploadFile(file, postId) {
+            const storageRef = storage.ref('attachments/' + postId + '/' + file.name);
+            return storageRef.put(file).then(snapshot => {
+                return snapshot.ref.getDownloadURL();
+            });
+        }
+
         function renderUsers(activeUserIds) {
             userList.innerHTML = '';
             
@@ -843,6 +917,20 @@
                 const postElement = document.createElement('div');
                 postElement.className = 'post';
                 postElement.dataset.postId = post.id;
+                
+                let attachmentHtml = '';
+                if (post.attachment) {
+                    attachmentHtml = `
+                        <div class="post-attachment">
+                            <div class="attachment-icon">
+                                <i class="fas ${getFileIcon(post.attachment.type)}"></i>
+                            </div>
+                            <a href="${post.attachment.url}" class="attachment-link" target="_blank">
+                                ${post.attachment.name}
+                            </a>
+                        </div>
+                    `;
+                }
                 
                 let repliesHtml = '';
                 if (post.replies && post.replies.length > 0) {
@@ -883,6 +971,7 @@
                         </div>
                     </div>
                     <div class="post-content">${post.content}</div>
+                    ${attachmentHtml}
                     <div class="post-actions">
                         <button class="action-btn reply-btn">
                             <i class="fas fa-reply"></i> Répondre
@@ -910,6 +999,19 @@
             });
             
             setupPostEvents();
+        }
+
+        function getFileIcon(fileType) {
+            if (!fileType) return 'fa-file';
+            
+            if (fileType.includes('image')) return 'fa-file-image';
+            if (fileType.includes('pdf')) return 'fa-file-pdf';
+            if (fileType.includes('word')) return 'fa-file-word';
+            if (fileType.includes('excel')) return 'fa-file-excel';
+            if (fileType.includes('powerpoint')) return 'fa-file-powerpoint';
+            if (fileType.includes('zip')) return 'fa-file-archive';
+            
+            return 'fa-file';
         }
 
         function setupPostEvents() {
@@ -992,7 +1094,7 @@
 
         postBtn.addEventListener('click', () => {
             const content = postInput.value.trim();
-            if (content) {
+            if (content || currentAttachment) {
                 const newPost = {
                     id: Date.now(),
                     userId: db.currentUser.id,
@@ -1000,13 +1102,31 @@
                     timestamp: Date.now(),
                     replies: []
                 };
-                
-                savePost(newPost).then(() => {
-                    postInput.value = '';
-                    if (!db.currentUser.isAdmin) {
-                        showNotification("Message publié !");
-                    }
-                });
+
+                if (currentAttachment) {
+                    uploadFile(currentAttachment, newPost.id).then(downloadURL => {
+                        newPost.attachment = {
+                            name: currentAttachment.name,
+                            type: currentAttachment.type,
+                            url: downloadURL
+                        };
+                        return savePost(newPost);
+                    }).then(() => {
+                        postInput.value = '';
+                        currentAttachment = null;
+                        attachmentInput.value = '';
+                        if (!db.currentUser.isAdmin) {
+                            showNotification("Message avec pièce jointe publié !");
+                        }
+                    });
+                } else {
+                    savePost(newPost).then(() => {
+                        postInput.value = '';
+                        if (!db.currentUser.isAdmin) {
+                            showNotification("Message publié !");
+                        }
+                    });
+                }
             }
         });
 
