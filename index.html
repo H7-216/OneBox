@@ -406,34 +406,68 @@
             white-space: pre-wrap;
         }
 
-        .post-attachment {
+        .attachment-container {
             margin-top: 15px;
-            padding: 10px;
-            border: 1px dashed var(--border);
             border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        .attachment-preview {
             display: flex;
             align-items: center;
-            gap: 10px;
+            padding: 10px;
+            background-color: rgba(0, 0, 0, 0.03);
+        }
+
+        .dark-mode .attachment-preview {
+            background-color: rgba(255, 255, 255, 0.05);
         }
 
         .attachment-icon {
             font-size: 1.5rem;
+            margin-right: 10px;
+            color: var(--primary);
+        }
+
+        .attachment-info {
+            flex: 1;
+        }
+
+        .attachment-name {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .attachment-size {
+            font-size: 0.8rem;
+            opacity: 0.7;
         }
 
         .attachment-link {
+            display: inline-block;
+            margin-top: 5px;
             color: var(--primary);
             text-decoration: none;
-            word-break: break-all;
         }
 
         .attachment-link:hover {
             text-decoration: underline;
         }
 
+        .attachment-image {
+            max-width: 100%;
+            max-height: 300px;
+            display: block;
+            margin-top: 10px;
+            border-radius: 4px;
+        }
+
         .post-actions {
             display: flex;
             gap: 10px;
             justify-content: flex-end;
+            margin-top: 15px;
         }
 
         .action-btn {
@@ -615,7 +649,7 @@
                 <div class="new-post">
                     <textarea class="post-input" id="post-input" placeholder="Écrivez un message pour la classe..."></textarea>
                     <div class="post-actions">
-                        <input type="file" id="attachment-input" class="attachment-input" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                        <input type="file" id="attachment-input" class="attachment-input" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt">
                         <button class="attachment-btn" id="attachment-btn">
                             <i class="fas fa-paperclip"></i> Pièce jointe
                         </button>
@@ -882,8 +916,23 @@
         function uploadFile(file, postId) {
             const storageRef = storage.ref('attachments/' + postId + '/' + file.name);
             return storageRef.put(file).then(snapshot => {
-                return snapshot.ref.getDownloadURL();
+                return snapshot.ref.getDownloadURL().then(url => {
+                    return {
+                        url: url,
+                        name: file.name,
+                        type: file.type,
+                        size: formatFileSize(file.size)
+                    };
+                });
             });
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
         }
 
         function renderUsers(activeUserIds) {
@@ -920,16 +969,38 @@
                 
                 let attachmentHtml = '';
                 if (post.attachment) {
-                    attachmentHtml = `
-                        <div class="post-attachment">
-                            <div class="attachment-icon">
-                                <i class="fas ${getFileIcon(post.attachment.type)}"></i>
+                    if (post.attachment.type.includes('image')) {
+                        attachmentHtml = `
+                            <div class="attachment-container">
+                                <div class="attachment-preview">
+                                    <div class="attachment-icon">
+                                        <i class="fas fa-image"></i>
+                                    </div>
+                                    <div class="attachment-info">
+                                        <div class="attachment-name">${post.attachment.name}</div>
+                                        <div class="attachment-size">${post.attachment.size}</div>
+                                        <a href="${post.attachment.url}" class="attachment-link" target="_blank">Voir l'image</a>
+                                    </div>
+                                </div>
+                                <img src="${post.attachment.url}" alt="${post.attachment.name}" class="attachment-image">
                             </div>
-                            <a href="${post.attachment.url}" class="attachment-link" target="_blank">
-                                ${post.attachment.name}
-                            </a>
-                        </div>
-                    `;
+                        `;
+                    } else {
+                        attachmentHtml = `
+                            <div class="attachment-container">
+                                <div class="attachment-preview">
+                                    <div class="attachment-icon">
+                                        <i class="${getFileIcon(post.attachment.type)}"></i>
+                                    </div>
+                                    <div class="attachment-info">
+                                        <div class="attachment-name">${post.attachment.name}</div>
+                                        <div class="attachment-size">${post.attachment.size}</div>
+                                        <a href="${post.attachment.url}" class="attachment-link" target="_blank">Télécharger</a>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
                 }
                 
                 let repliesHtml = '';
@@ -970,7 +1041,7 @@
                             <div class="post-time">${formatDate(post.timestamp)}</div>
                         </div>
                     </div>
-                    <div class="post-content">${post.content}</div>
+                    ${post.content ? `<div class="post-content">${post.content}</div>` : ''}
                     ${attachmentHtml}
                     <div class="post-actions">
                         <button class="action-btn reply-btn">
@@ -1010,6 +1081,7 @@
             if (fileType.includes('excel')) return 'fa-file-excel';
             if (fileType.includes('powerpoint')) return 'fa-file-powerpoint';
             if (fileType.includes('zip')) return 'fa-file-archive';
+            if (fileType.includes('text')) return 'fa-file-alt';
             
             return 'fa-file';
         }
@@ -1104,12 +1176,8 @@
                 };
 
                 if (currentAttachment) {
-                    uploadFile(currentAttachment, newPost.id).then(downloadURL => {
-                        newPost.attachment = {
-                            name: currentAttachment.name,
-                            type: currentAttachment.type,
-                            url: downloadURL
-                        };
+                    uploadFile(currentAttachment, newPost.id).then(attachmentData => {
+                        newPost.attachment = attachmentData;
                         return savePost(newPost);
                     }).then(() => {
                         postInput.value = '';
