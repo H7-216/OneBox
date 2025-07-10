@@ -914,16 +914,30 @@
         });
 
         function uploadFile(file, postId) {
-            const storageRef = storage.ref('attachments/' + postId + '/' + file.name);
-            return storageRef.put(file).then(snapshot => {
-                return snapshot.ref.getDownloadURL().then(url => {
-                    return {
-                        url: url,
-                        name: file.name,
-                        type: file.type,
-                        size: formatFileSize(file.size)
-                    };
-                });
+            return new Promise((resolve, reject) => {
+                const storageRef = storage.ref('attachments/' + postId + '/' + file.name);
+                const uploadTask = storageRef.put(file);
+                
+                uploadTask.on('state_changed',
+                    (snapshot) => {
+                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                        console.log('Upload progress: ' + progress + '%');
+                    },
+                    (error) => {
+                        console.error("Erreur upload:", error);
+                        reject(error);
+                    },
+                    () => {
+                        uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                            resolve({
+                                url: downloadURL,
+                                name: file.name,
+                                type: file.type,
+                                size: formatFileSize(file.size)
+                            });
+                        });
+                    }
+                );
             });
         }
 
@@ -932,7 +946,7 @@
             const k = 1024;
             const sizes = ['Bytes', 'KB', 'MB', 'GB'];
             const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2) + ' ' + sizes[i];
         }
 
         function renderUsers(activeUserIds) {
@@ -1164,9 +1178,15 @@
             });
         }
 
-        postBtn.addEventListener('click', () => {
-            const content = postInput.value.trim();
-            if (content || currentAttachment) {
+        postBtn.addEventListener('click', async () => {
+            try {
+                const content = postInput.value.trim();
+                
+                if (!content && !currentAttachment) {
+                    showNotification("Veuillez écrire un message ou ajouter un fichier");
+                    return;
+                }
+
                 const newPost = {
                     id: Date.now(),
                     userId: db.currentUser.id,
@@ -1176,25 +1196,26 @@
                 };
 
                 if (currentAttachment) {
-                    uploadFile(currentAttachment, newPost.id).then(attachmentData => {
+                    try {
+                        const attachmentData = await uploadFile(currentAttachment, newPost.id);
                         newPost.attachment = attachmentData;
-                        return savePost(newPost);
-                    }).then(() => {
-                        postInput.value = '';
-                        currentAttachment = null;
-                        attachmentInput.value = '';
-                        if (!db.currentUser.isAdmin) {
-                            showNotification("Message avec pièce jointe publié !");
-                        }
-                    });
-                } else {
-                    savePost(newPost).then(() => {
-                        postInput.value = '';
-                        if (!db.currentUser.isAdmin) {
-                            showNotification("Message publié !");
-                        }
-                    });
+                    } catch (error) {
+                        console.error("Erreur upload:", error);
+                        showNotification("Échec de l'envoi du fichier");
+                        return;
+                    }
                 }
+
+                await savePost(newPost);
+                
+                postInput.value = '';
+                currentAttachment = null;
+                attachmentInput.value = '';
+                
+                showNotification("Publication réussie !");
+            } catch (error) {
+                console.error("Erreur publication:", error);
+                showNotification("Erreur lors de la publication");
             }
         });
 
