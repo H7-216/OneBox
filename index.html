@@ -350,12 +350,6 @@
             border-radius: 8px;
             font-weight: 600;
             cursor: pointer;
-            position: relative;
-        }
-
-        .post-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
         }
 
         .attachment-btn {
@@ -375,58 +369,8 @@
             background: rgba(0, 0, 0, 0.05);
         }
 
-        .attachment-btn.has-file {
-            border-color: var(--primary);
-            color: var(--primary);
-        }
-
         .attachment-input {
             display: none;
-        }
-
-        .attachment-preview-container {
-            margin-top: 10px;
-            padding: 10px;
-            background: var(--bg);
-            border-radius: 8px;
-            display: none;
-        }
-
-        .attachment-preview-container.show {
-            display: block;
-        }
-
-        .attachment-preview-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .attachment-preview-item .attachment-icon {
-            font-size: 1.2rem;
-            color: var(--primary);
-        }
-
-        .attachment-preview-item .attachment-info {
-            flex: 1;
-        }
-
-        .attachment-preview-item .attachment-name {
-            font-weight: 500;
-            margin-bottom: 2px;
-        }
-
-        .attachment-preview-item .attachment-size {
-            font-size: 0.8rem;
-            opacity: 0.7;
-        }
-
-        .attachment-remove {
-            background: none;
-            border: none;
-            color: #dc3545;
-            cursor: pointer;
-            font-size: 1.1rem;
         }
 
         .posts-list {
@@ -643,23 +587,6 @@
             color: white;
             cursor: pointer;
         }
-
-        .upload-progress {
-            width: 100%;
-            height: 4px;
-            background-color: rgba(0, 0, 0, 0.1);
-            border-radius: 2px;
-            overflow: hidden;
-            margin-top: 10px;
-            display: none;
-        }
-
-        .upload-progress-bar {
-            height: 100%;
-            background: linear-gradient(to right, var(--primary), var(--secondary));
-            width: 0%;
-            transition: width 0.3s;
-        }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
@@ -721,28 +648,8 @@
             <div class="posts-container">
                 <div class="new-post">
                     <textarea class="post-input" id="post-input" placeholder="Écrivez un message pour la classe..."></textarea>
-                    
-                    <div class="attachment-preview-container" id="attachment-preview-container">
-                        <div class="attachment-preview-item" id="attachment-preview-item">
-                            <div class="attachment-icon" id="preview-icon">
-                                <i class="fas fa-file"></i>
-                            </div>
-                            <div class="attachment-info">
-                                <div class="attachment-name" id="preview-name">Fichier.pdf</div>
-                                <div class="attachment-size" id="preview-size">1.2 MB</div>
-                            </div>
-                            <button class="attachment-remove" id="attachment-remove">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="upload-progress" id="upload-progress">
-                        <div class="upload-progress-bar" id="upload-progress-bar"></div>
-                    </div>
-                    
                     <div class="post-actions">
-                        <input type="file" id="attachment-input" class="attachment-input" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif,.txt,.zip,.rar">
+                        <input type="file" id="attachment-input" class="attachment-input" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt">
                         <button class="attachment-btn" id="attachment-btn">
                             <i class="fas fa-paperclip"></i> Pièce jointe
                         </button>
@@ -857,10 +764,6 @@
         const postBtn = document.getElementById('post-btn');
         const attachmentBtn = document.getElementById('attachment-btn');
         const attachmentInput = document.getElementById('attachment-input');
-        const attachmentPreviewContainer = document.getElementById('attachment-preview-container');
-        const attachmentRemove = document.getElementById('attachment-remove');
-        const uploadProgress = document.getElementById('upload-progress');
-        const uploadProgressBar = document.getElementById('upload-progress-bar');
         const userName = document.getElementById('user-name');
         const userAvatar = document.getElementById('user-avatar');
         const userRole = document.getElementById('user-role');
@@ -870,7 +773,6 @@
         const notificationClose = document.getElementById('notification-close');
 
         let currentAttachment = null;
-        let isUploading = false;
 
         loadUsers();
         loadPosts();
@@ -963,20 +865,18 @@
 
         saveProfileBtn.addEventListener('click', () => {
             const name = userNameInput.value.trim();
-            const selectedColor = document.querySelector('.color-option.selected').dataset.color;
+            const color = document.querySelector('.color-option.selected').dataset.color;
             
             if (name.length < 2) {
-                alert("Veuillez entrer un nom valide (au moins 2 caractères)");
+                showNotification("Veuillez entrer un prénom valide (2 caractères minimum)");
                 return;
             }
-            
-            const initials = name.split(' ').map(n => n.charAt(0).toUpperCase()).join('').substring(0, 2);
             
             db.currentUser = {
                 ...db.currentUser,
                 name: name,
-                avatar: initials,
-                color: selectedColor,
+                avatar: name.charAt(0).toUpperCase(),
+                color: color,
                 role: "Étudiant"
             };
             
@@ -984,329 +884,60 @@
                 localStorage.setItem('geii2025_currentUser', JSON.stringify(db.currentUser));
                 profileModal.style.display = 'none';
                 updateUserActivity(db.currentUser.id);
-                updateUI();
+                startApplication();
             });
         });
 
         function startApplication() {
-            updateUI();
+            userName.textContent = db.currentUser.name;
+            userAvatar.textContent = db.currentUser.avatar;
+            userAvatar.style.backgroundColor = db.currentUser.color;
+            userRole.textContent = db.currentUser.role;
+            
             appContainer.classList.add('show');
+            renderUsers();
+            renderPosts();
             
-            // Vérifier le thème
-            if (localStorage.getItem('geii2025_darkMode') {
-                document.body.classList.add('dark-mode');
-                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-            }
-            
-            // Charger les utilisateurs actifs
-            loadActiveUsers((activeUserIds) => {
-                renderUserList(activeUserIds);
-            });
-            
-            // Mettre à jour l'activité toutes les 30 secondes
-            setInterval(() => {
-                if (db.currentUser) {
-                    updateUserActivity(db.currentUser.id);
-                }
-            }, 30000);
+            loadActiveUsers(renderUsers);
+            loadPosts(renderPosts);
         }
 
-        function updateUI() {
-            if (db.currentUser) {
-                userName.textContent = db.currentUser.name;
-                userAvatar.textContent = db.currentUser.avatar;
-                userAvatar.style.backgroundColor = db.currentUser.color;
-                userRole.textContent = db.currentUser.role;
-            }
-        }
+        attachmentBtn.addEventListener('click', () => {
+            attachmentInput.click();
+        });
 
-        function renderUserList(activeUserIds) {
-            userList.innerHTML = '';
-            
-            const activeUsers = db.users.filter(user => 
-                activeUserIds.includes(user.id.toString()) && 
-                user.id !== db.currentUser.id
-            );
-            
-            if (activeUsers.length === 0) {
-                userList.innerHTML = '<li class="user-item">Aucun autre utilisateur en ligne</li>';
-                return;
+        attachmentInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                currentAttachment = e.target.files[0];
+                showNotification("Fichier prêt à être envoyé: " + currentAttachment.name);
             }
-            
-            activeUsers.forEach(user => {
-                const li = document.createElement('li');
-                li.className = 'user-item';
-                
-                const avatar = document.createElement('div');
-                avatar.className = 'user-avatar';
-                avatar.textContent = user.avatar;
-                avatar.style.backgroundColor = user.color;
-                
-                const info = document.createElement('div');
-                info.innerHTML = `
-                    <div>${user.name}</div>
-                    <small>${user.role}</small>
-                `;
-                
-                li.appendChild(avatar);
-                li.appendChild(info);
-                userList.appendChild(li);
-            });
-        }
+        });
 
-        function renderPosts() {
-            postsList.innerHTML = '';
-            
-            if (db.posts.length === 0) {
-                postsList.innerHTML = '<p>Aucun message pour le moment. Soyez le premier à poster !</p>';
-                return;
-            }
-            
-            // Trier les posts par date (du plus récent au plus ancien)
-            const sortedPosts = [...db.posts].sort((a, b) => b.timestamp - a.timestamp);
-            
-            sortedPosts.forEach(post => {
-                const postElement = document.createElement('div');
-                postElement.className = 'post';
+        function uploadFile(file, postId) {
+            return new Promise((resolve, reject) => {
+                const storageRef = storage.ref('attachments/' + postId + '/' + file.name);
+                const uploadTask = storageRef.put(file);
                 
-                const user = db.users.find(u => u.id === post.userId) || {
-                    name: "Utilisateur inconnu",
-                    avatar: "?",
-                    color: "#999999"
-                };
-                
-                const isCurrentUserPost = post.userId === db.currentUser.id;
-                const isAdmin = db.currentUser.isAdmin;
-                
-                const date = new Date(post.timestamp);
-                const formattedDate = date.toLocaleDateString('fr-FR', {
-                    day: 'numeric',
-                    month: 'numeric',
-                    year: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
-                
-                let attachmentHTML = '';
-                if (post.attachment) {
-                    const isImage = ['jpg', 'jpeg', 'png', 'gif'].includes(post.attachment.type);
-                    
-                    attachmentHTML = `
-                        <div class="attachment-container">
-                            <div class="attachment-preview">
-                                <div class="attachment-icon">
-                                    <i class="fas fa-${isImage ? 'image' : 'file'}"></i>
-                                </div>
-                                <div class="attachment-info">
-                                    <div class="attachment-name">${post.attachment.name}</div>
-                                    <div class="attachment-size">${formatFileSize(post.attachment.size)}</div>
-                                    <a href="${post.attachment.url}" class="attachment-link" target="_blank" download>
-                                        <i class="fas fa-download"></i> Télécharger
-                                    </a>
-                                </div>
-                            </div>
-                            ${isImage ? `<img src="${post.attachment.url}" class="attachment-image" alt="${post.attachment.name}">` : ''}
-                        </div>
-                    `;
-                }
-                
-                postElement.innerHTML = `
-                    <div class="post-header">
-                        <div class="user-avatar" style="background-color: ${user.color}">${user.avatar}</div>
-                        <div>
-                            <div class="post-user">${user.name}</div>
-                            <div class="post-time">${formattedDate}</div>
-                        </div>
-                    </div>
-                    <div class="post-content">${post.content}</div>
-                    ${attachmentHTML}
-                    <div class="post-actions">
-                        <button class="action-btn reply-btn" data-post-id="${post.id}">
-                            <i class="fas fa-reply"></i> Répondre
-                        </button>
-                        ${isCurrentUserPost || isAdmin ? `
-                            <button class="action-btn edit-btn" data-post-id="${post.id}">
-                                <i class="fas fa-edit"></i> Modifier
-                            </button>
-                            <button class="action-btn delete-btn" data-post-id="${post.id}">
-                                <i class="fas fa-trash"></i> Supprimer
-                            </button>
-                        ` : ''}
-                    </div>
-                    <div class="reply-form" id="reply-form-${post.id}">
-                        <textarea class="reply-input" id="reply-input-${post.id}" placeholder="Écrivez votre réponse..."></textarea>
-                        <div class="reply-actions">
-                            <button class="attachment-btn cancel-reply" data-post-id="${post.id}">
-                                Annuler
-                            </button>
-                            <button class="post-btn send-reply" data-post-id="${post.id}">
-                                Envoyer
-                            </button>
-                        </div>
-                    </div>
-                    ${post.replies.length > 0 ? `
-                        <div class="replies">
-                            ${post.replies.map(reply => {
-                                const replyUser = db.users.find(u => u.id === reply.userId) || {
-                                    name: "Utilisateur inconnu",
-                                    avatar: "?",
-                                    color: "#999999"
-                                };
-                                
-                                const replyDate = new Date(reply.timestamp);
-                                const formattedReplyDate = replyDate.toLocaleDateString('fr-FR', {
-                                    day: 'numeric',
-                                    month: 'numeric',
-                                    year: 'numeric',
-                                    hour: '2-digit',
-                                    minute: '2-digit'
-                                });
-                                
-                                const isCurrentUserReply = reply.userId === db.currentUser.id;
-                                
-                                return `
-                                    <div class="reply" id="reply-${reply.id}">
-                                        <div class="post-header">
-                                            <div class="user-avatar" style="background-color: ${replyUser.color}">${replyUser.avatar}</div>
-                                            <div>
-                                                <div class="post-user">${replyUser.name}</div>
-                                                <div class="post-time">${formattedReplyDate}</div>
-                                            </div>
-                                        </div>
-                                        <div class="post-content">${reply.content}</div>
-                                        ${isCurrentUserReply || isAdmin ? `
-                                            <div class="post-actions">
-                                                <button class="action-btn edit-reply" data-post-id="${post.id}" data-reply-id="${reply.id}">
-                                                    <i class="fas fa-edit"></i> Modifier
-                                                </button>
-                                                <button class="action-btn delete-reply" data-post-id="${post.id}" data-reply-id="${reply.id}">
-                                                    <i class="fas fa-trash"></i> Supprimer
-                                                </button>
-                                            </div>
-                                        ` : ''}
-                                    </div>
-                                `;
-                            }).join('')}
-                        </div>
-                    ` : ''}
-                `;
-                
-                postsList.appendChild(postElement);
-            });
-            
-            // Ajouter les événements après le rendu
-            addPostEvents();
-        }
-
-        function addPostEvents() {
-            // Répondre à un post
-            document.querySelectorAll('.reply-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const postId = e.target.closest('button').dataset.postId;
-                    const replyForm = document.getElementById(`reply-form-${postId}`);
-                    
-                    if (replyForm.style.display === 'block') {
-                        replyForm.style.display = 'none';
-                    } else {
-                        document.querySelectorAll('.reply-form').forEach(form => {
-                            form.style.display = 'none';
-                        });
-                        replyForm.style.display = 'block';
-                        document.getElementById(`reply-input-${postId}`).focus();
-                    }
-                });
-            });
-            
-            // Annuler une réponse
-            document.querySelectorAll('.cancel-reply').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const postId = e.target.closest('button').dataset.postId;
-                    document.getElementById(`reply-form-${postId}`).style.display = 'none';
-                });
-            });
-            
-            // Envoyer une réponse
-            document.querySelectorAll('.send-reply').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const postId = e.target.closest('button').dataset.postId;
-                    const replyInput = document.getElementById(`reply-input-${postId}`);
-                    const content = replyInput.value.trim();
-                    
-                    if (content) {
-                        const reply = {
-                            id: Date.now(),
-                            userId: db.currentUser.id,
-                            content: content,
-                            timestamp: Date.now()
-                        };
-                        
-                        saveReply(postId, reply).then(() => {
-                            replyInput.value = '';
-                            document.getElementById(`reply-form-${postId}`).style.display = 'none';
-                        });
-                    }
-                });
-            });
-            
-            // Supprimer un post
-            document.querySelectorAll('.delete-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    if (confirm("Voulez-vous vraiment supprimer ce message ?")) {
-                        const postId = e.target.closest('button').dataset.postId;
-                        deletePost(postId);
-                    }
-                });
-            });
-            
-            // Modifier un post
-            document.querySelectorAll('.edit-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const postId = e.target.closest('button').dataset.postId;
-                    const post = db.posts.find(p => p.id.toString() === postId);
-                    
-                    if (post) {
-                        const newContent = prompt("Modifier le message:", post.content);
-                        if (newContent !== null && newContent.trim() !== post.content) {
-                            savePost({
-                                ...post,
-                                content: newContent.trim()
+                uploadTask.on('state_changed',
+                    (snapshot) => {
+                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                        console.log('Upload progress: ' + progress + '%');
+                    },
+                    (error) => {
+                        console.error("Erreur upload:", error);
+                        reject(error);
+                    },
+                    () => {
+                        uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                            resolve({
+                                url: downloadURL,
+                                name: file.name,
+                                type: file.type,
+                                size: formatFileSize(file.size)
                             });
-                        }
+                        });
                     }
-                });
-            });
-            
-            // Supprimer une réponse
-            document.querySelectorAll('.delete-reply').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    if (confirm("Voulez-vous vraiment supprimer cette réponse ?")) {
-                        const postId = e.target.closest('button').dataset.postId;
-                        const replyId = e.target.closest('button').dataset.replyId;
-                        deleteReply(postId, replyId);
-                    }
-                });
-            });
-            
-            // Modifier une réponse
-            document.querySelectorAll('.edit-reply').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const postId = e.target.closest('button').dataset.postId;
-                    const replyId = e.target.closest('button').dataset.replyId;
-                    const post = db.posts.find(p => p.id.toString() === postId);
-                    
-                    if (post) {
-                        const reply = post.replies.find(r => r.id.toString() === replyId);
-                        if (reply) {
-                            const newContent = prompt("Modifier la réponse:", reply.content);
-                            if (newContent !== null && newContent.trim() !== reply.content) {
-                                saveReply(postId, {
-                                    ...reply,
-                                    content: newContent.trim()
-                                });
-                            }
-                        }
-                    }
-                });
+                );
             });
         }
 
@@ -1318,186 +949,318 @@
             return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
         }
 
-        themeToggle.addEventListener('click', () => {
-            document.body.classList.toggle('dark-mode');
+        function renderUsers(activeUserIds) {
+            userList.innerHTML = '';
             
-            if (document.body.classList.contains('dark-mode')) {
-                localStorage.setItem('geii2025_darkMode', 'true');
-                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-            } else {
-                localStorage.removeItem('geii2025_darkMode');
-                themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+            const activeUsers = db.users.filter(user => 
+                activeUserIds ? activeUserIds.includes(user.id.toString()) : true
+            );
+
+            activeUsers.forEach(user => {
+                const userItem = document.createElement('li');
+                userItem.className = 'user-item';
+                userItem.innerHTML = `
+                    <div class="user-avatar" style="background: ${user.color}">${user.avatar}</div>
+                    <div>
+                        <div>${user.name}</div>
+                        <small>${user.role}</small>
+                    </div>
+                `;
+                userList.appendChild(userItem);
+            });
+        }
+
+        function renderPosts() {
+            postsList.innerHTML = '';
+            
+            const sortedPosts = [...db.posts].sort((a, b) => b.timestamp - a.timestamp);
+            
+            sortedPosts.forEach(post => {
+                const user = db.users.find(u => u.id === post.userId) || { name: "Inconnu", avatar: "?", color: "#999" };
+                const postElement = document.createElement('div');
+                postElement.className = 'post';
+                postElement.dataset.postId = post.id;
+                
+                let attachmentHtml = '';
+                if (post.attachment) {
+                    if (post.attachment.type.includes('image')) {
+                        attachmentHtml = `
+                            <div class="attachment-container">
+                                <div class="attachment-preview">
+                                    <div class="attachment-icon">
+                                        <i class="fas fa-image"></i>
+                                    </div>
+                                    <div class="attachment-info">
+                                        <div class="attachment-name">${post.attachment.name}</div>
+                                        <div class="attachment-size">${post.attachment.size}</div>
+                                        <a href="${post.attachment.url}" class="attachment-link" target="_blank">Voir l'image</a>
+                                    </div>
+                                </div>
+                                <img src="${post.attachment.url}" alt="${post.attachment.name}" class="attachment-image">
+                            </div>
+                        `;
+                    } else {
+                        attachmentHtml = `
+                            <div class="attachment-container">
+                                <div class="attachment-preview">
+                                    <div class="attachment-icon">
+                                        <i class="${getFileIcon(post.attachment.type)}"></i>
+                                    </div>
+                                    <div class="attachment-info">
+                                        <div class="attachment-name">${post.attachment.name}</div>
+                                        <div class="attachment-size">${post.attachment.size}</div>
+                                        <a href="${post.attachment.url}" class="attachment-link" target="_blank">Télécharger</a>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                }
+                
+                let repliesHtml = '';
+                if (post.replies && post.replies.length > 0) {
+                    repliesHtml += `<div class="replies">`;
+                    post.replies.forEach(reply => {
+                        const replyUser = db.users.find(u => u.id === reply.userId) || { name: "Inconnu", avatar: "?", color: "#999" };
+                        repliesHtml += `
+                            <div class="reply">
+                                <div class="post-header">
+                                    <div class="user-avatar" style="background: ${replyUser.color}">${replyUser.avatar}</div>
+                                    <div>
+                                        <div class="post-user">${replyUser.name}</div>
+                                        <div class="post-time">${formatDate(reply.timestamp)}</div>
+                                    </div>
+                                </div>
+                                <div class="post-content">${reply.content}</div>
+                                ${reply.userId === db.currentUser.id || db.currentUser.isAdmin ? `
+                                <div class="post-actions">
+                                    <button class="action-btn delete-btn" data-reply-id="${reply.id}" data-post-id="${post.id}">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                                ` : ''}
+                            </div>
+                        `;
+                    });
+                    repliesHtml += `</div>`;
+                }
+                
+                const canEditDelete = post.userId === db.currentUser.id || db.currentUser.isAdmin;
+                
+                postElement.innerHTML = `
+                    <div class="post-header">
+                        <div class="user-avatar" style="background: ${user.color}">${user.avatar}</div>
+                        <div>
+                            <div class="post-user">${user.name}</div>
+                            <div class="post-time">${formatDate(post.timestamp)}</div>
+                        </div>
+                    </div>
+                    ${post.content ? `<div class="post-content">${post.content}</div>` : ''}
+                    ${attachmentHtml}
+                    <div class="post-actions">
+                        <button class="action-btn reply-btn">
+                            <i class="fas fa-reply"></i> Répondre
+                        </button>
+                        ${canEditDelete ? `
+                        <button class="action-btn edit-btn" data-post-id="${post.id}">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="action-btn delete-btn" data-post-id="${post.id}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                        ` : ''}
+                    </div>
+                    <div class="reply-form">
+                        <textarea class="reply-input" placeholder="Écrivez votre réponse..."></textarea>
+                        <div class="reply-actions">
+                            <button class="action-btn cancel-reply">Annuler</button>
+                            <button class="post-btn submit-reply">Envoyer</button>
+                        </div>
+                    </div>
+                    ${repliesHtml}
+                `;
+                
+                postsList.appendChild(postElement);
+            });
+            
+            setupPostEvents();
+        }
+
+        function getFileIcon(fileType) {
+            if (!fileType) return 'fa-file';
+            
+            if (fileType.includes('image')) return 'fa-file-image';
+            if (fileType.includes('pdf')) return 'fa-file-pdf';
+            if (fileType.includes('word')) return 'fa-file-word';
+            if (fileType.includes('excel')) return 'fa-file-excel';
+            if (fileType.includes('powerpoint')) return 'fa-file-powerpoint';
+            if (fileType.includes('zip')) return 'fa-file-archive';
+            if (fileType.includes('text')) return 'fa-file-alt';
+            
+            return 'fa-file';
+        }
+
+        function setupPostEvents() {
+            document.querySelectorAll('.reply-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const replyForm = e.target.closest('.post').querySelector('.reply-form');
+                    replyForm.style.display = replyForm.style.display === 'block' ? 'none' : 'block';
+                });
+            });
+            
+            document.querySelectorAll('.cancel-reply').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.target.closest('.reply-form').style.display = 'none';
+                });
+            });
+            
+            document.querySelectorAll('.submit-reply').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const postId = e.target.closest('.post').dataset.postId;
+                    const replyInput = e.target.closest('.reply-form').querySelector('.reply-input');
+                    const content = replyInput.value.trim();
+                    
+                    if (content) {
+                        const newReply = {
+                            id: Date.now(),
+                            userId: db.currentUser.id,
+                            content: content,
+                            timestamp: Date.now()
+                        };
+                        
+                        saveReply(postId, newReply).then(() => {
+                            replyInput.value = '';
+                            showNotification("Réponse envoyée !");
+                        });
+                    }
+                });
+            });
+            
+            document.querySelectorAll('.delete-btn[data-post-id]').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const postId = e.target.closest('.delete-btn').dataset.postId;
+                    if (confirm("Supprimer ce message ?")) {
+                        deletePost(postId).then(() => {
+                            showNotification("Message supprimé");
+                        });
+                    }
+                });
+            });
+            
+            document.querySelectorAll('.delete-btn[data-reply-id]').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const replyId = e.target.closest('.delete-btn').dataset.replyId;
+                    const postId = e.target.closest('.delete-btn').dataset.postId;
+                    if (confirm("Supprimer cette réponse ?")) {
+                        deleteReply(postId, replyId).then(() => {
+                            showNotification("Réponse supprimée");
+                        });
+                    }
+                });
+            });
+            
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const postId = e.target.closest('.edit-btn').dataset.postId;
+                    const post = db.posts.find(p => p.id == postId);
+                    if (post) {
+                        const newContent = prompt("Modifier le message:", post.content);
+                        if (newContent !== null) {
+                            savePost({
+                                ...post,
+                                content: newContent
+                            }).then(() => {
+                                showNotification("Message modifié");
+                            });
+                        }
+                    }
+                });
+            });
+        }
+
+        postBtn.addEventListener('click', async () => {
+            try {
+                const content = postInput.value.trim();
+                
+                if (!content && !currentAttachment) {
+                    showNotification("Veuillez écrire un message ou ajouter un fichier");
+                    return;
+                }
+
+                const newPost = {
+                    id: Date.now(),
+                    userId: db.currentUser.id,
+                    content: content,
+                    timestamp: Date.now(),
+                    replies: []
+                };
+
+                if (currentAttachment) {
+                    try {
+                        const attachmentData = await uploadFile(currentAttachment, newPost.id);
+                        newPost.attachment = attachmentData;
+                    } catch (error) {
+                        console.error("Erreur upload:", error);
+                        showNotification("Échec de l'envoi du fichier");
+                        return;
+                    }
+                }
+
+                await savePost(newPost);
+                
+                postInput.value = '';
+                currentAttachment = null;
+                attachmentInput.value = '';
+                
+                showNotification("Publication réussie !");
+            } catch (error) {
+                console.error("Erreur publication:", error);
+                showNotification("Erreur lors de la publication");
             }
         });
 
         logoutBtn.addEventListener('click', () => {
             if (confirm("Voulez-vous vraiment vous déconnecter ?")) {
-                removeUserActivity(db.currentUser.id);
-                localStorage.removeItem('geii2025_currentUser');
-                localStorage.removeItem('geii2025_admin_connected');
-                db.currentUser = null;
-                
-                loginContainer.classList.remove('hidden');
-                appContainer.classList.remove('show');
-                accessCodeInput.value = '';
-                loader.style.display = 'none';
-                loginBtn.style.display = 'block';
+                removeUserActivity(db.currentUser.id).then(() => {
+                    localStorage.removeItem('geii2025_currentUser');
+                    if (db.currentUser.isAdmin) {
+                        localStorage.removeItem('geii2025_admin_connected');
+                    }
+                    location.reload();
+                });
             }
         });
 
-        postBtn.addEventListener('click', () => {
-            const content = postInput.value.trim();
-            
-            if (!content && !currentAttachment) {
-                alert("Veuillez écrire un message ou ajouter une pièce jointe");
-                return;
+        function applyTheme(isDark) {
+            if (isDark) {
+                document.body.classList.add('dark-mode');
+                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                document.body.classList.remove('dark-mode');
+                themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+                localStorage.setItem('theme', 'light');
             }
-            
-            if (isUploading) {
-                alert("Un fichier est en cours de téléchargement, veuillez patienter");
-                return;
-            }
-            
-            const post = {
-                id: Date.now(),
-                userId: db.currentUser.id,
-                content: content,
-                timestamp: Date.now(),
-                replies: []
-            };
-            
-            if (currentAttachment) {
-                post.attachment = currentAttachment;
-            }
-            
-            savePost(post).then(() => {
-                postInput.value = '';
-                
-                if (currentAttachment) {
-                    currentAttachment = null;
-                    attachmentPreviewContainer.classList.remove('show');
-                    attachmentBtn.classList.remove('has-file');
-                }
-                
-                // Faire défiler vers le haut pour voir le nouveau message
-                postsList.scrollTop = 0;
-                
-                // Masquer la notification si elle est affichée
-                notification.classList.remove('show');
-            });
-        });
-
-        attachmentBtn.addEventListener('click', () => {
-            attachmentInput.click();
-        });
-
-        attachmentInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            
-            if (!file) return;
-            
-            // Vérifier la taille du fichier (max 5MB)
-            if (file.size > 5 * 1024 * 1024) {
-                alert("Le fichier est trop volumineux (max 5MB)");
-                return;
-            }
-            
-            // Vérifier le type de fichier
-            const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 
-                                'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-                                'text/plain', 'application/zip', 'application/x-rar-compressed'];
-            
-            if (!allowedTypes.includes(file.type)) {
-                alert("Type de fichier non autorisé");
-                return;
-            }
-            
-            // Afficher le preview
-            const fileExt = file.name.split('.').pop().toLowerCase();
-            const isImage = ['jpg', 'jpeg', 'png', 'gif'].includes(fileExt);
-            
-            document.getElementById('preview-name').textContent = file.name;
-            document.getElementById('preview-size').textContent = formatFileSize(file.size);
-            
-            const iconMap = {
-                pdf: 'file-pdf',
-                doc: 'file-word',
-                docx: 'file-word',
-                txt: 'file-alt',
-                zip: 'file-archive',
-                rar: 'file-archive',
-                jpg: 'file-image',
-                jpeg: 'file-image',
-                png: 'file-image',
-                gif: 'file-image'
-            };
-            
-            document.getElementById('preview-icon').innerHTML = `<i class="fas fa-${iconMap[fileExt] || 'file'}"></i>`;
-            
-            attachmentPreviewContainer.classList.add('show');
-            attachmentBtn.classList.add('has-file');
-            
-            // Upload du fichier
-            isUploading = true;
-            uploadProgress.style.display = 'block';
-            
-            const storageRef = storage.ref(`attachments/${Date.now()}_${file.name}`);
-            const uploadTask = storageRef.put(file);
-            
-            uploadTask.on('state_changed', 
-                (snapshot) => {
-                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                    uploadProgressBar.style.width = progress + '%';
-                },
-                (error) => {
-                    console.error("Upload error:", error);
-                    alert("Erreur lors du téléchargement du fichier");
-                    resetAttachment();
-                },
-                () => {
-                    uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
-                        currentAttachment = {
-                            name: file.name,
-                            size: file.size,
-                            type: fileExt,
-                            url: downloadURL
-                        };
-                        
-                        isUploading = false;
-                        uploadProgress.style.display = 'none';
-                        uploadProgressBar.style.width = '0%';
-                    });
-                }
-            );
-        });
-
-        attachmentRemove.addEventListener('click', resetAttachment);
-
-        function resetAttachment() {
-            currentAttachment = null;
-            attachmentInput.value = '';
-            attachmentPreviewContainer.classList.remove('show');
-            attachmentBtn.classList.remove('has-file');
-            uploadProgress.style.display = 'none';
-            uploadProgressBar.style.width = '0%';
-            isUploading = false;
         }
 
-        // Notifications
-        notificationClose.addEventListener('click', () => {
-            notification.classList.remove('show');
+        const savedTheme = localStorage.getItem('theme');
+        applyTheme(savedTheme === 'dark');
+
+        themeToggle.addEventListener('click', () => {
+            const isDark = !document.body.classList.contains('dark-mode');
+            applyTheme(isDark);
         });
 
-        function showNotification(userId, message) {
-            if (userId === db.currentUser.id) return;
+        function showNotification(message, user = null) {
+            if (user) {
+                notificationAvatar.textContent = user.avatar;
+                notificationAvatar.style.backgroundColor = user.color;
+            } else {
+                notificationAvatar.textContent = db.currentUser.avatar;
+                notificationAvatar.style.backgroundColor = db.currentUser.color;
+            }
             
-            const user = db.users.find(u => u.id === userId);
-            if (!user) return;
-            
-            notificationAvatar.textContent = user.avatar;
-            notificationAvatar.style.backgroundColor = user.color;
-            notificationContent.textContent = `${user.name} ${message}`;
-            
+            notificationContent.textContent = message;
             notification.classList.add('show');
             
             setTimeout(() => {
@@ -1505,48 +1268,20 @@
             }, 5000);
         }
 
-        // Écouter les nouveaux messages
-        database.ref('posts').limitToLast(1).on('child_added', (snapshot) => {
-            const post = snapshot.val();
-            
-            if (post.userId !== db.currentUser.id) {
-                const user = db.users.find(u => u.id === post.userId);
-                if (user) {
-                    showNotification(post.userId, "a posté un nouveau message");
-                }
-            }
+        notificationClose.addEventListener('click', () => {
+            notification.classList.remove('show');
         });
 
-        // Écouter les nouvelles réponses
-        database.ref('posts').on('child_changed', (snapshot) => {
-            const post = snapshot.val();
-            
-            if (post.replies) {
-                const replies = Object.values(post.replies);
-                if (replies.length > 0) {
-                    const lastReply = replies[replies.length - 1];
-                    
-                    if (lastReply.userId !== db.currentUser.id && 
-                        post.userId === db.currentUser.id) {
-                        const user = db.users.find(u => u.id === lastReply.userId);
-                        if (user) {
-                            showNotification(lastReply.userId, `a répondu à votre message`);
-                        }
-                    }
-                }
-            }
-        });
-
-        // Raccourci clavier pour envoyer un message (Ctrl+Entrée)
-        postInput.addEventListener('keydown', (e) => {
-            if (e.ctrlKey && e.key === 'Enter') {
-                postBtn.click();
-            }
-        });
-
-        // Initial render
-        loadUsers(renderPosts);
-        loadPosts(renderPosts);
+        function formatDate(timestamp) {
+            const date = new Date(timestamp);
+            return date.toLocaleString('fr-FR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
     </script>
 </body>
 </html>
