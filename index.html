@@ -336,6 +336,65 @@
             border-color: var(--primary);
         }
 
+        .upload-zone {
+            border: 2px dashed var(--border);
+            padding: 20px;
+            text-align: center;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            background: rgba(106, 17, 203, 0.05);
+        }
+
+        .upload-zone:hover {
+            border-color: var(--primary);
+            background: rgba(106, 17, 203, 0.1);
+        }
+
+        .upload-zone.dragover {
+            border-color: var(--primary);
+            background: rgba(106, 17, 203, 0.15);
+            transform: scale(1.02);
+        }
+
+        .preview-container {
+            margin-top: 15px;
+            text-align: center;
+            padding: 15px;
+            background: var(--bg);
+            border-radius: 10px;
+            display: none;
+        }
+
+        .preview-image {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .file-info {
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 5px;
+            text-align: left;
+        }
+
+        .remove-attachment {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .remove-attachment:hover {
+            background: #c82333;
+        }
+
         .post-actions {
             display: flex;
             justify-content: flex-end;
@@ -649,10 +708,23 @@
                 <div class="new-post">
                     <textarea class="post-input" id="post-input" placeholder="Écrivez un message pour la classe..."></textarea>
                     <div class="post-actions">
-                        <input type="file" id="attachment-input" class="attachment-input" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt">
-                        <button class="attachment-btn" id="attachment-btn">
-                            <i class="fas fa-paperclip"></i> Pièce jointe
-                        </button>
+                        <div class="upload-zone" id="uploadZone">
+                            <p>📁 Glissez votre fichier ici ou cliquez pour sélectionner</p>
+                            <input type="file" id="attachment-input" class="attachment-input" accept="image/*,.pdf,.doc,.docx,.txt">
+                            <button class="attachment-btn" id="attachment-btn">
+                                <i class="fas fa-paperclip"></i> Choisir un fichier
+                            </button>
+                        </div>
+                        
+                        <div class="preview-container" id="previewContainer">
+                            <h3>Prévisualisation :</h3>
+                            <img id="previewImage" class="preview-image" alt="Prévisualisation">
+                            <div class="file-info" id="fileInfo"></div>
+                            <button class="remove-attachment" id="remove-attachment">
+                                <i class="fas fa-times"></i> Supprimer
+                            </button>
+                        </div>
+                        
                         <button class="post-btn" id="post-btn">Publier</button>
                     </div>
                 </div>
@@ -762,8 +834,13 @@
         const postsList = document.getElementById('posts-list');
         const postInput = document.getElementById('post-input');
         const postBtn = document.getElementById('post-btn');
-        const attachmentBtn = document.getElementById('attachment-btn');
+        const uploadZone = document.getElementById('uploadZone');
+        const previewContainer = document.getElementById('previewContainer');
+        const previewImage = document.getElementById('previewImage');
+        const fileInfo = document.getElementById('fileInfo');
+        const removeAttachment = document.getElementById('remove-attachment');
         const attachmentInput = document.getElementById('attachment-input');
+        const attachmentBtn = document.getElementById('attachment-btn');
         const userName = document.getElementById('user-name');
         const userAvatar = document.getElementById('user-avatar');
         const userRole = document.getElementById('user-role');
@@ -777,6 +854,71 @@
         loadUsers();
         loadPosts();
         checkAuth();
+
+        uploadZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadZone.classList.add('dragover');
+        });
+
+        uploadZone.addEventListener('dragleave', () => {
+            uploadZone.classList.remove('dragover');
+        });
+
+        uploadZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadZone.classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFileSelect(files[0]);
+            }
+        });
+
+        attachmentInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                handleFileSelect(file);
+            }
+        });
+
+        removeAttachment.addEventListener('click', () => {
+            currentAttachment = null;
+            previewContainer.style.display = 'none';
+            attachmentInput.value = '';
+        });
+
+        function handleFileSelect(file) {
+            const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 
+                               'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                               'text/plain'];
+            
+            if (!validTypes.includes(file.type)) {
+                showNotification("Type de fichier non supporté. Formats acceptés: images, PDF, Word, texte");
+                return;
+            }
+
+            currentAttachment = file;
+            
+            fileInfo.innerHTML = `
+                <strong>Nom:</strong> ${file.name}<br>
+                <strong>Taille:</strong> ${(file.size / 1024).toFixed(2)} KB<br>
+                <strong>Type:</strong> ${file.type}
+            `;
+            
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImage.src = e.target.result;
+                    previewImage.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                previewImage.style.display = 'none';
+            }
+            
+            previewContainer.style.display = 'block';
+            showNotification("Fichier prêt à être envoyé: " + file.name);
+        }
 
         function checkAuth() {
             const currentUser = JSON.parse(localStorage.getItem('geii2025_currentUser'));
@@ -901,17 +1043,6 @@
             loadActiveUsers(renderUsers);
             loadPosts(renderPosts);
         }
-
-        attachmentBtn.addEventListener('click', () => {
-            attachmentInput.click();
-        });
-
-        attachmentInput.addEventListener('change', (e) => {
-            if (e.target.files.length > 0) {
-                currentAttachment = e.target.files[0];
-                showNotification("Fichier prêt à être envoyé: " + currentAttachment.name);
-            }
-        });
 
         function uploadFile(file, postId) {
             return new Promise((resolve, reject) => {
@@ -1211,6 +1342,7 @@
                 postInput.value = '';
                 currentAttachment = null;
                 attachmentInput.value = '';
+                previewContainer.style.display = 'none';
                 
                 showNotification("Publication réussie !");
             } catch (error) {
