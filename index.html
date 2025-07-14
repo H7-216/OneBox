@@ -381,6 +381,13 @@
             text-align: left;
         }
 
+        .attachment-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            justify-content: space-between;
+        }
+
         .remove-attachment {
             background: #dc3545;
             color: white;
@@ -388,11 +395,23 @@
             padding: 8px 15px;
             border-radius: 5px;
             cursor: pointer;
-            margin-top: 10px;
         }
 
         .remove-attachment:hover {
             background: #c82333;
+        }
+
+        .send-attachment {
+            background: linear-gradient(to right, #4CAF50, #2E7D32);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .send-attachment:hover {
+            background: linear-gradient(to right, #3e8e41, #1B5E20);
         }
 
         .post-actions {
@@ -720,12 +739,17 @@
                             <h3>Prévisualisation :</h3>
                             <img id="previewImage" class="preview-image" alt="Prévisualisation">
                             <div class="file-info" id="fileInfo"></div>
-                            <button class="remove-attachment" id="remove-attachment">
-                                <i class="fas fa-times"></i> Supprimer
-                            </button>
+                            <div class="attachment-actions">
+                                <button class="remove-attachment" id="remove-attachment">
+                                    <i class="fas fa-times"></i> Supprimer
+                                </button>
+                                <button class="send-attachment" id="send-attachment">
+                                    <i class="fas fa-paper-plane"></i> Envoyer la pièce jointe
+                                </button>
+                            </div>
                         </div>
                         
-                        <button class="post-btn" id="post-btn">Publier</button>
+                        <button class="post-btn" id="post-btn">Publier le message</button>
                     </div>
                 </div>
 
@@ -748,7 +772,7 @@
             authDomain: "geii-2025-chat.firebaseapp.com",
             databaseURL: "https://geii-2025-chat-default-rtdb.europe-west1.firebasedatabase.app",
             projectId: "geii-2025-chat",
-            storageBucket: "geii-2025-chat.firebasestorage.app",
+            storageBucket: "geii-2025-chat.appspot.com",
             messagingSenderId: "416880087770",
             appId: "1:416880087770:web:47d58872916336673f4be3"
         };
@@ -839,6 +863,7 @@
         const previewImage = document.getElementById('previewImage');
         const fileInfo = document.getElementById('fileInfo');
         const removeAttachment = document.getElementById('remove-attachment');
+        const sendAttachmentBtn = document.getElementById('send-attachment');
         const attachmentInput = document.getElementById('attachment-input');
         const attachmentBtn = document.getElementById('attachment-btn');
         const userName = document.getElementById('user-name');
@@ -887,6 +912,37 @@
             attachmentInput.value = '';
         });
 
+        sendAttachmentBtn.addEventListener('click', async () => {
+            if (!currentAttachment) {
+                showNotification("Veuillez d'abord sélectionner un fichier");
+                return;
+            }
+
+            try {
+                const newPost = {
+                    id: Date.now(),
+                    userId: db.currentUser.id,
+                    content: "",
+                    timestamp: Date.now(),
+                    replies: []
+                };
+
+                const attachmentData = await uploadFile(currentAttachment, newPost.id);
+                newPost.attachment = attachmentData;
+
+                await savePost(newPost);
+                
+                currentAttachment = null;
+                attachmentInput.value = '';
+                previewContainer.style.display = 'none';
+                
+                showNotification("Pièce jointe envoyée avec succès !");
+            } catch (error) {
+                console.error("Erreur envoi pièce jointe:", error);
+                showNotification("Erreur lors de l'envoi de la pièce jointe");
+            }
+        });
+
         function handleFileSelect(file) {
             const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 
                                'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
@@ -917,7 +973,6 @@
             }
             
             previewContainer.style.display = 'block';
-            showNotification("Fichier prêt à être envoyé: " + file.name);
         }
 
         function checkAuth() {
