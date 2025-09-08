@@ -255,16 +255,63 @@
             background-color: hsl(var(--muted));
             border-radius: 20px;
         }
+
+        /* Responsive styles for mobile, tablet, and desktop */
+        @media (max-width: 640px) {
+            .cube {
+                width: 20px;
+                height: 20px;
+            }
+            
+            .cube-face {
+                width: 20px;
+                height: 20px;
+            }
+            
+            .cube-front { transform: translateZ(10px); }
+            .cube-back { transform: rotateY(180deg) translateZ(10px); }
+            .cube-right { transform: rotateY(90deg) translateZ(10px); }
+            .cube-left { transform: rotateY(-90deg) translateZ(10px); }
+            .cube-top { transform: rotateX(90deg) translateZ(10px); }
+            .cube-bottom { transform: rotateX(-90deg) translateZ(10px); }
+            
+            .toast {
+                left: 10px;
+                right: 10px;
+                bottom: 10px;
+                max-width: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-mobile {
+                display: none;
+            }
+            
+            .mobile-menu {
+                display: block;
+            }
+        }
+
+        @media (min-width: 769px) {
+            .nav-mobile {
+                display: flex;
+            }
+            
+            .mobile-menu {
+                display: none;
+            }
+        }
     </style>
 </head>
 <body class="bg-background text-foreground min-h-screen">
 
     <!-- Toast Container -->
-    <div id="toastContainer" class="fixed bottom-4 right-4 space-y-2 z-50"></div>
+    <div id="toastContainer" class="fixed bottom-2 sm:bottom-4 right-2 sm:right-4 left-2 sm:left-auto space-y-2 z-50"></div>
 
     <!-- Authentication Modal -->
     <div id="authModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center hidden">
-        <div class="bg-card border border-border rounded-xl p-8 w-full max-w-md mx-4 shadow-2xl">
+        <div class="bg-card border border-border rounded-xl p-6 sm:p-8 w-full max-w-md mx-4 shadow-2xl max-h-[90vh] overflow-y-auto">
             <div id="loginForm" class="space-y-6">
                 <div class="text-center">
                     <div class="flex justify-center mb-4">
@@ -376,44 +423,53 @@
     <!-- Main Application -->
     <div id="mainApp" class="hidden">
         <!-- Header -->
-        <header class="bg-card border-b border-border px-6 py-4 flex items-center justify-between">
-            <div class="flex items-center space-x-4">
-                <div class="flex items-center space-x-3">
-                    <div class="cube" style="width: 24px; height: 24px;">
-                        <div class="cube-face cube-front" style="width: 24px; height: 24px;"></div>
-                        <div class="cube-face cube-back" style="width: 24px; height: 24px;"></div>
-                        <div class="cube-face cube-right" style="width: 24px; height: 24px;"></div>
-                        <div class="cube-face cube-left" style="width: 24px; height: 24px;"></div>
-                        <div class="cube-face cube-top" style="width: 24px; height: 24px;"></div>
-                        <div class="cube-face cube-bottom" style="width: 24px; height: 24px;"></div>
+        <header class="bg-card border-b border-border px-4 sm:px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center space-x-2 sm:space-x-4">
+                <div class="flex items-center space-x-2 sm:space-x-3">
+                    <div class="cube" style="width: 20px; height: 20px;">
+                        <div class="cube-face cube-front" style="width: 20px; height: 20px;"></div>
+                        <div class="cube-face cube-back" style="width: 20px; height: 20px;"></div>
+                        <div class="cube-face cube-right" style="width: 20px; height: 20px;"></div>
+                        <div class="cube-face cube-left" style="width: 20px; height: 20px;"></div>
+                        <div class="cube-face cube-top" style="width: 20px; height: 20px;"></div>
+                        <div class="cube-face cube-bottom" style="width: 20px; height: 20px;"></div>
                     </div>
-                    <h1 class="text-2xl font-bold text-foreground">OneBox</h1>
+                    <h1 class="text-xl sm:text-2xl font-bold text-foreground">OneBox</h1>
                 </div>
-                <div class="h-6 w-px bg-border"></div>
-                <nav class="flex space-x-6">
-                    <button onclick="showSection('home')" class="nav-item text-foreground hover:text-primary transition-colors" data-section="home" data-testid="button-nav-home">
-                        <i class="fas fa-home mr-2"></i>Accueil
-                    </button>
-                    <button onclick="showSection('storage')" class="nav-item text-muted-foreground hover:text-primary transition-colors" data-section="storage" data-testid="button-nav-storage">
-                        <i class="fas fa-folder mr-2"></i>Mes fichiers
-                    </button>
-                    <button onclick="showSection('editor')" class="nav-item text-muted-foreground hover:text-primary transition-colors" data-section="editor" data-testid="button-nav-editor">
-                        <i class="fas fa-edit mr-2"></i>Éditeur
-                    </button>
-                    <button onclick="showSection('help')" class="nav-item text-muted-foreground hover:text-primary transition-colors" data-section="help" data-testid="button-nav-help">
-                        <i class="fas fa-question-circle mr-2"></i>Aide
-                    </button>
-                </nav>
+                
+                <!-- Desktop Navigation -->
+                <div class="nav-mobile">
+                    <div class="h-6 w-px bg-border"></div>
+                    <nav class="flex space-x-6">
+                        <button onclick="showSection('home')" class="nav-item text-foreground hover:text-primary transition-colors" data-section="home" data-testid="button-nav-home">
+                            <i class="fas fa-home mr-2"></i>Accueil
+                        </button>
+                        <button onclick="showSection('storage')" class="nav-item text-muted-foreground hover:text-primary transition-colors" data-section="storage" data-testid="button-nav-storage">
+                            <i class="fas fa-folder mr-2"></i>Mes fichiers
+                        </button>
+                        <button onclick="showSection('editor')" class="nav-item text-muted-foreground hover:text-primary transition-colors" data-section="editor" data-testid="button-nav-editor">
+                            <i class="fas fa-edit mr-2"></i>Éditeur
+                        </button>
+                        <button onclick="showSection('help')" class="nav-item text-muted-foreground hover:text-primary transition-colors" data-section="help" data-testid="button-nav-help">
+                            <i class="fas fa-question-circle mr-2"></i>Aide
+                        </button>
+                    </nav>
+                </div>
+                
+                <!-- Mobile Menu Button -->
+                <button onclick="toggleMobileMenu()" class="mobile-menu ml-4 p-2 rounded-md hover:bg-accent transition-colors md:hidden" data-testid="button-mobile-menu">
+                    <i class="fas fa-bars text-foreground"></i>
+                </button>
             </div>
             
-            <div class="flex items-center space-x-4">
+            <div class="flex items-center space-x-2 sm:space-x-4">
                 <div class="relative">
-                    <button onclick="toggleProfileMenu()" class="flex items-center space-x-2 hover:bg-accent rounded-lg p-2 transition-colors">
-                        <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-                            <i class="fas fa-user text-primary-foreground text-sm"></i>
+                    <button onclick="toggleProfileMenu()" class="flex items-center space-x-1 sm:space-x-2 hover:bg-accent rounded-lg p-2 transition-colors">
+                        <div class="w-6 h-6 sm:w-8 sm:h-8 bg-primary rounded-full flex items-center justify-center">
+                            <i class="fas fa-user text-primary-foreground text-xs sm:text-sm"></i>
                         </div>
-                        <span id="userNameDisplay" class="font-medium">Utilisateur</span>
-                        <i class="fas fa-chevron-down text-sm text-muted-foreground"></i>
+                        <span id="userNameDisplay" class="font-medium text-sm sm:text-base hidden sm:block">Utilisateur</span>
+                        <i class="fas fa-chevron-down text-xs sm:text-sm text-muted-foreground hidden sm:block"></i>
                     </button>
                     
                     <div id="profileMenu" class="absolute right-0 mt-2 w-48 bg-card border border-border rounded-lg shadow-lg hidden z-10">
@@ -431,31 +487,47 @@
             </div>
         </header>
 
+        <!-- Mobile Navigation Menu -->
+        <div id="mobileMenu" class="bg-card border-b border-border px-4 py-4 space-y-2 hidden md:hidden">
+            <button onclick="showSection('home'); closeMobileMenu()" class="w-full text-left px-3 py-2 rounded hover:bg-accent transition-colors" data-section="home" data-testid="button-nav-home-mobile">
+                <i class="fas fa-home mr-3"></i>Accueil
+            </button>
+            <button onclick="showSection('storage'); closeMobileMenu()" class="w-full text-left px-3 py-2 rounded hover:bg-accent transition-colors" data-section="storage" data-testid="button-nav-storage-mobile">
+                <i class="fas fa-folder mr-3"></i>Mes fichiers
+            </button>
+            <button onclick="showSection('editor'); closeMobileMenu()" class="w-full text-left px-3 py-2 rounded hover:bg-accent transition-colors" data-section="editor" data-testid="button-nav-editor-mobile">
+                <i class="fas fa-edit mr-3"></i>Éditeur
+            </button>
+            <button onclick="showSection('help'); closeMobileMenu()" class="w-full text-left px-3 py-2 rounded hover:bg-accent transition-colors" data-section="help" data-testid="button-nav-help-mobile">
+                <i class="fas fa-question-circle mr-3"></i>Aide
+            </button>
+        </div>
+
         <!-- Home Section -->
         <div id="home" class="section" data-testid="home-page">
-            <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-                <div class="text-center space-y-8">
-                    <div class="space-y-4">
-                        <h1 class="text-4xl md:text-6xl font-bold text-foreground" data-testid="text-hero-title">
+            <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-12">
+                <div class="text-center space-y-6 sm:space-y-8">
+                    <div class="space-y-3 sm:space-y-4">
+                        <h1 class="text-3xl sm:text-4xl md:text-6xl font-bold text-foreground leading-tight" data-testid="text-hero-title">
                             Votre cloud <span class="text-accent">personnel</span>
                         </h1>
-                        <p class="text-xl text-muted-foreground max-w-3xl mx-auto" data-testid="text-hero-description">
+                        <p class="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto px-4" data-testid="text-hero-description">
                             OneBox est un service de stockage local et sécurisé. Sauvegardez, organisez et éditez vos fichiers directement en local avec une interface moderne et intuitive.
                         </p>
                     </div>
                     
-                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                        <button onclick="showSection('storage')" class="bg-primary text-primary-foreground px-8 py-3 rounded-lg text-lg font-medium hover:opacity-90 transition-opacity" data-testid="button-get-started">
+                    <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4">
+                        <button onclick="showSection('storage')" class="bg-primary text-primary-foreground px-6 sm:px-8 py-3 rounded-lg text-base sm:text-lg font-medium hover:opacity-90 transition-opacity" data-testid="button-get-started">
                             Commencer
                         </button>
-                        <button onclick="showSection('help')" class="bg-secondary text-secondary-foreground px-8 py-3 rounded-lg text-lg font-medium hover:bg-accent transition-colors" data-testid="button-learn-more">
+                        <button onclick="showSection('help')" class="bg-secondary text-secondary-foreground px-6 sm:px-8 py-3 rounded-lg text-base sm:text-lg font-medium hover:bg-accent transition-colors" data-testid="button-learn-more">
                             En savoir plus
                         </button>
                     </div>
                 </div>
                 
                 <!-- Features Grid -->
-                <div class="mt-20 grid md:grid-cols-3 gap-8">
+                <div class="mt-12 sm:mt-20 grid sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 px-4">
                     <div class="bg-card p-6 rounded-xl border border-border file-hover" data-testid="feature-security">
                         <div class="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center mb-4">
                             <i class="fas fa-shield-alt text-accent text-xl"></i>
@@ -497,18 +569,18 @@
 
         <!-- Storage Section -->
         <div id="storage" class="section hidden" data-testid="storage-page">
-            <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
                 <!-- Storage Header -->
-                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
-                    <div>
-                        <h1 class="text-3xl font-bold text-foreground" data-testid="text-page-title">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 sm:mb-8">
+                    <div class="mb-4 sm:mb-0">
+                        <h1 class="text-2xl sm:text-3xl font-bold text-foreground" data-testid="text-page-title">
                             Mes fichiers
                         </h1>
                         <p class="text-muted-foreground mt-1" data-testid="text-page-description">
                             Gérez et organisez votre stockage local
                         </p>
                     </div>
-                    <div class="flex items-center space-x-4 mt-4 sm:mt-0">
+                    <div class="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
                         <button onclick="showCreateFolder()" class="bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:opacity-90 transition-opacity" data-testid="button-new-folder">
                             <i class="fas fa-plus mr-2"></i>Nouveau dossier
                         </button>
@@ -519,36 +591,38 @@
                 </div>
 
                 <!-- Create folder input -->
-                <div id="createFolderSection" class="bg-card border border-border rounded-xl p-6 mb-6 hidden">
-                    <div class="flex items-center space-x-4">
+                <div id="createFolderSection" class="bg-card border border-border rounded-xl p-4 sm:p-6 mb-6 hidden">
+                    <div class="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
                         <input type="text" id="newFolderName" 
                                class="flex-1 px-3 py-2 bg-input border border-border rounded-md focus:ring-2 focus:ring-primary focus:border-transparent"
                                placeholder="Nom du dossier"
                                data-testid="input-folder-name">
-                        <button onclick="createFolder()" class="bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:opacity-90 transition-opacity" data-testid="button-create-folder">
-                            Créer
-                        </button>
-                        <button onclick="hideCreateFolder()" class="bg-secondary text-secondary-foreground px-4 py-2 rounded-lg hover:bg-accent transition-colors" data-testid="button-cancel-folder">
-                            Annuler
-                        </button>
+                        <div class="flex space-x-2">
+                            <button onclick="createFolder()" class="bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:opacity-90 transition-opacity" data-testid="button-create-folder">
+                                Créer
+                            </button>
+                            <button onclick="hideCreateFolder()" class="bg-secondary text-secondary-foreground px-4 py-2 rounded-lg hover:bg-accent transition-colors" data-testid="button-cancel-folder">
+                                Annuler
+                            </button>
+                        </div>
                     </div>
                 </div>
                 
                 <!-- Drag & Drop Upload Zone -->
-                <div id="uploadZone" class="bg-card border-2 border-dashed border-border hover:border-accent rounded-xl p-8 mb-8 text-center transition-colors" data-testid="upload-zone">
-                    <div class="space-y-4">
-                        <div class="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto">
-                            <i class="fas fa-cloud-upload-alt text-accent text-2xl"></i>
+                <div id="uploadZone" class="bg-card border-2 border-dashed border-border hover:border-accent rounded-xl p-6 sm:p-8 mb-6 sm:mb-8 text-center transition-colors" data-testid="upload-zone">
+                    <div class="space-y-3 sm:space-y-4">
+                        <div class="w-12 h-12 sm:w-16 sm:h-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto">
+                            <i class="fas fa-cloud-upload-alt text-accent text-xl sm:text-2xl"></i>
                         </div>
                         <div>
-                            <p class="text-lg font-medium text-foreground" data-testid="text-upload-title">
+                            <p class="text-base sm:text-lg font-medium text-foreground" data-testid="text-upload-title">
                                 Glissez vos fichiers ici
                             </p>
-                            <p class="text-muted-foreground" data-testid="text-upload-description">
+                            <p class="text-sm sm:text-base text-muted-foreground" data-testid="text-upload-description">
                                 ou cliquez pour parcourir
                             </p>
                         </div>
-                        <button onclick="triggerFileUpload()" class="bg-primary text-primary-foreground px-6 py-2 rounded-lg hover:opacity-90 transition-opacity" data-testid="button-choose-files">
+                        <button onclick="triggerFileUpload()" class="bg-primary text-primary-foreground px-4 sm:px-6 py-2 rounded-lg hover:opacity-90 transition-opacity" data-testid="button-choose-files">
                             Choisir des fichiers
                         </button>
                     </div>
@@ -557,14 +631,14 @@
                 <input type="file" id="fileInput" multiple class="hidden" onchange="handleFileUpload(event)" data-testid="file-input">
                 
                 <!-- Files and Folders Grid -->
-                <div id="filesGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div id="filesGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6">
                     <!-- Empty state -->
-                    <div id="emptyState" class="col-span-full text-center py-12" data-testid="empty-state">
-                        <div class="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
-                            <i class="fas fa-folder text-muted-foreground text-2xl"></i>
+                    <div id="emptyState" class="col-span-full text-center py-8 sm:py-12" data-testid="empty-state">
+                        <div class="w-12 h-12 sm:w-16 sm:h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-folder text-muted-foreground text-xl sm:text-2xl"></i>
                         </div>
-                        <h3 class="text-lg font-medium text-foreground mb-2">Aucun fichier</h3>
-                        <p class="text-muted-foreground">Commencez par uploader vos premiers fichiers</p>
+                        <h3 class="text-base sm:text-lg font-medium text-foreground mb-2">Aucun fichier</h3>
+                        <p class="text-sm sm:text-base text-muted-foreground px-4">Commencez par uploader vos premiers fichiers</p>
                     </div>
                 </div>
             </main>
@@ -573,23 +647,23 @@
         <!-- Editor Section -->
         <div id="editor" class="section hidden h-screen flex flex-col" data-testid="editor-page">
             <!-- Editor Header -->
-            <div class="bg-card border-b border-border px-4 py-3 flex items-center justify-between">
-                <div class="flex items-center space-x-4">
-                    <h1 class="text-lg font-semibold text-foreground" data-testid="text-editor-title">
+            <div class="bg-card border-b border-border px-3 sm:px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
+                <div class="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
+                    <h1 class="text-base sm:text-lg font-semibold text-foreground" data-testid="text-editor-title">
                         Éditeur de documents
                     </h1>
                     <input type="text" id="documentTitle" 
-                           class="px-3 py-1 bg-input border border-border rounded-md focus:ring-2 focus:ring-primary focus:border-transparent max-w-xs"
+                           class="px-3 py-1 bg-input border border-border rounded-md focus:ring-2 focus:ring-primary focus:border-transparent w-full sm:max-w-xs"
                            placeholder="Titre du document"
                            value="Document sans titre"
                            data-testid="input-document-title">
-                    <span id="unsavedIndicator" class="text-sm text-muted-foreground hidden" data-testid="text-unsaved-indicator">
+                    <span id="unsavedIndicator" class="text-xs sm:text-sm text-muted-foreground hidden" data-testid="text-unsaved-indicator">
                         Non sauvegardé
                     </span>
                 </div>
                 <div class="flex items-center space-x-2">
-                    <button onclick="saveDocument()" class="bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:opacity-90 transition-opacity" data-testid="button-save">
-                        <i class="fas fa-save mr-2"></i><span id="saveButtonText">Sauvegarder</span>
+                    <button onclick="saveDocument()" class="bg-primary text-primary-foreground px-3 sm:px-4 py-2 rounded-lg hover:opacity-90 transition-opacity" data-testid="button-save">
+                        <i class="fas fa-save mr-1 sm:mr-2"></i><span id="saveButtonText" class="text-sm sm:text-base">Sauvegarder</span>
                     </button>
                     <button onclick="toggleEditorTheme()" class="p-2 hover:bg-accent rounded-lg transition-colors" data-testid="button-toggle-theme">
                         <i id="themeIcon" class="fas fa-sun text-muted-foreground"></i>
@@ -598,40 +672,40 @@
             </div>
             
             <!-- Editor Toolbar -->
-            <div class="bg-card border-b border-border px-4 py-2 flex items-center space-x-1">
-                <button onclick="execCommand('bold')" class="p-2 hover:bg-accent rounded transition-colors" data-testid="button-bold">
-                    <i class="fas fa-bold text-sm"></i>
+            <div class="bg-card border-b border-border px-2 sm:px-4 py-2 flex items-center space-x-1 overflow-x-auto">
+                <button onclick="execCommand('bold')" class="p-1.5 sm:p-2 hover:bg-accent rounded transition-colors flex-shrink-0" data-testid="button-bold">
+                    <i class="fas fa-bold text-xs sm:text-sm"></i>
                 </button>
-                <button onclick="execCommand('italic')" class="p-2 hover:bg-accent rounded transition-colors" data-testid="button-italic">
-                    <i class="fas fa-italic text-sm"></i>
+                <button onclick="execCommand('italic')" class="p-1.5 sm:p-2 hover:bg-accent rounded transition-colors flex-shrink-0" data-testid="button-italic">
+                    <i class="fas fa-italic text-xs sm:text-sm"></i>
                 </button>
-                <button onclick="execCommand('underline')" class="p-2 hover:bg-accent rounded transition-colors" data-testid="button-underline">
-                    <i class="fas fa-underline text-sm"></i>
+                <button onclick="execCommand('underline')" class="p-1.5 sm:p-2 hover:bg-accent rounded transition-colors flex-shrink-0" data-testid="button-underline">
+                    <i class="fas fa-underline text-xs sm:text-sm"></i>
                 </button>
-                <div class="w-px h-6 bg-border mx-2"></div>
-                <button onclick="execCommand('justifyLeft')" class="p-2 hover:bg-accent rounded transition-colors" data-testid="button-align-left">
-                    <i class="fas fa-align-left text-sm"></i>
+                <div class="w-px h-4 sm:h-6 bg-border mx-1 sm:mx-2 flex-shrink-0"></div>
+                <button onclick="execCommand('justifyLeft')" class="p-1.5 sm:p-2 hover:bg-accent rounded transition-colors flex-shrink-0" data-testid="button-align-left">
+                    <i class="fas fa-align-left text-xs sm:text-sm"></i>
                 </button>
-                <button onclick="execCommand('justifyCenter')" class="p-2 hover:bg-accent rounded transition-colors" data-testid="button-align-center">
-                    <i class="fas fa-align-center text-sm"></i>
+                <button onclick="execCommand('justifyCenter')" class="p-1.5 sm:p-2 hover:bg-accent rounded transition-colors flex-shrink-0" data-testid="button-align-center">
+                    <i class="fas fa-align-center text-xs sm:text-sm"></i>
                 </button>
-                <button onclick="execCommand('justifyRight')" class="p-2 hover:bg-accent rounded transition-colors" data-testid="button-align-right">
-                    <i class="fas fa-align-right text-sm"></i>
+                <button onclick="execCommand('justifyRight')" class="p-1.5 sm:p-2 hover:bg-accent rounded transition-colors flex-shrink-0" data-testid="button-align-right">
+                    <i class="fas fa-align-right text-xs sm:text-sm"></i>
                 </button>
-                <div class="w-px h-6 bg-border mx-2"></div>
-                <button onclick="insertImage()" class="p-2 hover:bg-accent rounded transition-colors" data-testid="button-insert-image">
-                    <i class="fas fa-image text-sm"></i>
+                <div class="w-px h-4 sm:h-6 bg-border mx-1 sm:mx-2 flex-shrink-0"></div>
+                <button onclick="insertImage()" class="p-1.5 sm:p-2 hover:bg-accent rounded transition-colors flex-shrink-0" data-testid="button-insert-image">
+                    <i class="fas fa-image text-xs sm:text-sm"></i>
                 </button>
-                <button onclick="insertTable()" class="p-2 hover:bg-accent rounded transition-colors" data-testid="button-insert-table">
-                    <i class="fas fa-table text-sm"></i>
+                <button onclick="insertTable()" class="p-1.5 sm:p-2 hover:bg-accent rounded transition-colors flex-shrink-0" data-testid="button-insert-table">
+                    <i class="fas fa-table text-xs sm:text-sm"></i>
                 </button>
             </div>
             
             <!-- Editor Content -->
-            <div class="flex-1 bg-background p-8 overflow-auto">
-                <div id="editorContainer" class="max-w-4xl mx-auto rounded-lg shadow-lg min-h-full p-8 bg-card text-foreground">
+            <div class="flex-1 bg-background p-4 sm:p-8 overflow-auto">
+                <div id="editorContainer" class="max-w-4xl mx-auto rounded-lg shadow-lg min-h-full p-4 sm:p-8 bg-card text-foreground">
                     <div id="editorContent" 
-                         class="prose prose-lg max-w-none outline-none min-h-96"
+                         class="prose prose-sm sm:prose-lg max-w-none outline-none min-h-96"
                          contenteditable="true"
                          data-testid="editor-content"
                          oninput="handleEditorChange()">
@@ -643,9 +717,9 @@
 
         <!-- Profile Section -->
         <div id="profile" class="section hidden" data-testid="profile-page">
-            <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-                <div class="mb-8">
-                    <h1 class="text-3xl font-bold text-foreground mb-4" data-testid="text-page-title">
+            <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-12">
+                <div class="mb-6 sm:mb-8">
+                    <h1 class="text-2xl sm:text-3xl font-bold text-foreground mb-4" data-testid="text-page-title">
                         Profil et paramètres
                     </h1>
                     <p class="text-muted-foreground" data-testid="text-page-description">
@@ -653,12 +727,12 @@
                     </p>
                 </div>
 
-                <div class="grid gap-8">
+                <div class="grid gap-6 sm:gap-8">
                     <!-- Personal Information -->
-                    <div class="bg-card border border-border rounded-xl p-6" data-testid="card-personal-info">
-                        <div class="flex items-center gap-2 mb-6">
+                    <div class="bg-card border border-border rounded-xl p-4 sm:p-6" data-testid="card-personal-info">
+                        <div class="flex items-center gap-2 mb-4 sm:mb-6">
                             <i class="fas fa-user text-primary"></i>
-                            <h2 class="text-xl font-semibold">Informations personnelles</h2>
+                            <h2 class="text-lg sm:text-xl font-semibold">Informations personnelles</h2>
                         </div>
                         <div class="space-y-4">
                             <div class="space-y-2">
@@ -674,10 +748,10 @@
                     </div>
 
                     <!-- Security Settings -->
-                    <div class="bg-card border border-border rounded-xl p-6" data-testid="card-security">
-                        <div class="flex items-center gap-2 mb-6">
+                    <div class="bg-card border border-border rounded-xl p-4 sm:p-6" data-testid="card-security">
+                        <div class="flex items-center gap-2 mb-4 sm:mb-6">
                             <i class="fas fa-shield-alt text-primary"></i>
-                            <h2 class="text-xl font-semibold">Sécurité</h2>
+                            <h2 class="text-lg sm:text-xl font-semibold">Sécurité</h2>
                         </div>
                         <div class="space-y-6">
                             <div class="flex items-center justify-between">
@@ -702,10 +776,10 @@
                     </div>
 
                     <!-- Appearance Settings -->
-                    <div class="bg-card border border-border rounded-xl p-6" data-testid="card-appearance">
-                        <div class="flex items-center gap-2 mb-6">
+                    <div class="bg-card border border-border rounded-xl p-4 sm:p-6" data-testid="card-appearance">
+                        <div class="flex items-center gap-2 mb-4 sm:mb-6">
                             <i class="fas fa-palette text-primary"></i>
-                            <h2 class="text-xl font-semibold">Apparence</h2>
+                            <h2 class="text-lg sm:text-xl font-semibold">Apparence</h2>
                         </div>
                         <div class="flex items-center justify-between">
                             <div>
@@ -722,10 +796,10 @@
                     </div>
 
                     <!-- Language Settings -->
-                    <div class="bg-card border border-border rounded-xl p-6" data-testid="card-language">
-                        <div class="flex items-center gap-2 mb-6">
+                    <div class="bg-card border border-border rounded-xl p-4 sm:p-6" data-testid="card-language">
+                        <div class="flex items-center gap-2 mb-4 sm:mb-6">
                             <i class="fas fa-globe text-primary"></i>
-                            <h2 class="text-xl font-semibold">Langue et région</h2>
+                            <h2 class="text-lg sm:text-xl font-semibold">Langue et région</h2>
                         </div>
                         <div class="space-y-2">
                             <label class="block text-sm font-medium">Langue</label>
@@ -1419,6 +1493,14 @@
                 hideProfileMenu();
             }
 
+            // Close mobile menu when clicking outside
+            const mobileMenuButton = event.target.closest('[onclick="toggleMobileMenu()"]');
+            const mobileMenu = document.getElementById('mobileMenu');
+            
+            if (!mobileMenuButton && !mobileMenu.contains(event.target)) {
+                closeMobileMenu();
+            }
+
             // Close dropdowns when clicking outside
             if (!event.target.closest('[onclick*="toggleDropdown"]') && !event.target.closest('[id*="dropdown-"]')) {
                 document.querySelectorAll('[id*="dropdown-"]').forEach(dropdown => {
@@ -1431,6 +1513,7 @@
         document.addEventListener('keydown', function(event) {
             if (event.key === 'Escape') {
                 hideProfileMenu();
+                closeMobileMenu();
                 document.querySelectorAll('[id*="dropdown-"]').forEach(dropdown => {
                     dropdown.classList.add('hidden');
                 });
@@ -1481,6 +1564,17 @@
                 });
             });
         });
+
+        // Mobile Menu Functions
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById('mobileMenu');
+            mobileMenu.classList.toggle('hidden');
+        }
+
+        function closeMobileMenu() {
+            const mobileMenu = document.getElementById('mobileMenu');
+            mobileMenu.classList.add('hidden');
+        }
 
         // Modal Functions
         function showModal(modalId) {
