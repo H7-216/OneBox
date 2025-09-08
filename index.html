@@ -1,1475 +1,1728 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GEII 2025 - Espace Collaboratif</title>
+    <title>OneBox - Plateforme de Stockage Personnel</title>
+    <meta name="description" content="OneBox est un service de stockage local et sécurisé. Sauvegardez, organisez et éditez vos fichiers directement en local avec une interface moderne et intuitive.">
+    
+    <!-- Open Graph tags -->
+    <meta property="og:title" content="OneBox - Plateforme de Stockage Personnel">
+    <meta property="og:description" content="Votre cloud personnel sécurisé avec éditeur intégré et organisation de fichiers.">
+    <meta property="og:type" content="website">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+    tailwind.config = {
+        darkMode: ["class"],
+        theme: {
+            extend: {
+                borderRadius: {
+                    lg: "var(--radius)",
+                    md: "calc(var(--radius) - 2px)",
+                    sm: "calc(var(--radius) - 4px)",
+                },
+                colors: {
+                    background: "hsl(var(--background))",
+                    foreground: "hsl(var(--foreground))",
+                    card: {
+                        DEFAULT: "hsl(var(--card))",
+                        foreground: "hsl(var(--card-foreground))",
+                    },
+                    popover: {
+                        DEFAULT: "hsl(var(--popover))",
+                        foreground: "hsl(var(--popover-foreground))",
+                    },
+                    primary: {
+                        DEFAULT: "hsl(var(--primary))",
+                        foreground: "hsl(var(--primary-foreground))",
+                    },
+                    secondary: {
+                        DEFAULT: "hsl(var(--secondary))",
+                        foreground: "hsl(var(--secondary-foreground))",
+                    },
+                    muted: {
+                        DEFAULT: "hsl(var(--muted))",
+                        foreground: "hsl(var(--muted-foreground))",
+                    },
+                    accent: {
+                        DEFAULT: "hsl(var(--accent))",
+                        foreground: "hsl(var(--accent-foreground))",
+                    },
+                    destructive: {
+                        DEFAULT: "hsl(var(--destructive))",
+                        foreground: "hsl(var(--destructive-foreground))",
+                    },
+                    border: "hsl(var(--border))",
+                    input: "hsl(var(--input))",
+                    ring: "hsl(var(--ring))",
+                },
+                fontFamily: {
+                    sans: ["Inter", "sans-serif"],
+                },
+                keyframes: {
+                    "accordion-down": {
+                        from: { height: "0" },
+                        to: { height: "var(--radix-accordion-content-height)" },
+                    },
+                    "accordion-up": {
+                        from: { height: "var(--radix-accordion-content-height)" },
+                        to: { height: "0" },
+                    },
+                    fadeIn: {
+                        from: { opacity: "0", transform: "translateY(20px)" },
+                        to: { opacity: "1", transform: "translateY(0)" },
+                    },
+                    spin: {
+                        from: { transform: "rotate(0deg)" },
+                        to: { transform: "rotate(360deg)" },
+                    },
+                    bounce: {
+                        "0%, 100%": { 
+                            transform: "translateY(-25%)",
+                            animationTimingFunction: "cubic-bezier(0.8, 0, 1, 1)"
+                        },
+                        "50%": { 
+                            transform: "translateY(0)",
+                            animationTimingFunction: "cubic-bezier(0, 0, 0.2, 1)"
+                        }
+                    }
+                },
+                animation: {
+                    "accordion-down": "accordion-down 0.2s ease-out",
+                    "accordion-up": "accordion-up 0.2s ease-out",
+                    "fade-in": "fadeIn 0.6s ease-out forwards",
+                    "spin": "spin 1s linear infinite",
+                    "bounce": "bounce 1s infinite",
+                },
+            },
+        }
+    };
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
     <style>
         :root {
-            --primary: #6a11cb;
-            --secondary: #2575fc;
-            --accent: #ff3e9d;
-            --text: #121212;
-            --bg: #f8f9fa;
-            --card: #ffffff;
-            --border: rgba(0, 0, 0, 0.1);
-        }
-
-        .dark-mode {
-            --primary: #8a2be2;
-            --secondary: #00b4d8;
-            --accent: #ff7096;
-            --text: #f8f9fa;
-            --bg: #121212;
-            --card: #1e1e1e;
-            --border: rgba(255, 255, 255, 0.1);
+            --background: 222 84% 5%;
+            --foreground: 210 40% 98%;
+            --card: 222 84% 8%;
+            --card-foreground: 210 40% 98%;
+            --popover: 222 84% 8%;
+            --popover-foreground: 210 40% 98%;
+            --primary: 180 83% 55%;
+            --primary-foreground: 210 40% 98%;
+            --secondary: 217 32% 17%;
+            --secondary-foreground: 210 40% 98%;
+            --muted: 217 32% 14%;
+            --muted-foreground: 215 20% 65%;
+            --accent: 180 83% 55%;
+            --accent-foreground: 210 40% 98%;
+            --destructive: 0 84% 60%;
+            --destructive-foreground: 210 40% 98%;
+            --border: 217 32% 17%;
+            --input: 217 32% 17%;
+            --ring: 180 83% 55%;
+            --radius: 0.75rem;
         }
 
         * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            transition: background 0.3s, color 0.3s;
+            border-color: hsl(var(--border));
         }
 
         body {
-            background-color: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-            overflow-x: hidden;
+            font-family: 'Inter', sans-serif;
+            background-color: hsl(var(--background));
+            color: hsl(var(--foreground));
         }
 
-        .login-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            z-index: 1000;
-            transition: opacity 0.5s, visibility 0.5s;
+        .gradient-bg {
+            background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%);
         }
 
-        .login-container.hidden {
-            opacity: 0;
-            visibility: hidden;
+        .hover-lift {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .login-box {
-            background-color: white;
-            padding: 40px;
-            border-radius: 15px;
-            width: 90%;
-            max-width: 400px;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        .hover-lift:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(34, 197, 194, 0.2);
         }
 
-        .logo {
-            font-size: 2.5rem;
-            font-weight: 800;
-            background: linear-gradient(to right, var(--primary), var(--accent));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            margin-bottom: 20px;
+        .file-hover {
+            transition: all 0.2s ease;
         }
 
-        .login-title {
-            font-size: 1.5rem;
-            margin-bottom: 30px;
-            color: var(--text);
+        .file-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(34, 197, 194, 0.1);
         }
 
-        .login-input {
-            width: 100%;
-            padding: 15px;
-            margin-bottom: 20px;
-            border: 2px solid var(--border);
-            border-radius: 8px;
-            font-size: 1rem;
+        .nav-item {
+            transition: all 0.2s ease;
         }
 
-        .login-input:focus {
-            outline: none;
-            border-color: var(--primary);
+        .nav-item:hover {
+            transform: translateX(2px);
         }
 
-        .login-btn {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(to right, var(--primary), var(--secondary));
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.3s;
-        }
-
-        .login-btn:hover {
-            transform: translateY(-3px);
-        }
-
-        .loader {
-            display: none;
-            width: 40px;
-            height: 40px;
-            margin: 20px auto;
-            border: 4px solid rgba(0, 0, 0, 0.1);
-            border-radius: 50%;
-            border-top-color: var(--primary);
-            animation: spin 1s ease-in-out infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .profile-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-        }
-
-        .profile-box {
-            background-color: var(--card);
-            padding: 30px;
-            border-radius: 15px;
-            width: 90%;
-            max-width: 400px;
-            text-align: center;
-        }
-
-        .avatar-preview {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            margin: 0 auto 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            font-weight: bold;
-            color: white;
-        }
-
-        .color-options {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .color-option {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            cursor: pointer;
+        .loading-spinner {
             border: 2px solid transparent;
-        }
-
-        .color-option.selected {
-            border-color: var(--text);
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.5s, transform 0.5s;
-        }
-
-        .container.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 0;
-            border-bottom: 1px solid var(--border);
-            margin-bottom: 30px;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .avatar {
-            width: 50px;
-            height: 50px;
+            border-top: 2px solid hsl(var(--primary));
             border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 1.2rem;
         }
 
-        .user-name {
+        .prose {
+            max-width: none;
+        }
+
+        .prose p {
+            margin-bottom: 1em;
+        }
+
+        .prose h1, .prose h2, .prose h3 {
+            margin-top: 2em;
+            margin-bottom: 1em;
             font-weight: 600;
         }
 
-        .user-role {
-            font-size: 0.8rem;
-            opacity: 0.7;
-        }
-
-        .theme-toggle {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: var(--text);
-        }
-
-        .logout-btn {
-            background: none;
-            border: none;
-            color: var(--text);
-            cursor: pointer;
-            margin-left: 15px;
-        }
-
-        .main-content {
-            display: grid;
-            grid-template-columns: 250px 1fr;
-            gap: 30px;
-        }
-
-        @media (max-width: 768px) {
-            .main-content {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .sidebar {
-            background-color: var(--card);
-            border-radius: 15px;
-            padding: 20px;
-            height: fit-content;
-        }
-
-        .sidebar-title {
-            font-size: 1.2rem;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .user-list {
-            list-style: none;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        .user-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px 0;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .user-item:last-child {
-            border-bottom: none;
-        }
-
-        .user-avatar {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 0.8rem;
-            font-weight: bold;
-        }
-
-        .posts-container {
-            background-color: var(--card);
-            border-radius: 15px;
-            padding: 20px;
-        }
-
-        .new-post {
-            margin-bottom: 30px;
-        }
-
-        .post-input {
-            width: 100%;
-            border: none;
-            background-color: transparent;
-            color: var(--text);
-            font-size: 1rem;
-            margin-bottom: 15px;
-            resize: none;
-            min-height: 100px;
-            padding: 15px;
-            border: 1px solid var(--border);
-            border-radius: 10px;
-        }
-
-        .post-input:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-
-        .upload-zone {
-            border: 2px dashed var(--border);
-            padding: 20px;
-            text-align: center;
-            border-radius: 10px;
-            margin-bottom: 15px;
-            transition: all 0.3s ease;
-            background: rgba(106, 17, 203, 0.05);
-        }
-
-        .upload-zone:hover {
-            border-color: var(--primary);
-            background: rgba(106, 17, 203, 0.1);
-        }
-
-        .upload-zone.dragover {
-            border-color: var(--primary);
-            background: rgba(106, 17, 203, 0.15);
-            transform: scale(1.02);
-        }
-
-        .preview-container {
-            margin-top: 15px;
-            text-align: center;
-            padding: 15px;
-            background: var(--bg);
-            border-radius: 10px;
-            display: none;
-        }
-
-        .preview-image {
-            max-width: 100%;
-            max-height: 200px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-        }
-
-        .file-info {
-            margin-top: 10px;
-            padding: 10px;
-            background: rgba(0, 0, 0, 0.05);
-            border-radius: 5px;
-            text-align: left;
-        }
-
-        .attachment-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-            justify-content: space-between;
-        }
-
-        .remove-attachment {
-            background: #dc3545;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .remove-attachment:hover {
-            background: #c82333;
-        }
-
-        .send-attachment {
-            background: linear-gradient(to right, #4CAF50, #2E7D32);
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .send-attachment:hover {
-            background: linear-gradient(to right, #3e8e41, #1B5E20);
-        }
-
-        .post-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-        }
-
-        .post-btn {
-            padding: 10px 20px;
-            background: linear-gradient(to right, var(--primary), var(--secondary));
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .attachment-btn {
-            padding: 10px 20px;
-            background: var(--bg);
-            color: var(--text);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .attachment-btn:hover {
-            background: rgba(0, 0, 0, 0.05);
-        }
-
-        .attachment-input {
-            display: none;
-        }
-
-        .posts-list {
-            margin-top: 30px;
-        }
-
-        .post {
-            background-color: var(--bg);
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 20px;
+        .cube {
+            width: 32px;
+            height: 32px;
             position: relative;
+            transform-style: preserve-3d;
+            animation: rotateCube 6s infinite linear;
         }
 
-        .post-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 15px;
+        .cube-face {
+            position: absolute;
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%);
+            border: 1px solid hsl(var(--border));
         }
 
-        .post-user {
-            font-weight: 600;
+        .cube-front { transform: translateZ(16px); }
+        .cube-back { transform: rotateY(180deg) translateZ(16px); }
+        .cube-right { transform: rotateY(90deg) translateZ(16px); }
+        .cube-left { transform: rotateY(-90deg) translateZ(16px); }
+        .cube-top { transform: rotateX(90deg) translateZ(16px); }
+        .cube-bottom { transform: rotateX(-90deg) translateZ(16px); }
+
+        @keyframes rotateCube {
+            from { transform: rotateX(0deg) rotateY(0deg); }
+            to { transform: rotateX(360deg) rotateY(360deg); }
         }
 
-        .post-time {
-            font-size: 0.8rem;
-            opacity: 0.7;
-        }
-
-        .post-content {
-            margin-bottom: 15px;
-            white-space: pre-wrap;
-        }
-
-        .attachment-container {
-            margin-top: 15px;
-            border-radius: 8px;
-            overflow: hidden;
-            border: 1px solid var(--border);
-        }
-
-        .attachment-preview {
-            display: flex;
-            align-items: center;
-            padding: 10px;
-            background-color: rgba(0, 0, 0, 0.03);
-        }
-
-        .dark-mode .attachment-preview {
-            background-color: rgba(255, 255, 255, 0.05);
-        }
-
-        .attachment-icon {
-            font-size: 1.5rem;
-            margin-right: 10px;
-            color: var(--primary);
-        }
-
-        .attachment-info {
-            flex: 1;
-        }
-
-        .attachment-name {
-            font-weight: 500;
-            margin-bottom: 5px;
-        }
-
-        .attachment-size {
-            font-size: 0.8rem;
-            opacity: 0.7;
-        }
-
-        .attachment-link {
-            display: inline-block;
-            margin-top: 5px;
-            color: var(--primary);
-            text-decoration: none;
-        }
-
-        .attachment-link:hover {
-            text-decoration: underline;
-        }
-
-        .attachment-image {
-            max-width: 100%;
-            max-height: 300px;
-            display: block;
-            margin-top: 10px;
-            border-radius: 4px;
-        }
-
-        .post-actions {
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-            margin-top: 15px;
-        }
-
-        .action-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: var(--text);
-            opacity: 0.7;
-            transition: opacity 0.3s;
-        }
-
-        .action-btn:hover {
-            opacity: 1;
-        }
-
-        .reply-btn {
-            color: var(--primary);
-        }
-
-        .edit-btn {
-            color: var(--secondary);
-        }
-
-        .delete-btn {
-            color: #dc3545;
-        }
-
-        .replies {
-            margin-top: 20px;
-            padding-left: 20px;
-            border-left: 3px solid var(--border);
-        }
-
-        .reply-form {
-            margin-top: 15px;
-            display: none;
-        }
-
-        .reply-input {
-            width: 100%;
-            border: none;
-            background-color: transparent;
-            color: var(--text);
-            font-size: 0.9rem;
-            margin-bottom: 10px;
-            resize: none;
-            min-height: 50px;
-            padding: 10px;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-        }
-
-        .reply-input:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-
-        .reply-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-        }
-
-        .reply {
-            background-color: rgba(0, 0, 0, 0.05);
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 10px;
-        }
-
-        .dark-mode .reply {
-            background-color: rgba(255, 255, 255, 0.05);
-        }
-
-        .notification {
+        .toast {
             position: fixed;
             bottom: 20px;
             right: 20px;
-            background-color: var(--primary);
-            color: white;
-            padding: 15px 25px;
-            border-radius: 8px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-            z-index: 1000;
-            transform: translateY(100px);
-            opacity: 0;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            background: hsl(var(--card));
+            border: 1px solid hsl(var(--border));
+            border-radius: calc(var(--radius) - 2px);
+            padding: 16px 24px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            z-index: 100;
+            transform: translateX(100%);
+            transition: transform 0.3s ease-in-out;
+            max-width: 400px;
         }
 
-        .notification.show {
-            transform: translateY(0);
-            opacity: 1;
+        .toast.show {
+            transform: translateX(0);
         }
 
-        .notification-avatar {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 0.8rem;
+        .toast.destructive {
+            border-color: hsl(var(--destructive));
+            background: hsl(var(--destructive) / 0.1);
         }
 
-        .notification-content {
-            flex: 1;
+        .scrollbar-thin {
+            scrollbar-width: thin;
+            scrollbar-color: hsl(var(--muted)) transparent;
         }
 
-        .notification-close {
-            background: none;
-            border: none;
-            color: white;
-            cursor: pointer;
+        .scrollbar-thin::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .scrollbar-thin::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .scrollbar-thin::-webkit-scrollbar-thumb {
+            background-color: hsl(var(--muted));
+            border-radius: 20px;
         }
     </style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-storage-compat.js"></script>
 </head>
-<body>
-    <div class="login-container" id="login-container">
-        <div class="login-box">
-            <div class="logo">GEII 2025</div>
-            <h2 class="login-title">Espace Collaboratif</h2>
-            <input type="password" class="login-input" id="access-code" placeholder="Code d'accès" maxlength="4">
-            <button class="login-btn" id="login-btn">Accéder</button>
-            <div class="loader" id="loader"></div>
-        </div>
-    </div>
+<body class="bg-background text-foreground min-h-screen">
 
-    <div class="profile-modal" id="profile-modal">
-        <div class="profile-box">
-            <div class="logo">GEII 2025</div>
-            <h2>Créez votre profil</h2>
-            <div class="avatar-preview" id="avatar-preview" style="background-color: #6a11cb;">?</div>
-            <input type="text" id="user-name-input" class="login-input" placeholder="Votre prénom" maxlength="20">
-            <div class="color-options">
-                <div class="color-option selected" style="background-color: #6a11cb;" data-color="#6a11cb"></div>
-                <div class="color-option" style="background-color: #2575fc;" data-color="#2575fc"></div>
-                <div class="color-option" style="background-color: #ff3e9d;" data-color="#ff3e9d"></div>
-                <div class="color-option" style="background-color: #28a745;" data-color="#28a745"></div>
-                <div class="color-option" style="background-color: #ffc107;" data-color="#ffc107"></div>
-            </div>
-            <button class="login-btn" id="save-profile">Enregistrer</button>
-        </div>
-    </div>
+    <!-- Toast Container -->
+    <div id="toastContainer" class="fixed bottom-4 right-4 space-y-2 z-50"></div>
 
-    <div class="container" id="app-container">
-        <header>
-            <div class="logo">GEII 2025</div>
-            <div class="user-info">
-                <div class="avatar" id="user-avatar">AD</div>
-                <div>
-                    <div class="user-name" id="user-name">Admin</div>
-                    <div class="user-role" id="user-role">Professeur</div>
+    <!-- Authentication Modal -->
+    <div id="authModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+        <div class="bg-card border border-border rounded-xl p-8 w-full max-w-md mx-4 shadow-2xl">
+            <div id="loginForm" class="space-y-6">
+                <div class="text-center">
+                    <div class="flex justify-center mb-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="cube">
+                                <div class="cube-face cube-front"></div>
+                                <div class="cube-face cube-back"></div>
+                                <div class="cube-face cube-right"></div>
+                                <div class="cube-face cube-left"></div>
+                                <div class="cube-face cube-top"></div>
+                                <div class="cube-face cube-bottom"></div>
+                            </div>
+                            <h2 class="text-2xl font-bold text-foreground">OneBox</h2>
+                        </div>
+                    </div>
+                    <h3 class="text-xl font-semibold text-foreground" data-testid="text-auth-prompt">Connexion</h3>
+                    <p class="text-muted-foreground mt-2" data-testid="text-auth-description">Connectez-vous à votre compte OneBox</p>
                 </div>
-            </div>
-            <button class="theme-toggle" id="theme-toggle">
-                <i class="fas fa-moon"></i>
-            </button>
-            <button class="logout-btn" id="logout-btn">
-                <i class="fas fa-sign-out-alt"></i>
-            </button>
-        </header>
-
-        <div class="main-content">
-            <div class="sidebar">
-                <h3 class="sidebar-title">Membres en ligne</h3>
-                <ul class="user-list" id="user-list"></ul>
-            </div>
-
-            <div class="posts-container">
-                <div class="new-post">
-                    <textarea class="post-input" id="post-input" placeholder="Écrivez un message pour la classe..."></textarea>
-                    <div class="post-actions">
-                        <div class="upload-zone" id="uploadZone">
-                            <p>📁 Glissez votre fichier ici ou cliquez pour sélectionner</p>
-                            <input type="file" id="attachment-input" class="attachment-input" accept="image/*,.pdf,.doc,.docx,.txt">
-                            <button class="attachment-btn" id="attachment-btn">
-                                <i class="fas fa-paperclip"></i> Choisir un fichier
+                
+                <form class="space-y-4" onsubmit="handleLogin(event)">
+                    <div class="space-y-2">
+                        <label class="block text-sm font-medium">Nom d'utilisateur</label>
+                        <input type="text" id="loginUsername" required
+                               class="w-full px-3 py-2 bg-input border border-border rounded-md focus:ring-2 focus:ring-primary focus:border-transparent"
+                               placeholder="Entrez votre nom d'utilisateur"
+                               data-testid="input-username">
+                    </div>
+                    
+                    <div class="space-y-2">
+                        <label class="block text-sm font-medium">Mot de passe</label>
+                        <input type="password" id="loginPassword" required
+                               class="w-full px-3 py-2 bg-input border border-border rounded-md focus:ring-2 focus:ring-primary focus:border-transparent"
+                               placeholder="Entrez votre mot de passe"
+                               data-testid="input-password">
+                    </div>
+                    
+                    <div class="space-y-3">
+                        <button type="submit" class="w-full bg-primary text-primary-foreground py-2 px-4 rounded-md hover:opacity-90 transition-opacity"
+                                data-testid="button-login">
+                            <span id="loginButtonText">Se connecter</span>
+                            <div id="loginSpinner" class="loading-spinner w-5 h-5 mx-auto hidden animate-spin"></div>
+                        </button>
+                        <div class="text-center">
+                            <button type="button" onclick="showRegister()" 
+                                    class="text-sm text-accent hover:underline"
+                                    data-testid="button-toggle-mode">
+                                Pas de compte ? Créez-en un
                             </button>
                         </div>
-                        
-                        <div class="preview-container" id="previewContainer">
-                            <h3>Prévisualisation :</h3>
-                            <img id="previewImage" class="preview-image" alt="Prévisualisation">
-                            <div class="file-info" id="fileInfo"></div>
-                            <div class="attachment-actions">
-                                <button class="remove-attachment" id="remove-attachment">
-                                    <i class="fas fa-times"></i> Supprimer
-                                </button>
-                                <button class="send-attachment" id="send-attachment">
-                                    <i class="fas fa-paper-plane"></i> Envoyer la pièce jointe
-                                </button>
+                    </div>
+                </form>
+            </div>
+            
+            <div id="registerForm" class="space-y-6 hidden">
+                <div class="text-center">
+                    <div class="flex justify-center mb-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="cube">
+                                <div class="cube-face cube-front"></div>
+                                <div class="cube-face cube-back"></div>
+                                <div class="cube-face cube-right"></div>
+                                <div class="cube-face cube-left"></div>
+                                <div class="cube-face cube-top"></div>
+                                <div class="cube-face cube-bottom"></div>
                             </div>
+                            <h2 class="text-2xl font-bold text-foreground">OneBox</h2>
                         </div>
-                        
-                        <button class="post-btn" id="post-btn">Publier le message</button>
+                    </div>
+                    <h3 class="text-xl font-semibold text-foreground" data-testid="text-auth-prompt">Créer un compte</h3>
+                    <p class="text-muted-foreground mt-2" data-testid="text-auth-description">Créez votre compte OneBox</p>
+                </div>
+                
+                <form class="space-y-4" onsubmit="handleRegister(event)">
+                    <div class="space-y-2">
+                        <label class="block text-sm font-medium">Nom d'utilisateur</label>
+                        <input type="text" id="registerUsername" required
+                               class="w-full px-3 py-2 bg-input border border-border rounded-md focus:ring-2 focus:ring-primary focus:border-transparent"
+                               placeholder="Entrez votre nom d'utilisateur"
+                               data-testid="input-username">
+                    </div>
+                    
+                    <div class="space-y-2">
+                        <label class="block text-sm font-medium">Mot de passe</label>
+                        <input type="password" id="registerPassword" required
+                               class="w-full px-3 py-2 bg-input border border-border rounded-md focus:ring-2 focus:ring-primary focus:border-transparent"
+                               placeholder="Entrez votre mot de passe"
+                               data-testid="input-password">
+                    </div>
+                    
+                    <div class="space-y-3">
+                        <button type="submit" class="w-full bg-primary text-primary-foreground py-2 px-4 rounded-md hover:opacity-90 transition-opacity"
+                                data-testid="button-register">
+                            <span id="registerButtonText">Créer un compte</span>
+                            <div id="registerSpinner" class="loading-spinner w-5 h-5 mx-auto hidden animate-spin"></div>
+                        </button>
+                        <div class="text-center">
+                            <button type="button" onclick="showLogin()" 
+                                    class="text-sm text-accent hover:underline"
+                                    data-testid="button-toggle-mode">
+                                Déjà un compte ? Connectez-vous
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="mainApp" class="hidden">
+        <!-- Header -->
+        <header class="bg-card border-b border-border px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-3">
+                    <div class="cube" style="width: 24px; height: 24px;">
+                        <div class="cube-face cube-front" style="width: 24px; height: 24px;"></div>
+                        <div class="cube-face cube-back" style="width: 24px; height: 24px;"></div>
+                        <div class="cube-face cube-right" style="width: 24px; height: 24px;"></div>
+                        <div class="cube-face cube-left" style="width: 24px; height: 24px;"></div>
+                        <div class="cube-face cube-top" style="width: 24px; height: 24px;"></div>
+                        <div class="cube-face cube-bottom" style="width: 24px; height: 24px;"></div>
+                    </div>
+                    <h1 class="text-2xl font-bold text-foreground">OneBox</h1>
+                </div>
+                <div class="h-6 w-px bg-border"></div>
+                <nav class="flex space-x-6">
+                    <button onclick="showSection('home')" class="nav-item text-foreground hover:text-primary transition-colors" data-section="home" data-testid="button-nav-home">
+                        <i class="fas fa-home mr-2"></i>Accueil
+                    </button>
+                    <button onclick="showSection('storage')" class="nav-item text-muted-foreground hover:text-primary transition-colors" data-section="storage" data-testid="button-nav-storage">
+                        <i class="fas fa-folder mr-2"></i>Mes fichiers
+                    </button>
+                    <button onclick="showSection('editor')" class="nav-item text-muted-foreground hover:text-primary transition-colors" data-section="editor" data-testid="button-nav-editor">
+                        <i class="fas fa-edit mr-2"></i>Éditeur
+                    </button>
+                    <button onclick="showSection('help')" class="nav-item text-muted-foreground hover:text-primary transition-colors" data-section="help" data-testid="button-nav-help">
+                        <i class="fas fa-question-circle mr-2"></i>Aide
+                    </button>
+                </nav>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <div class="relative">
+                    <button onclick="toggleProfileMenu()" class="flex items-center space-x-2 hover:bg-accent rounded-lg p-2 transition-colors">
+                        <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                            <i class="fas fa-user text-primary-foreground text-sm"></i>
+                        </div>
+                        <span id="userNameDisplay" class="font-medium">Utilisateur</span>
+                        <i class="fas fa-chevron-down text-sm text-muted-foreground"></i>
+                    </button>
+                    
+                    <div id="profileMenu" class="absolute right-0 mt-2 w-48 bg-card border border-border rounded-lg shadow-lg hidden z-10">
+                        <div class="p-2">
+                            <button onclick="showSection('profile')" class="w-full text-left px-3 py-2 hover:bg-accent rounded transition-colors" data-testid="button-profile">
+                                <i class="fas fa-user mr-3"></i>Profil
+                            </button>
+                            <div class="border-t border-border my-2"></div>
+                            <button onclick="handleLogout()" class="w-full text-left px-3 py-2 hover:bg-accent rounded transition-colors text-destructive" data-testid="button-logout">
+                                <i class="fas fa-sign-out-alt mr-3"></i>Se déconnecter
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Home Section -->
+        <div id="home" class="section" data-testid="home-page">
+            <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <div class="text-center space-y-8">
+                    <div class="space-y-4">
+                        <h1 class="text-4xl md:text-6xl font-bold text-foreground" data-testid="text-hero-title">
+                            Votre cloud <span class="text-accent">personnel</span>
+                        </h1>
+                        <p class="text-xl text-muted-foreground max-w-3xl mx-auto" data-testid="text-hero-description">
+                            OneBox est un service de stockage local et sécurisé. Sauvegardez, organisez et éditez vos fichiers directement en local avec une interface moderne et intuitive.
+                        </p>
+                    </div>
+                    
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                        <button onclick="showSection('storage')" class="bg-primary text-primary-foreground px-8 py-3 rounded-lg text-lg font-medium hover:opacity-90 transition-opacity" data-testid="button-get-started">
+                            Commencer
+                        </button>
+                        <button onclick="showSection('help')" class="bg-secondary text-secondary-foreground px-8 py-3 rounded-lg text-lg font-medium hover:bg-accent transition-colors" data-testid="button-learn-more">
+                            En savoir plus
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Features Grid -->
+                <div class="mt-20 grid md:grid-cols-3 gap-8">
+                    <div class="bg-card p-6 rounded-xl border border-border file-hover" data-testid="feature-security">
+                        <div class="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center mb-4">
+                            <i class="fas fa-shield-alt text-accent text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-foreground mb-2" data-testid="text-feature-security-title">
+                            Sécurisé
+                        </h3>
+                        <p class="text-muted-foreground" data-testid="text-feature-security-description">
+                            Vos données restent locales avec une authentification Face ID avancée.
+                        </p>
+                    </div>
+
+                    <div class="bg-card p-6 rounded-xl border border-border file-hover" data-testid="feature-editor">
+                        <div class="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center mb-4">
+                            <i class="fas fa-edit text-accent text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-foreground mb-2" data-testid="text-feature-editor-title">
+                            Éditeur intégré
+                        </h3>
+                        <p class="text-muted-foreground" data-testid="text-feature-editor-description">
+                            Créez et modifiez vos documents directement dans l'interface.
+                        </p>
+                    </div>
+
+                    <div class="bg-card p-6 rounded-xl border border-border file-hover" data-testid="feature-organization">
+                        <div class="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center mb-4">
+                            <i class="fas fa-folder-tree text-accent text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-foreground mb-2" data-testid="text-feature-organization-title">
+                            Organisation
+                        </h3>
+                        <p class="text-muted-foreground" data-testid="text-feature-organization-description">
+                            Organisez vos fichiers en dossiers avec un partage local facile.
+                        </p>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- Storage Section -->
+        <div id="storage" class="section hidden" data-testid="storage-page">
+            <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <!-- Storage Header -->
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
+                    <div>
+                        <h1 class="text-3xl font-bold text-foreground" data-testid="text-page-title">
+                            Mes fichiers
+                        </h1>
+                        <p class="text-muted-foreground mt-1" data-testid="text-page-description">
+                            Gérez et organisez votre stockage local
+                        </p>
+                    </div>
+                    <div class="flex items-center space-x-4 mt-4 sm:mt-0">
+                        <button onclick="showCreateFolder()" class="bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:opacity-90 transition-opacity" data-testid="button-new-folder">
+                            <i class="fas fa-plus mr-2"></i>Nouveau dossier
+                        </button>
+                        <button onclick="triggerFileUpload()" class="bg-secondary text-secondary-foreground px-4 py-2 rounded-lg hover:bg-accent transition-colors" data-testid="button-upload">
+                            <i class="fas fa-upload mr-2"></i>Importer
+                        </button>
                     </div>
                 </div>
 
-                <div class="posts-list" id="posts-list"></div>
+                <!-- Create folder input -->
+                <div id="createFolderSection" class="bg-card border border-border rounded-xl p-6 mb-6 hidden">
+                    <div class="flex items-center space-x-4">
+                        <input type="text" id="newFolderName" 
+                               class="flex-1 px-3 py-2 bg-input border border-border rounded-md focus:ring-2 focus:ring-primary focus:border-transparent"
+                               placeholder="Nom du dossier"
+                               data-testid="input-folder-name">
+                        <button onclick="createFolder()" class="bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:opacity-90 transition-opacity" data-testid="button-create-folder">
+                            Créer
+                        </button>
+                        <button onclick="hideCreateFolder()" class="bg-secondary text-secondary-foreground px-4 py-2 rounded-lg hover:bg-accent transition-colors" data-testid="button-cancel-folder">
+                            Annuler
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Drag & Drop Upload Zone -->
+                <div id="uploadZone" class="bg-card border-2 border-dashed border-border hover:border-accent rounded-xl p-8 mb-8 text-center transition-colors" data-testid="upload-zone">
+                    <div class="space-y-4">
+                        <div class="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto">
+                            <i class="fas fa-cloud-upload-alt text-accent text-2xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-lg font-medium text-foreground" data-testid="text-upload-title">
+                                Glissez vos fichiers ici
+                            </p>
+                            <p class="text-muted-foreground" data-testid="text-upload-description">
+                                ou cliquez pour parcourir
+                            </p>
+                        </div>
+                        <button onclick="triggerFileUpload()" class="bg-primary text-primary-foreground px-6 py-2 rounded-lg hover:opacity-90 transition-opacity" data-testid="button-choose-files">
+                            Choisir des fichiers
+                        </button>
+                    </div>
+                </div>
+
+                <input type="file" id="fileInput" multiple class="hidden" onchange="handleFileUpload(event)" data-testid="file-input">
+                
+                <!-- Files and Folders Grid -->
+                <div id="filesGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Empty state -->
+                    <div id="emptyState" class="col-span-full text-center py-12" data-testid="empty-state">
+                        <div class="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-folder text-muted-foreground text-2xl"></i>
+                        </div>
+                        <h3 class="text-lg font-medium text-foreground mb-2">Aucun fichier</h3>
+                        <p class="text-muted-foreground">Commencez par uploader vos premiers fichiers</p>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- Editor Section -->
+        <div id="editor" class="section hidden h-screen flex flex-col" data-testid="editor-page">
+            <!-- Editor Header -->
+            <div class="bg-card border-b border-border px-4 py-3 flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <h1 class="text-lg font-semibold text-foreground" data-testid="text-editor-title">
+                        Éditeur de documents
+                    </h1>
+                    <input type="text" id="documentTitle" 
+                           class="px-3 py-1 bg-input border border-border rounded-md focus:ring-2 focus:ring-primary focus:border-transparent max-w-xs"
+                           placeholder="Titre du document"
+                           value="Document sans titre"
+                           data-testid="input-document-title">
+                    <span id="unsavedIndicator" class="text-sm text-muted-foreground hidden" data-testid="text-unsaved-indicator">
+                        Non sauvegardé
+                    </span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button onclick="saveDocument()" class="bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:opacity-90 transition-opacity" data-testid="button-save">
+                        <i class="fas fa-save mr-2"></i><span id="saveButtonText">Sauvegarder</span>
+                    </button>
+                    <button onclick="toggleEditorTheme()" class="p-2 hover:bg-accent rounded-lg transition-colors" data-testid="button-toggle-theme">
+                        <i id="themeIcon" class="fas fa-sun text-muted-foreground"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Editor Toolbar -->
+            <div class="bg-card border-b border-border px-4 py-2 flex items-center space-x-1">
+                <button onclick="execCommand('bold')" class="p-2 hover:bg-accent rounded transition-colors" data-testid="button-bold">
+                    <i class="fas fa-bold text-sm"></i>
+                </button>
+                <button onclick="execCommand('italic')" class="p-2 hover:bg-accent rounded transition-colors" data-testid="button-italic">
+                    <i class="fas fa-italic text-sm"></i>
+                </button>
+                <button onclick="execCommand('underline')" class="p-2 hover:bg-accent rounded transition-colors" data-testid="button-underline">
+                    <i class="fas fa-underline text-sm"></i>
+                </button>
+                <div class="w-px h-6 bg-border mx-2"></div>
+                <button onclick="execCommand('justifyLeft')" class="p-2 hover:bg-accent rounded transition-colors" data-testid="button-align-left">
+                    <i class="fas fa-align-left text-sm"></i>
+                </button>
+                <button onclick="execCommand('justifyCenter')" class="p-2 hover:bg-accent rounded transition-colors" data-testid="button-align-center">
+                    <i class="fas fa-align-center text-sm"></i>
+                </button>
+                <button onclick="execCommand('justifyRight')" class="p-2 hover:bg-accent rounded transition-colors" data-testid="button-align-right">
+                    <i class="fas fa-align-right text-sm"></i>
+                </button>
+                <div class="w-px h-6 bg-border mx-2"></div>
+                <button onclick="insertImage()" class="p-2 hover:bg-accent rounded transition-colors" data-testid="button-insert-image">
+                    <i class="fas fa-image text-sm"></i>
+                </button>
+                <button onclick="insertTable()" class="p-2 hover:bg-accent rounded transition-colors" data-testid="button-insert-table">
+                    <i class="fas fa-table text-sm"></i>
+                </button>
+            </div>
+            
+            <!-- Editor Content -->
+            <div class="flex-1 bg-background p-8 overflow-auto">
+                <div id="editorContainer" class="max-w-4xl mx-auto rounded-lg shadow-lg min-h-full p-8 bg-card text-foreground">
+                    <div id="editorContent" 
+                         class="prose prose-lg max-w-none outline-none min-h-96"
+                         contenteditable="true"
+                         data-testid="editor-content"
+                         oninput="handleEditorChange()">
+                        <p>Commencez à écrire votre document ici...</p>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="notification" id="notification">
-        <div class="notification-avatar" id="notification-avatar">?</div>
-        <div class="notification-content" id="notification-content">Nouveau message reçu</div>
-        <button class="notification-close" id="notification-close">
-            <i class="fas fa-times"></i>
-        </button>
+        <!-- Profile Section -->
+        <div id="profile" class="section hidden" data-testid="profile-page">
+            <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <div class="mb-8">
+                    <h1 class="text-3xl font-bold text-foreground mb-4" data-testid="text-page-title">
+                        Profil et paramètres
+                    </h1>
+                    <p class="text-muted-foreground" data-testid="text-page-description">
+                        Gérez votre compte et vos préférences
+                    </p>
+                </div>
+
+                <div class="grid gap-8">
+                    <!-- Personal Information -->
+                    <div class="bg-card border border-border rounded-xl p-6" data-testid="card-personal-info">
+                        <div class="flex items-center gap-2 mb-6">
+                            <i class="fas fa-user text-primary"></i>
+                            <h2 class="text-xl font-semibold">Informations personnelles</h2>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="space-y-2">
+                                <label class="block text-sm font-medium">Nom d'utilisateur</label>
+                                <input type="text" id="profileUsername" 
+                                       class="w-full px-3 py-2 bg-input border border-border rounded-md focus:ring-2 focus:ring-primary focus:border-transparent"
+                                       data-testid="input-username">
+                            </div>
+                            <button onclick="saveProfile()" class="bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:opacity-90 transition-opacity" data-testid="button-save-profile">
+                                Sauvegarder les modifications
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Security Settings -->
+                    <div class="bg-card border border-border rounded-xl p-6" data-testid="card-security">
+                        <div class="flex items-center gap-2 mb-6">
+                            <i class="fas fa-shield-alt text-primary"></i>
+                            <h2 class="text-xl font-semibold">Sécurité</h2>
+                        </div>
+                        <div class="space-y-6">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-base font-medium">Face ID</p>
+                                    <p class="text-sm text-muted-foreground">
+                                        Utilisez Face ID pour vous connecter rapidement
+                                    </p>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="faceIdToggle" class="sr-only peer" data-testid="switch-face-id">
+                                    <div class="w-11 h-6 bg-secondary peer-focus:ring-4 peer-focus:ring-primary/25 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                                </label>
+                            </div>
+                            
+                            <div class="pt-4 border-t border-border">
+                                <button class="bg-secondary text-secondary-foreground px-4 py-2 rounded-lg hover:bg-accent transition-colors" data-testid="button-change-password">
+                                    Changer le mot de passe
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Appearance Settings -->
+                    <div class="bg-card border border-border rounded-xl p-6" data-testid="card-appearance">
+                        <div class="flex items-center gap-2 mb-6">
+                            <i class="fas fa-palette text-primary"></i>
+                            <h2 class="text-xl font-semibold">Apparence</h2>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-base font-medium">Mode sombre</p>
+                                <p class="text-sm text-muted-foreground">
+                                    Activer le thème sombre pour réduire la fatigue oculaire
+                                </p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="darkModeToggle" class="sr-only peer" checked data-testid="switch-dark-mode">
+                                <div class="w-11 h-6 bg-secondary peer-focus:ring-4 peer-focus:ring-primary/25 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Language Settings -->
+                    <div class="bg-card border border-border rounded-xl p-6" data-testid="card-language">
+                        <div class="flex items-center gap-2 mb-6">
+                            <i class="fas fa-globe text-primary"></i>
+                            <h2 class="text-xl font-semibold">Langue et région</h2>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium">Langue</label>
+                            <select id="languageSelect" 
+                                    class="w-full px-3 py-2 bg-input border border-border rounded-md focus:ring-2 focus:ring-primary focus:border-transparent"
+                                    data-testid="select-language">
+                                <option value="fr">Français</option>
+                                <option value="en">English</option>
+                                <option value="es">Español</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Account Actions -->
+                    <div class="bg-card border border-border rounded-xl p-6" data-testid="card-account-actions">
+                        <div class="flex items-center gap-2 mb-6">
+                            <i class="fas fa-cog text-primary"></i>
+                            <h2 class="text-xl font-semibold">Actions du compte</h2>
+                        </div>
+                        <div class="flex flex-col sm:flex-row gap-4">
+                            <button class="bg-secondary text-secondary-foreground px-4 py-2 rounded-lg hover:bg-accent transition-colors" data-testid="button-export-data">
+                                Exporter mes données
+                            </button>
+                            <button onclick="handleLogout()" class="bg-destructive text-destructive-foreground px-4 py-2 rounded-lg hover:opacity-90 transition-opacity" data-testid="button-logout">
+                                Se déconnecter
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- Help Section -->
+        <div id="help" class="section hidden" data-testid="help-page">
+            <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <div class="text-center mb-12">
+                    <h1 class="text-3xl font-bold text-foreground mb-4" data-testid="text-page-title">
+                        Centre d'aide
+                    </h1>
+                    <p class="text-xl text-muted-foreground" data-testid="text-page-description">
+                        Découvrez comment utiliser OneBox
+                    </p>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="bg-card border border-border rounded-xl p-6" data-testid="help-upload">
+                        <h3 class="text-xl font-semibold text-foreground mb-4" data-testid="text-help-upload-title">
+                            Comment uploader des fichiers ?
+                        </h3>
+                        <p class="text-muted-foreground mb-4" data-testid="text-help-upload-description">
+                            Glissez-déposez vos fichiers directement dans la zone de stockage ou utilisez le bouton "Importer".
+                        </p>
+                        <button onclick="showModal('uploadTutorialModal')" class="text-accent hover:underline font-medium" data-testid="button-help-upload-learn-more">
+                            Lire le tutoriel <i class="fas fa-arrow-right ml-1"></i>
+                        </button>
+                    </div>
+
+                    <div class="bg-card border border-border rounded-xl p-6" data-testid="help-editor">
+                        <h3 class="text-xl font-semibold text-foreground mb-4" data-testid="text-help-editor-title">
+                            Comment utiliser l'éditeur ?
+                        </h3>
+                        <p class="text-muted-foreground mb-4" data-testid="text-help-editor-description">
+                            L'éditeur intégré permet de créer et modifier des documents avec un formatage riche.
+                        </p>
+                        <button onclick="showModal('editorTutorialModal')" class="text-accent hover:underline font-medium" data-testid="button-help-editor-learn-more">
+                            Lire le tutoriel <i class="fas fa-arrow-right ml-1"></i>
+                        </button>
+                    </div>
+
+                    <div class="bg-card border border-border rounded-xl p-6" data-testid="help-sharing">
+                        <h3 class="text-xl font-semibold text-foreground mb-4" data-testid="text-help-sharing-title">
+                            Comment partager des fichiers ?
+                        </h3>
+                        <p class="text-muted-foreground mb-4" data-testid="text-help-sharing-description">
+                            Générez des liens internes pour partager vos fichiers localement en toute sécurité.
+                        </p>
+                        <button onclick="showModal('sharingTutorialModal')" class="text-accent hover:underline font-medium" data-testid="button-help-sharing-learn-more">
+                            Lire le tutoriel <i class="fas fa-arrow-right ml-1"></i>
+                        </button>
+                    </div>
+
+                    <div class="bg-card border border-border rounded-xl p-6" data-testid="help-contact">
+                        <h3 class="text-xl font-semibold text-foreground mb-4" data-testid="text-help-contact-title">
+                            Contact
+                        </h3>
+                        <p class="text-muted-foreground mb-4" data-testid="text-help-contact-description">
+                            Besoin d'aide ? Contactez notre équipe de support.
+                        </p>
+                        <button onclick="showModal('contactModal')" class="text-accent hover:underline font-medium" data-testid="button-help-contact-learn-more">
+                            Nous contacter <i class="fas fa-arrow-right ml-1"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- FAQ Section -->
+                <div class="mt-16">
+                    <h2 class="text-2xl font-bold text-foreground mb-8 text-center" data-testid="text-faq-title">
+                        Questions fréquentes
+                    </h2>
+                    
+                    <div class="space-y-6">
+                        <div class="bg-card border border-border rounded-xl p-6">
+                            <h3 class="text-lg font-semibold text-foreground mb-2" data-testid="text-faq-security-title">
+                                Mes données sont-elles sécurisées ?
+                            </h3>
+                            <p class="text-muted-foreground" data-testid="text-faq-security-answer">
+                                Oui, OneBox stocke toutes vos données localement sur votre appareil. Aucune donnée n'est envoyée vers des serveurs externes.
+                            </p>
+                        </div>
+
+                        <div class="bg-card border border-border rounded-xl p-6">
+                            <h3 class="text-lg font-semibold text-foreground mb-2" data-testid="text-faq-space-title">
+                                Quelle est la limite de stockage ?
+                            </h3>
+                            <p class="text-muted-foreground" data-testid="text-faq-space-answer">
+                                La limite de stockage dépend de l'espace disponible sur votre appareil. OneBox utilise le stockage local de votre navigateur.
+                            </p>
+                        </div>
+
+                        <div class="bg-card border border-border rounded-xl p-6">
+                            <h3 class="text-lg font-semibold text-foreground mb-2" data-testid="text-faq-access-title">
+                                Comment accéder à mes fichiers depuis un autre appareil ?
+                            </h3>
+                            <p class="text-muted-foreground" data-testid="text-faq-access-answer">
+                                OneBox est conçu pour un usage local. Pour accéder à vos fichiers depuis un autre appareil, vous devez les synchroniser manuellement.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
     </div>
 
     <script>
-  const firebaseConfig = {
-  apiKey: "AIzaSyBmMSD2SwHt-zF_YZHPEs6-03IlLGnO1CM",
-  authDomain: "chat-2026-671bb.firebaseapp.com",
-  databaseURL: "https://chat-2026-671bb-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "chat-2026-671bb",
-  storageBucket: "chat-2026-671bb.firebasestorage.app",
-  messagingSenderId: "767585260701",
-  appId: "1:767585260701:web:9159e8293d385415f87074",
-  measurementId: "G-8ZHZV3QQDH"
-};
+        // Application State
+        let currentUser = null;
+        let currentSection = 'home';
+        let files = [];
+        let folders = [];
+        let documents = [];
+        let hasUnsavedChanges = false;
+        let editorDarkMode = true;
 
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
-        const storage = firebase.storage();
+        // Initialize the application
+        (function() {
+            // Check for existing authentication
+            const savedUser = localStorage.getItem('oneboxUser');
+            const savedFiles = localStorage.getItem('oneboxFiles');
+            const savedFolders = localStorage.getItem('oneboxFolders');
+            const savedDocuments = localStorage.getItem('oneboxDocuments');
 
-        let db = {
-            users: [],
-            posts: [],
-            currentUser: null
-        };
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                showMainApp();
+            } else {
+                showAuthModal();
+            }
 
-        function saveUser(user) {
-            return database.ref('users/' + user.id).set(user);
-        }
+            if (savedFiles) {
+                files = JSON.parse(savedFiles);
+            }
 
-        function savePost(post) {
-            return database.ref('posts/' + post.id).set(post);
-        }
+            if (savedFolders) {
+                folders = JSON.parse(savedFolders);
+            }
 
-        function deletePost(postId) {
-            return database.ref('posts/' + postId).remove();
-        }
+            if (savedDocuments) {
+                documents = JSON.parse(savedDocuments);
+            }
 
-        function saveReply(postId, reply) {
-            return database.ref('posts/' + postId + '/replies/' + reply.id).set(reply);
-        }
-
-        function deleteReply(postId, replyId) {
-            return database.ref('posts/' + postId + '/replies/' + replyId).remove();
-        }
-
-        function updateUserActivity(userId) {
-            return database.ref('activeUsers/' + userId).set({
-                lastActive: Date.now()
-            });
-        }
-
-        function removeUserActivity(userId) {
-            return database.ref('activeUsers/' + userId).remove();
-        }
-
-        function loadUsers(callback) {
-            database.ref('users').on('value', (snapshot) => {
-                const users = snapshot.val() || {};
-                db.users = Object.values(users);
-                if (callback) callback();
-            });
-        }
-
-        function loadPosts(callback) {
-            database.ref('posts').on('value', (snapshot) => {
-                const posts = snapshot.val() || {};
-                db.posts = Object.values(posts).map(post => ({
-                    ...post,
-                    replies: post.replies ? Object.values(post.replies) : []
-                }));
-                if (callback) callback();
-            });
-        }
-
-        function loadActiveUsers(callback) {
-            database.ref('activeUsers').on('value', (snapshot) => {
-                const activeUsers = snapshot.val() || {};
-                if (callback) callback(Object.keys(activeUsers));
-            });
-        }
-
-        const loginContainer = document.getElementById('login-container');
-        const appContainer = document.getElementById('app-container');
-        const accessCodeInput = document.getElementById('access-code');
-        const loginBtn = document.getElementById('login-btn');
-        const loader = document.getElementById('loader');
-        const profileModal = document.getElementById('profile-modal');
-        const saveProfileBtn = document.getElementById('save-profile');
-        const userNameInput = document.getElementById('user-name-input');
-        const avatarPreview = document.getElementById('avatar-preview');
-        const themeToggle = document.getElementById('theme-toggle');
-        const logoutBtn = document.getElementById('logout-btn');
-        const userList = document.getElementById('user-list');
-        const postsList = document.getElementById('posts-list');
-        const postInput = document.getElementById('post-input');
-        const postBtn = document.getElementById('post-btn');
-        const uploadZone = document.getElementById('uploadZone');
-        const previewContainer = document.getElementById('previewContainer');
-        const previewImage = document.getElementById('previewImage');
-        const fileInfo = document.getElementById('fileInfo');
-        const removeAttachment = document.getElementById('remove-attachment');
-        const sendAttachmentBtn = document.getElementById('send-attachment');
-        const attachmentInput = document.getElementById('attachment-input');
-        const attachmentBtn = document.getElementById('attachment-btn');
-        const userName = document.getElementById('user-name');
-        const userAvatar = document.getElementById('user-avatar');
-        const userRole = document.getElementById('user-role');
-        const notification = document.getElementById('notification');
-        const notificationAvatar = document.getElementById('notification-avatar');
-        const notificationContent = document.getElementById('notification-content');
-        const notificationClose = document.getElementById('notification-close');
-
-        let currentAttachment = null;
-
-        loadUsers();
-        loadPosts();
-        checkAuth();
-
-        uploadZone.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadZone.classList.add('dragover');
-        });
-
-        uploadZone.addEventListener('dragleave', () => {
-            uploadZone.classList.remove('dragover');
-        });
-
-        uploadZone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadZone.classList.remove('dragover');
+            // Setup drag and drop for upload zone
+            setupDragAndDrop();
             
-            const files = e.dataTransfer.files;
-            if (files.length > 0) {
-                handleFileSelect(files[0]);
-            }
-        });
+            // Setup editor change tracking
+            setupEditorTracking();
+        })();
 
-        attachmentInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                handleFileSelect(file);
-            }
-        });
-
-        removeAttachment.addEventListener('click', () => {
-            currentAttachment = null;
-            previewContainer.style.display = 'none';
-            attachmentInput.value = '';
-        });
-
-        sendAttachmentBtn.addEventListener('click', async () => {
-            if (!currentAttachment) {
-                showNotification("Veuillez d'abord sélectionner un fichier");
-                return;
-            }
-
-            try {
-                const newPost = {
-                    id: Date.now(),
-                    userId: db.currentUser.id,
-                    content: "",
-                    timestamp: Date.now(),
-                    replies: []
-                };
-
-                const attachmentData = await uploadFile(currentAttachment, newPost.id);
-                newPost.attachment = attachmentData;
-
-                await savePost(newPost);
-                
-                currentAttachment = null;
-                attachmentInput.value = '';
-                previewContainer.style.display = 'none';
-                
-                showNotification("Pièce jointe envoyée avec succès !");
-            } catch (error) {
-                console.error("Erreur envoi pièce jointe:", error);
-                showNotification("Erreur lors de l'envoi de la pièce jointe");
-            }
-        });
-
-        function handleFileSelect(file) {
-            const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 
-                               'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-                               'text/plain'];
+        // Toast notification system
+        function showToast(title, description, variant = 'default') {
+            const toastContainer = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${variant === 'destructive' ? 'destructive' : ''}`;
             
-            if (!validTypes.includes(file.type)) {
-                showNotification("Type de fichier non supporté. Formats acceptés: images, PDF, Word, texte");
-                return;
-            }
-
-            currentAttachment = file;
-            
-            fileInfo.innerHTML = `
-                <strong>Nom:</strong> ${file.name}<br>
-                <strong>Taille:</strong> ${(file.size / 1024).toFixed(2)} KB<br>
-                <strong>Type:</strong> ${file.type}
+            toast.innerHTML = `
+                <div class="flex items-start space-x-3">
+                    <div class="flex-1">
+                        <p class="font-semibold text-sm">${title}</p>
+                        <p class="text-sm text-muted-foreground">${description}</p>
+                    </div>
+                    <button onclick="this.parentElement.parentElement.remove()" class="text-muted-foreground hover:text-foreground">
+                        <i class="fas fa-times text-sm"></i>
+                    </button>
+                </div>
             `;
             
-            if (file.type.startsWith('image/')) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    previewImage.src = e.target.result;
-                    previewImage.style.display = 'block';
-                };
-                reader.readAsDataURL(file);
-            } else {
-                previewImage.style.display = 'none';
-            }
+            toastContainer.appendChild(toast);
             
-            previewContainer.style.display = 'block';
-        }
-
-        function checkAuth() {
-            const currentUser = JSON.parse(localStorage.getItem('geii2025_currentUser'));
-            if (currentUser) {
-                db.currentUser = currentUser;
-                
-                loadUsers(() => {
-                    const userExists = db.users.some(u => u.id === db.currentUser.id);
-                    
-                    if (!userExists && !db.currentUser.isAdmin) {
-                        showProfileModal();
-                    } else if (userExists) {
-                        const userData = db.users.find(u => u.id === db.currentUser.id);
-                        db.currentUser = { ...db.currentUser, ...userData };
-                        updateUserActivity(db.currentUser.id);
-                    }
-                    
-                    startApplication();
-                    loginContainer.classList.add('hidden');
-                });
-            }
-        }
-
-        loginBtn.addEventListener('click', () => {
-            const code = accessCodeInput.value.toUpperCase();
+            // Show toast
+            setTimeout(() => toast.classList.add('show'), 100);
             
-            if (code === "H7" || code === "GEII") {
-                loader.style.display = 'block';
-                loginBtn.style.display = 'none';
-                
-                setTimeout(() => {
-                    if (code === "H7") {
-                        loadUsers(() => {
-                            const admin = db.users.find(u => u.isAdmin) || {
-                                id: 1,
-                                name: "Admin",
-                                role: "Professeur",
-                                avatar: "AD",
-                                color: "#6a11cb",
-                                isAdmin: true
-                            };
-                            db.currentUser = admin;
-                            saveUser(admin);
-                            localStorage.setItem('geii2025_currentUser', JSON.stringify(admin));
-                            localStorage.setItem('geii2025_admin_connected', 'true');
-                            updateUserActivity(admin.id);
-                            checkAuth();
-                        });
-                    } else {
-                        db.currentUser = {
-                            id: Date.now(),
-                            isAdmin: false
-                        };
-                        localStorage.setItem('geii2025_currentUser', JSON.stringify(db.currentUser));
-                        checkAuth();
-                    }
-                }, 1500);
-            } else {
-                alert("Code incorrect. Utilisez 'H7' pour admin ou 'GEII' pour les utilisateurs");
-            }
-        });
-
-        function showProfileModal() {
-            profileModal.style.display = 'flex';
-            updateAvatarPreview();
-        }
-
-        function updateAvatarPreview() {
-            const name = userNameInput.value.trim();
-            const selectedColor = document.querySelector('.color-option.selected').dataset.color;
-            const initials = name ? name.charAt(0).toUpperCase() : '?';
-            
-            avatarPreview.textContent = initials;
-            avatarPreview.style.backgroundColor = selectedColor;
-        }
-
-        document.querySelectorAll('.color-option').forEach(option => {
-            option.addEventListener('click', () => {
-                document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('selected'));
-                option.classList.add('selected');
-                updateAvatarPreview();
-            });
-        });
-
-        userNameInput.addEventListener('input', updateAvatarPreview);
-
-        saveProfileBtn.addEventListener('click', () => {
-            const name = userNameInput.value.trim();
-            const color = document.querySelector('.color-option.selected').dataset.color;
-            
-            if (name.length < 2) {
-                showNotification("Veuillez entrer un prénom valide (2 caractères minimum)");
-                return;
-            }
-            
-            db.currentUser = {
-                ...db.currentUser,
-                name: name,
-                avatar: name.charAt(0).toUpperCase(),
-                color: color,
-                role: "Étudiant"
-            };
-            
-            saveUser(db.currentUser).then(() => {
-                localStorage.setItem('geii2025_currentUser', JSON.stringify(db.currentUser));
-                profileModal.style.display = 'none';
-                updateUserActivity(db.currentUser.id);
-                startApplication();
-            });
-        });
-
-        function startApplication() {
-            userName.textContent = db.currentUser.name;
-            userAvatar.textContent = db.currentUser.avatar;
-            userAvatar.style.backgroundColor = db.currentUser.color;
-            userRole.textContent = db.currentUser.role;
-            
-            appContainer.classList.add('show');
-            renderUsers();
-            renderPosts();
-            
-            loadActiveUsers(renderUsers);
-            loadPosts(renderPosts);
-        }
-
-        function uploadFile(file, postId) {
-            return new Promise((resolve, reject) => {
-                const storageRef = storage.ref('attachments/' + postId + '/' + file.name);
-                const uploadTask = storageRef.put(file);
-                
-                uploadTask.on('state_changed',
-                    (snapshot) => {
-                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                        console.log('Upload progress: ' + progress + '%');
-                    },
-                    (error) => {
-                        console.error("Erreur upload:", error);
-                        reject(error);
-                    },
-                    () => {
-                        uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
-                            resolve({
-                                url: downloadURL,
-                                name: file.name,
-                                type: file.type,
-                                size: formatFileSize(file.size)
-                            });
-                        });
-                    }
-                );
-            });
-        }
-
-        function formatFileSize(bytes) {
-            if (bytes === 0) return '0 Bytes';
-            const k = 1024;
-            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-        }
-
-        function renderUsers(activeUserIds) {
-            userList.innerHTML = '';
-            
-            const activeUsers = db.users.filter(user => 
-                activeUserIds ? activeUserIds.includes(user.id.toString()) : true
-            );
-
-            activeUsers.forEach(user => {
-                const userItem = document.createElement('li');
-                userItem.className = 'user-item';
-                userItem.innerHTML = `
-                    <div class="user-avatar" style="background: ${user.color}">${user.avatar}</div>
-                    <div>
-                        <div>${user.name}</div>
-                        <small>${user.role}</small>
-                    </div>
-                `;
-                userList.appendChild(userItem);
-            });
-        }
-
-        function renderPosts() {
-            postsList.innerHTML = '';
-            
-            const sortedPosts = [...db.posts].sort((a, b) => b.timestamp - a.timestamp);
-            
-            sortedPosts.forEach(post => {
-                const user = db.users.find(u => u.id === post.userId) || { name: "Inconnu", avatar: "?", color: "#999" };
-                const postElement = document.createElement('div');
-                postElement.className = 'post';
-                postElement.dataset.postId = post.id;
-                
-                let attachmentHtml = '';
-                if (post.attachment) {
-                    if (post.attachment.type.includes('image')) {
-                        attachmentHtml = `
-                            <div class="attachment-container">
-                                <div class="attachment-preview">
-                                    <div class="attachment-icon">
-                                        <i class="fas fa-image"></i>
-                                    </div>
-                                    <div class="attachment-info">
-                                        <div class="attachment-name">${post.attachment.name}</div>
-                                        <div class="attachment-size">${post.attachment.size}</div>
-                                        <a href="${post.attachment.url}" class="attachment-link" target="_blank">Voir l'image</a>
-                                    </div>
-                                </div>
-                                <img src="${post.attachment.url}" alt="${post.attachment.name}" class="attachment-image">
-                            </div>
-                        `;
-                    } else {
-                        attachmentHtml = `
-                            <div class="attachment-container">
-                                <div class="attachment-preview">
-                                    <div class="attachment-icon">
-                                        <i class="${getFileIcon(post.attachment.type)}"></i>
-                                    </div>
-                                    <div class="attachment-info">
-                                        <div class="attachment-name">${post.attachment.name}</div>
-                                        <div class="attachment-size">${post.attachment.size}</div>
-                                        <a href="${post.attachment.url}" class="attachment-link" target="_blank">Télécharger</a>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                    }
-                }
-                
-                let repliesHtml = '';
-                if (post.replies && post.replies.length > 0) {
-                    repliesHtml += `<div class="replies">`;
-                    post.replies.forEach(reply => {
-                        const replyUser = db.users.find(u => u.id === reply.userId) || { name: "Inconnu", avatar: "?", color: "#999" };
-                        repliesHtml += `
-                            <div class="reply">
-                                <div class="post-header">
-                                    <div class="user-avatar" style="background: ${replyUser.color}">${replyUser.avatar}</div>
-                                    <div>
-                                        <div class="post-user">${replyUser.name}</div>
-                                        <div class="post-time">${formatDate(reply.timestamp)}</div>
-                                    </div>
-                                </div>
-                                <div class="post-content">${reply.content}</div>
-                                ${reply.userId === db.currentUser.id || db.currentUser.isAdmin ? `
-                                <div class="post-actions">
-                                    <button class="action-btn delete-btn" data-reply-id="${reply.id}" data-post-id="${post.id}">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </div>
-                                ` : ''}
-                            </div>
-                        `;
-                    });
-                    repliesHtml += `</div>`;
-                }
-                
-                const canEditDelete = post.userId === db.currentUser.id || db.currentUser.isAdmin;
-                
-                postElement.innerHTML = `
-                    <div class="post-header">
-                        <div class="user-avatar" style="background: ${user.color}">${user.avatar}</div>
-                        <div>
-                            <div class="post-user">${user.name}</div>
-                            <div class="post-time">${formatDate(post.timestamp)}</div>
-                        </div>
-                    </div>
-                    ${post.content ? `<div class="post-content">${post.content}</div>` : ''}
-                    ${attachmentHtml}
-                    <div class="post-actions">
-                        <button class="action-btn reply-btn">
-                            <i class="fas fa-reply"></i> Répondre
-                        </button>
-                        ${canEditDelete ? `
-                        <button class="action-btn edit-btn" data-post-id="${post.id}">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="action-btn delete-btn" data-post-id="${post.id}">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                        ` : ''}
-                    </div>
-                    <div class="reply-form">
-                        <textarea class="reply-input" placeholder="Écrivez votre réponse..."></textarea>
-                        <div class="reply-actions">
-                            <button class="action-btn cancel-reply">Annuler</button>
-                            <button class="post-btn submit-reply">Envoyer</button>
-                        </div>
-                    </div>
-                    ${repliesHtml}
-                `;
-                
-                postsList.appendChild(postElement);
-            });
-            
-            setupPostEvents();
-        }
-
-        function getFileIcon(fileType) {
-            if (!fileType) return 'fa-file';
-            
-            if (fileType.includes('image')) return 'fa-file-image';
-            if (fileType.includes('pdf')) return 'fa-file-pdf';
-            if (fileType.includes('word')) return 'fa-file-word';
-            if (fileType.includes('excel')) return 'fa-file-excel';
-            if (fileType.includes('powerpoint')) return 'fa-file-powerpoint';
-            if (fileType.includes('zip')) return 'fa-file-archive';
-            if (fileType.includes('text')) return 'fa-file-alt';
-            
-            return 'fa-file';
-        }
-
-        function setupPostEvents() {
-            document.querySelectorAll('.reply-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const replyForm = e.target.closest('.post').querySelector('.reply-form');
-                    replyForm.style.display = replyForm.style.display === 'block' ? 'none' : 'block';
-                });
-            });
-            
-            document.querySelectorAll('.cancel-reply').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    e.target.closest('.reply-form').style.display = 'none';
-                });
-            });
-            
-            document.querySelectorAll('.submit-reply').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const postId = e.target.closest('.post').dataset.postId;
-                    const replyInput = e.target.closest('.reply-form').querySelector('.reply-input');
-                    const content = replyInput.value.trim();
-                    
-                    if (content) {
-                        const newReply = {
-                            id: Date.now(),
-                            userId: db.currentUser.id,
-                            content: content,
-                            timestamp: Date.now()
-                        };
-                        
-                        saveReply(postId, newReply).then(() => {
-                            replyInput.value = '';
-                            showNotification("Réponse envoyée !");
-                        });
-                    }
-                });
-            });
-            
-            document.querySelectorAll('.delete-btn[data-post-id]').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const postId = e.target.closest('.delete-btn').dataset.postId;
-                    if (confirm("Supprimer ce message ?")) {
-                        deletePost(postId).then(() => {
-                            showNotification("Message supprimé");
-                        });
-                    }
-                });
-            });
-            
-            document.querySelectorAll('.delete-btn[data-reply-id]').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const replyId = e.target.closest('.delete-btn').dataset.replyId;
-                    const postId = e.target.closest('.delete-btn').dataset.postId;
-                    if (confirm("Supprimer cette réponse ?")) {
-                        deleteReply(postId, replyId).then(() => {
-                            showNotification("Réponse supprimée");
-                        });
-                    }
-                });
-            });
-            
-            document.querySelectorAll('.edit-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const postId = e.target.closest('.edit-btn').dataset.postId;
-                    const post = db.posts.find(p => p.id == postId);
-                    if (post) {
-                        const newContent = prompt("Modifier le message:", post.content);
-                        if (newContent !== null) {
-                            savePost({
-                                ...post,
-                                content: newContent
-                            }).then(() => {
-                                showNotification("Message modifié");
-                            });
-                        }
-                    }
-                });
-            });
-        }
-
-        postBtn.addEventListener('click', async () => {
-            try {
-                const content = postInput.value.trim();
-                
-                if (!content && !currentAttachment) {
-                    showNotification("Veuillez écrire un message ou ajouter un fichier");
-                    return;
-                }
-
-                const newPost = {
-                    id: Date.now(),
-                    userId: db.currentUser.id,
-                    content: content,
-                    timestamp: Date.now(),
-                    replies: []
-                };
-
-                if (currentAttachment) {
-                    try {
-                        const attachmentData = await uploadFile(currentAttachment, newPost.id);
-                        newPost.attachment = attachmentData;
-                    } catch (error) {
-                        console.error("Erreur upload:", error);
-                        showNotification("Échec de l'envoi du fichier");
-                        return;
-                    }
-                }
-
-                await savePost(newPost);
-                
-                postInput.value = '';
-                currentAttachment = null;
-                attachmentInput.value = '';
-                previewContainer.style.display = 'none';
-                
-                showNotification("Publication réussie !");
-            } catch (error) {
-                console.error("Erreur publication:", error);
-                showNotification("Erreur lors de la publication");
-            }
-        });
-
-        logoutBtn.addEventListener('click', () => {
-            if (confirm("Voulez-vous vraiment vous déconnecter ?")) {
-                removeUserActivity(db.currentUser.id).then(() => {
-                    localStorage.removeItem('geii2025_currentUser');
-                    if (db.currentUser.isAdmin) {
-                        localStorage.removeItem('geii2025_admin_connected');
-                    }
-                    location.reload();
-                });
-            }
-        });
-
-        function applyTheme(isDark) {
-            if (isDark) {
-                document.body.classList.add('dark-mode');
-                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-                localStorage.setItem('theme', 'dark');
-            } else {
-                document.body.classList.remove('dark-mode');
-                themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
-                localStorage.setItem('theme', 'light');
-            }
-        }
-
-        const savedTheme = localStorage.getItem('theme');
-        applyTheme(savedTheme === 'dark');
-
-        themeToggle.addEventListener('click', () => {
-            const isDark = !document.body.classList.contains('dark-mode');
-            applyTheme(isDark);
-        });
-
-        function showNotification(message, user = null) {
-            if (user) {
-                notificationAvatar.textContent = user.avatar;
-                notificationAvatar.style.backgroundColor = user.color;
-            } else {
-                notificationAvatar.textContent = db.currentUser.avatar;
-                notificationAvatar.style.backgroundColor = db.currentUser.color;
-            }
-            
-            notificationContent.textContent = message;
-            notification.classList.add('show');
-            
+            // Auto-remove after 5 seconds
             setTimeout(() => {
-                notification.classList.remove('show');
+                if (toast.parentElement) {
+                    toast.classList.remove('show');
+                    setTimeout(() => toast.remove(), 300);
+                }
             }, 5000);
         }
 
-        notificationClose.addEventListener('click', () => {
-            notification.classList.remove('show');
-        });
+        // Authentication Functions
+        function showAuthModal() {
+            document.getElementById('authModal').classList.remove('hidden');
+            document.getElementById('mainApp').classList.add('hidden');
+        }
 
-        function formatDate(timestamp) {
-            const date = new Date(timestamp);
-            return date.toLocaleString('fr-FR', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
+        function hideAuthModal() {
+            document.getElementById('authModal').classList.add('hidden');
+            document.getElementById('mainApp').classList.remove('hidden');
+        }
+
+        function showLogin() {
+            document.getElementById('loginForm').classList.remove('hidden');
+            document.getElementById('registerForm').classList.add('hidden');
+        }
+
+        function showRegister() {
+            document.getElementById('loginForm').classList.add('hidden');
+            document.getElementById('registerForm').classList.remove('hidden');
+        }
+
+        function handleLogin(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            if (!username || !password) {
+                showToast('Champs requis', 'Veuillez remplir tous les champs', 'destructive');
+                return;
+            }
+            
+            // Show loading state
+            const buttonText = document.getElementById('loginButtonText');
+            const spinner = document.getElementById('loginSpinner');
+            buttonText.classList.add('hidden');
+            spinner.classList.remove('hidden');
+            
+            // Simulate authentication delay
+            setTimeout(() => {
+                currentUser = {
+                    id: generateId(),
+                    username: username,
+                    loginTime: new Date().toISOString()
+                };
+                
+                // Save to localStorage for persistence
+                localStorage.setItem('oneboxUser', JSON.stringify(currentUser));
+                
+                // Hide loading state
+                buttonText.classList.remove('hidden');
+                spinner.classList.add('hidden');
+                
+                // Show success message
+                showToast('Connexion réussie', 'Bienvenue dans OneBox !');
+                
+                // Show main application
+                showMainApp();
+            }, 1500);
+        }
+
+        function handleRegister(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById('registerUsername').value;
+            const password = document.getElementById('registerPassword').value;
+            
+            if (!username || !password) {
+                showToast('Champs requis', 'Veuillez remplir tous les champs', 'destructive');
+                return;
+            }
+            
+            // Show loading state
+            const buttonText = document.getElementById('registerButtonText');
+            const spinner = document.getElementById('registerSpinner');
+            buttonText.classList.add('hidden');
+            spinner.classList.remove('hidden');
+            
+            // Simulate registration delay
+            setTimeout(() => {
+                currentUser = {
+                    id: generateId(),
+                    username: username,
+                    loginTime: new Date().toISOString()
+                };
+                
+                // Save to localStorage for persistence
+                localStorage.setItem('oneboxUser', JSON.stringify(currentUser));
+                
+                // Hide loading state
+                buttonText.classList.remove('hidden');
+                spinner.classList.add('hidden');
+                
+                // Show success message
+                showToast('Compte créé', 'Bienvenue dans OneBox !');
+                
+                // Show main application
+                showMainApp();
+            }, 1500);
+        }
+
+        function handleLogout() {
+            currentUser = null;
+            localStorage.removeItem('oneboxUser');
+            hideProfileMenu();
+            showAuthModal();
+            
+            // Reset forms
+            document.getElementById('loginUsername').value = '';
+            document.getElementById('loginPassword').value = '';
+            document.getElementById('registerUsername').value = '';
+            document.getElementById('registerPassword').value = '';
+            
+            showToast('Déconnexion', 'Vous avez été déconnecté avec succès');
+        }
+
+        function showMainApp() {
+            hideAuthModal();
+            if (currentUser) {
+                document.getElementById('userNameDisplay').textContent = currentUser.username;
+                document.getElementById('profileUsername').value = currentUser.username;
+            }
+            showSection('home');
+            renderFilesGrid();
+        }
+
+        // Navigation Functions
+        function showSection(sectionName) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => section.classList.add('hidden'));
+            
+            // Show target section
+            document.getElementById(sectionName).classList.remove('hidden');
+            
+            // Update navigation active states
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => {
+                if (item.dataset.section === sectionName) {
+                    item.classList.remove('text-muted-foreground');
+                    item.classList.add('text-foreground');
+                } else {
+                    item.classList.remove('text-foreground');
+                    item.classList.add('text-muted-foreground');
+                }
+            });
+            
+            currentSection = sectionName;
+            
+            // Section-specific actions
+            if (sectionName === 'storage') {
+                renderFilesGrid();
+            }
+        }
+
+        // Profile Menu Functions
+        function toggleProfileMenu() {
+            const menu = document.getElementById('profileMenu');
+            menu.classList.toggle('hidden');
+        }
+
+        function hideProfileMenu() {
+            document.getElementById('profileMenu').classList.add('hidden');
+        }
+
+        // Storage Functions
+        function generateId() {
+            return Date.now().toString(36) + Math.random().toString(36).substr(2);
+        }
+
+        function showCreateFolder() {
+            document.getElementById('createFolderSection').classList.remove('hidden');
+            document.getElementById('newFolderName').focus();
+        }
+
+        function hideCreateFolder() {
+            document.getElementById('createFolderSection').classList.add('hidden');
+            document.getElementById('newFolderName').value = '';
+        }
+
+        function createFolder() {
+            const name = document.getElementById('newFolderName').value.trim();
+            if (!name) return;
+
+            const folder = {
+                id: generateId(),
+                name: name,
+                createdAt: new Date().toISOString(),
+                userId: currentUser.id
+            };
+
+            folders.push(folder);
+            localStorage.setItem('oneboxFolders', JSON.stringify(folders));
+            
+            hideCreateFolder();
+            renderFilesGrid();
+            showToast('Dossier créé', 'Le dossier a été créé avec succès');
+        }
+
+        function deleteFolder(folderId) {
+            folders = folders.filter(f => f.id !== folderId);
+            localStorage.setItem('oneboxFolders', JSON.stringify(folders));
+            renderFilesGrid();
+            showToast('Dossier supprimé', 'Le dossier a été supprimé avec succès');
+        }
+
+        function triggerFileUpload() {
+            document.getElementById('fileInput').click();
+        }
+
+        function handleFileUpload(event) {
+            const selectedFiles = Array.from(event.target.files);
+            selectedFiles.forEach(file => uploadFile(file));
+            event.target.value = ''; // Reset input
+        }
+
+        function uploadFile(file) {
+            const fileRecord = {
+                id: generateId(),
+                originalName: file.name,
+                size: file.size,
+                mimeType: file.type,
+                createdAt: new Date().toISOString(),
+                userId: currentUser.id
+            };
+
+            // Store file data as base64 (for demo purposes)
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                fileRecord.data = e.target.result;
+                files.push(fileRecord);
+                localStorage.setItem('oneboxFiles', JSON.stringify(files));
+                renderFilesGrid();
+                showToast('Fichier uploadé', 'Le fichier a été uploadé avec succès');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function deleteFile(fileId) {
+            files = files.filter(f => f.id !== fileId);
+            localStorage.setItem('oneboxFiles', JSON.stringify(files));
+            renderFilesGrid();
+            showToast('Fichier supprimé', 'Le fichier a été supprimé avec succès');
+        }
+
+        function downloadFile(fileId) {
+            const file = files.find(f => f.id === fileId);
+            if (!file || !file.data) return;
+
+            const link = document.createElement('a');
+            link.href = file.data;
+            link.download = file.originalName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+        }
+
+        function formatDate(date) {
+            const d = new Date(date);
+            const now = new Date();
+            const diffTime = Math.abs(now.getTime() - d.getTime());
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            if (diffDays === 1) return 'Il y a 1 jour';
+            if (diffDays < 7) return `Il y a ${diffDays} jours`;
+            return d.toLocaleDateString('fr-FR');
+        }
+
+        function getFileIcon(mimeType) {
+            if (mimeType.startsWith('image/')) return 'fas fa-image';
+            if (mimeType.includes('pdf')) return 'fas fa-file-pdf';
+            if (mimeType.includes('document') || mimeType.includes('text')) return 'fas fa-file-alt';
+            return 'fas fa-file';
+        }
+
+        function renderFilesGrid() {
+            const grid = document.getElementById('filesGrid');
+            const emptyState = document.getElementById('emptyState');
+            
+            if (files.length === 0 && folders.length === 0) {
+                emptyState.classList.remove('hidden');
+                grid.innerHTML = '';
+                grid.appendChild(emptyState);
+                return;
+            }
+            
+            emptyState.classList.add('hidden');
+            
+            let html = '';
+            
+            // Render folders
+            folders.forEach(folder => {
+                html += `
+                    <div class="bg-card border border-border rounded-xl p-4 file-hover cursor-pointer" data-testid="folder-${folder.id}">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-folder text-green-400"></i>
+                            </div>
+                            <div class="relative">
+                                <button onclick="toggleDropdown('folder-${folder.id}')" class="p-1 hover:bg-accent rounded transition-colors" data-testid="button-folder-menu-${folder.id}">
+                                    <i class="fas fa-ellipsis-h text-sm"></i>
+                                </button>
+                                <div id="dropdown-folder-${folder.id}" class="hidden absolute right-0 mt-1 w-32 bg-card border border-border rounded-lg shadow-lg z-10">
+                                    <button onclick="deleteFolder('${folder.id}')" class="w-full text-left px-3 py-2 text-sm hover:bg-accent rounded transition-colors text-destructive" data-testid="button-delete-folder-${folder.id}">
+                                        <i class="fas fa-trash mr-2"></i>Supprimer
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <h3 class="font-medium text-foreground truncate" data-testid="text-folder-name-${folder.id}">
+                            ${folder.name}
+                        </h3>
+                        <p class="text-sm text-muted-foreground" data-testid="text-folder-date-${folder.id}">
+                            Modifié ${formatDate(folder.createdAt)}
+                        </p>
+                    </div>
+                `;
+            });
+            
+            // Render files
+            files.forEach(file => {
+                const iconClass = getFileIcon(file.mimeType);
+                html += `
+                    <div class="bg-card border border-border rounded-xl p-4 file-hover" data-testid="file-${file.id}">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center">
+                                <i class="${iconClass} text-blue-400"></i>
+                            </div>
+                            <div class="relative">
+                                <button onclick="toggleDropdown('file-${file.id}')" class="p-1 hover:bg-accent rounded transition-colors" data-testid="button-file-menu-${file.id}">
+                                    <i class="fas fa-ellipsis-h text-sm"></i>
+                                </button>
+                                <div id="dropdown-file-${file.id}" class="hidden absolute right-0 mt-1 w-32 bg-card border border-border rounded-lg shadow-lg z-10">
+                                    <button onclick="downloadFile('${file.id}')" class="w-full text-left px-3 py-2 text-sm hover:bg-accent rounded transition-colors" data-testid="button-download-${file.id}">
+                                        <i class="fas fa-download mr-2"></i>Télécharger
+                                    </button>
+                                    <button onclick="deleteFile('${file.id}')" class="w-full text-left px-3 py-2 text-sm hover:bg-accent rounded transition-colors text-destructive" data-testid="button-delete-file-${file.id}">
+                                        <i class="fas fa-trash mr-2"></i>Supprimer
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <h3 class="font-medium text-foreground truncate" data-testid="text-file-name-${file.id}">
+                            ${file.originalName}
+                        </h3>
+                        <p class="text-sm text-muted-foreground" data-testid="text-file-details-${file.id}">
+                            ${formatFileSize(file.size)} • ${formatDate(file.createdAt)}
+                        </p>
+                    </div>
+                `;
+            });
+            
+            grid.innerHTML = html;
+        }
+
+        function toggleDropdown(id) {
+            const dropdown = document.getElementById(`dropdown-${id}`);
+            dropdown.classList.toggle('hidden');
+        }
+
+        function setupDragAndDrop() {
+            const uploadZone = document.getElementById('uploadZone');
+            
+            uploadZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadZone.classList.add('border-accent', 'bg-accent/5');
+            });
+            
+            uploadZone.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                uploadZone.classList.remove('border-accent', 'bg-accent/5');
+            });
+            
+            uploadZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadZone.classList.remove('border-accent', 'bg-accent/5');
+                
+                const droppedFiles = Array.from(e.dataTransfer.files);
+                droppedFiles.forEach(file => uploadFile(file));
+            });
+            
+            uploadZone.addEventListener('click', () => {
+                document.getElementById('fileInput').click();
             });
         }
+
+        // Editor Functions
+        function setupEditorTracking() {
+            const titleInput = document.getElementById('documentTitle');
+            const editorContent = document.getElementById('editorContent');
+            
+            titleInput.addEventListener('input', markUnsaved);
+            editorContent.addEventListener('input', markUnsaved);
+        }
+
+        function markUnsaved() {
+            hasUnsavedChanges = true;
+            document.getElementById('unsavedIndicator').classList.remove('hidden');
+        }
+
+        function handleEditorChange() {
+            markUnsaved();
+        }
+
+        function execCommand(command, value = null) {
+            document.execCommand(command, false, value);
+            document.getElementById('editorContent').focus();
+        }
+
+        function insertImage() {
+            const url = prompt('URL de l\'image:');
+            if (url) {
+                execCommand('insertImage', url);
+            }
+        }
+
+        function insertTable() {
+            const tableHTML = '<table border="1" style="border-collapse: collapse; width: 100%;"><tr><td style="padding: 8px;">Cell 1</td><td style="padding: 8px;">Cell 2</td></tr><tr><td style="padding: 8px;">Cell 3</td><td style="padding: 8px;">Cell 4</td></tr></table>';
+            execCommand('insertHTML', tableHTML);
+        }
+
+        function toggleEditorTheme() {
+            editorDarkMode = !editorDarkMode;
+            const container = document.getElementById('editorContainer');
+            const icon = document.getElementById('themeIcon');
+            
+            if (editorDarkMode) {
+                container.className = 'max-w-4xl mx-auto rounded-lg shadow-lg min-h-full p-8 bg-card text-foreground';
+                icon.className = 'fas fa-sun text-muted-foreground';
+            } else {
+                container.className = 'max-w-4xl mx-auto rounded-lg shadow-lg min-h-full p-8 bg-white text-black';
+                icon.className = 'fas fa-moon text-muted-foreground';
+            }
+        }
+
+        function saveDocument() {
+            const title = document.getElementById('documentTitle').value || 'Document sans titre';
+            const content = document.getElementById('editorContent').innerHTML;
+            
+            const document = {
+                id: generateId(),
+                title: title,
+                content: content,
+                createdAt: new Date().toISOString(),
+                userId: currentUser.id
+            };
+            
+            documents.push(document);
+            localStorage.setItem('oneboxDocuments', JSON.stringify(documents));
+            
+            hasUnsavedChanges = false;
+            document.getElementById('unsavedIndicator').classList.add('hidden');
+            
+            showToast('Document sauvegardé', 'Votre document a été sauvegardé avec succès');
+        }
+
+        // Profile Functions
+        function saveProfile() {
+            const username = document.getElementById('profileUsername').value;
+            if (currentUser && username) {
+                currentUser.username = username;
+                localStorage.setItem('oneboxUser', JSON.stringify(currentUser));
+                document.getElementById('userNameDisplay').textContent = username;
+                showToast('Profil mis à jour', 'Vos modifications ont été sauvegardées');
+            }
+        }
+
+        // Global Event Listeners
+        document.addEventListener('click', function(event) {
+            const profileButton = event.target.closest('[onclick="toggleProfileMenu()"]');
+            const profileMenu = document.getElementById('profileMenu');
+            
+            if (!profileButton && !profileMenu.contains(event.target)) {
+                hideProfileMenu();
+            }
+
+            // Close dropdowns when clicking outside
+            if (!event.target.closest('[onclick*="toggleDropdown"]') && !event.target.closest('[id*="dropdown-"]')) {
+                document.querySelectorAll('[id*="dropdown-"]').forEach(dropdown => {
+                    dropdown.classList.add('hidden');
+                });
+            }
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                hideProfileMenu();
+                document.querySelectorAll('[id*="dropdown-"]').forEach(dropdown => {
+                    dropdown.classList.add('hidden');
+                });
+            }
+            
+            // Save document shortcut
+            if (event.ctrlKey && event.key === 's' && currentSection === 'editor') {
+                event.preventDefault();
+                saveDocument();
+            }
+            
+            // Navigation shortcuts (when authenticated)
+            if (currentUser && event.altKey) {
+                switch(event.key) {
+                    case '1':
+                        showSection('home');
+                        break;
+                    case '2':
+                        showSection('storage');
+                        break;
+                    case '3':
+                        showSection('editor');
+                        break;
+                    case '4':
+                        showSection('help');
+                        break;
+                }
+            }
+        });
+
+        // Form submit handlers for Enter key
+        document.getElementById('newFolderName').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                createFolder();
+            }
+        });
+
+        // Initialize interactive elements
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add visual feedback for button clicks
+            const buttons = document.querySelectorAll('button');
+            buttons.forEach(button => {
+                button.addEventListener('click', function() {
+                    this.style.transform = 'scale(0.98)';
+                    setTimeout(() => {
+                        this.style.transform = '';
+                    }, 150);
+                });
+            });
+        });
+
+        // Modal Functions
+        function showModal(modalId) {
+            document.getElementById(modalId).classList.remove('hidden');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+        }
+
+        // Close modals when clicking outside
+        document.addEventListener('click', function(event) {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (event.target === modal) {
+                    modal.classList.add('hidden');
+                }
+            });
+        });
+
+        // Close modals with Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                document.querySelectorAll('.modal').forEach(modal => {
+                    modal.classList.add('hidden');
+                });
+            }
+        });
     </script>
+
+    <!-- Upload Tutorial Modal -->
+    <div id="uploadTutorialModal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" data-testid="modal-upload-tutorial">
+        <div class="bg-card border border-border rounded-xl p-8 max-w-2xl max-h-[80vh] overflow-y-auto m-4">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold text-foreground">📁 Tutoriel : Upload de fichiers</h2>
+                <button onclick="closeModal('uploadTutorialModal')" class="text-muted-foreground hover:text-foreground" data-testid="button-close-upload-modal">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="space-y-6 text-muted-foreground">
+                <div class="flex items-start space-x-3">
+                    <div class="w-8 h-8 bg-accent rounded-full flex items-center justify-center text-accent-foreground font-bold">1</div>
+                    <div>
+                        <h3 class="text-foreground font-semibold mb-2">Glisser-déposer</h3>
+                        <p>Faites simplement glisser vos fichiers depuis votre explorateur vers la zone de stockage OneBox. C'est la méthode la plus rapide !</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-start space-x-3">
+                    <div class="w-8 h-8 bg-accent rounded-full flex items-center justify-center text-accent-foreground font-bold">2</div>
+                    <div>
+                        <h3 class="text-foreground font-semibold mb-2">Bouton Importer</h3>
+                        <p>Cliquez sur le bouton "📁 Importer fichiers" dans la section Stockage pour ouvrir l'explorateur de fichiers et sélectionner vos documents.</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-start space-x-3">
+                    <div class="w-8 h-8 bg-accent rounded-full flex items-center justify-center text-accent-foreground font-bold">3</div>
+                    <div>
+                        <h3 class="text-foreground font-semibold mb-2">Formats supportés</h3>
+                        <p>Tous les types de fichiers sont acceptés : images (JPG, PNG, GIF), documents (PDF, DOC, TXT), vidéos, et bien plus encore.</p>
+                    </div>
+                </div>
+                
+                <div class="bg-accent/10 border border-accent/20 rounded-lg p-4 mt-6">
+                    <h4 class="text-accent font-semibold mb-2">💡 Astuce pro</h4>
+                    <p class="text-sm">Vous pouvez sélectionner plusieurs fichiers à la fois en maintenant Ctrl (ou Cmd sur Mac) enfoncé !</p>
+                </div>
+            </div>
+            
+            <div class="flex justify-end mt-8">
+                <button onclick="closeModal('uploadTutorialModal')" class="bg-accent text-accent-foreground px-6 py-2 rounded-lg hover:bg-accent/90 transition-colors">
+                    Compris !
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Editor Tutorial Modal -->
+    <div id="editorTutorialModal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" data-testid="modal-editor-tutorial">
+        <div class="bg-card border border-border rounded-xl p-8 max-w-2xl max-h-[80vh] overflow-y-auto m-4">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold text-foreground">✏️ Tutoriel : Éditeur de documents</h2>
+                <button onclick="closeModal('editorTutorialModal')" class="text-muted-foreground hover:text-foreground" data-testid="button-close-editor-modal">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="space-y-6 text-muted-foreground">
+                <div class="flex items-start space-x-3">
+                    <div class="w-8 h-8 bg-accent rounded-full flex items-center justify-center text-accent-foreground font-bold">1</div>
+                    <div>
+                        <h3 class="text-foreground font-semibold mb-2">Créer un document</h3>
+                        <p>Accédez à la section "Éditeur" depuis le menu. Un nouveau document vierge s'ouvrira automatiquement.</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-start space-x-3">
+                    <div class="w-8 h-8 bg-accent rounded-full flex items-center justify-center text-accent-foreground font-bold">2</div>
+                    <div>
+                        <h3 class="text-foreground font-semibold mb-2">Outils de formatage</h3>
+                        <p>Utilisez la barre d'outils pour formater votre texte : <strong>gras</strong>, <em>italique</em>, soulignement, alignement, et insertion d'images ou tableaux.</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-start space-x-3">
+                    <div class="w-8 h-8 bg-accent rounded-full flex items-center justify-center text-accent-foreground font-bold">3</div>
+                    <div>
+                        <h3 class="text-foreground font-semibold mb-2">Sauvegarde automatique</h3>
+                        <p>Vos modifications sont détectées automatiquement. Cliquez sur "Sauvegarder" ou utilisez Ctrl+S pour enregistrer votre document.</p>
+                    </div>
+                </div>
+                
+                <div class="bg-accent/10 border border-accent/20 rounded-lg p-4 mt-6">
+                    <h4 class="text-accent font-semibold mb-2">⌨️ Raccourcis clavier</h4>
+                    <div class="text-sm space-y-1">
+                        <p><kbd class="bg-secondary px-2 py-1 rounded">Ctrl + S</kbd> : Sauvegarder le document</p>
+                        <p><kbd class="bg-secondary px-2 py-1 rounded">Ctrl + B</kbd> : Mettre en gras</p>
+                        <p><kbd class="bg-secondary px-2 py-1 rounded">Ctrl + I</kbd> : Mettre en italique</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex justify-end mt-8">
+                <button onclick="closeModal('editorTutorialModal')" class="bg-accent text-accent-foreground px-6 py-2 rounded-lg hover:bg-accent/90 transition-colors">
+                    Parfait !
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sharing Tutorial Modal -->
+    <div id="sharingTutorialModal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" data-testid="modal-sharing-tutorial">
+        <div class="bg-card border border-border rounded-xl p-8 max-w-2xl max-h-[80vh] overflow-y-auto m-4">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold text-foreground">🔗 Tutoriel : Partage de fichiers</h2>
+                <button onclick="closeModal('sharingTutorialModal')" class="text-muted-foreground hover:text-foreground" data-testid="button-close-sharing-modal">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="space-y-6 text-muted-foreground">
+                <div class="flex items-start space-x-3">
+                    <div class="w-8 h-8 bg-accent rounded-full flex items-center justify-center text-accent-foreground font-bold">1</div>
+                    <div>
+                        <h3 class="text-foreground font-semibold mb-2">Accès local uniquement</h3>
+                        <p>OneBox fonctionne en mode local pour votre sécurité. Vos fichiers restent sur votre appareil et ne sont pas partagés sur internet.</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-start space-x-3">
+                    <div class="w-8 h-8 bg-accent rounded-full flex items-center justify-center text-accent-foreground font-bold">2</div>
+                    <div>
+                        <h3 class="text-foreground font-semibold mb-2">Partage par téléchargement</h3>
+                        <p>Pour partager un fichier, utilisez le bouton "Télécharger" dans le menu du fichier, puis envoyez-le via email, messagerie, ou clé USB.</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-start space-x-3">
+                    <div class="w-8 h-8 bg-accent rounded-full flex items-center justify-center text-accent-foreground font-bold">3</div>
+                    <div>
+                        <h3 class="text-foreground font-semibold mb-2">Synchronisation manuelle</h3>
+                        <p>Pour accéder à vos fichiers depuis un autre appareil, exportez vos données et importez-les sur l'autre appareil.</p>
+                    </div>
+                </div>
+                
+                <div class="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-4 mt-6">
+                    <h4 class="text-yellow-500 font-semibold mb-2">🔒 Sécurité avant tout</h4>
+                    <p class="text-sm">Cette approche locale garantit que vos données privées ne quittent jamais votre appareil, offrant une sécurité maximale.</p>
+                </div>
+            </div>
+            
+            <div class="flex justify-end mt-8">
+                <button onclick="closeModal('sharingTutorialModal')" class="bg-accent text-accent-foreground px-6 py-2 rounded-lg hover:bg-accent/90 transition-colors">
+                    C'est noté !
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Modal with 3D Snapchat Style -->
+    <div id="contactModal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" data-testid="modal-contact">
+        <div class="relative bg-gradient-to-br from-yellow-400 via-pink-500 to-purple-600 p-1 rounded-3xl transform transition-all duration-300 hover:scale-105 m-4">
+            <div class="bg-black rounded-3xl p-8 max-w-md relative overflow-hidden">
+                <!-- 3D Background Effect -->
+                <div class="absolute inset-0 bg-gradient-to-r from-purple-600/20 via-pink-500/20 to-yellow-400/20 animate-pulse"></div>
+                <div class="absolute -top-10 -right-10 w-32 h-32 bg-yellow-400/30 rounded-full blur-3xl"></div>
+                <div class="absolute -bottom-10 -left-10 w-32 h-32 bg-purple-600/30 rounded-full blur-3xl"></div>
+                
+                <!-- Content -->
+                <div class="relative z-10">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-12 h-12 bg-gradient-to-r from-yellow-400 to-pink-500 rounded-2xl flex items-center justify-center transform rotate-12">
+                                <i class="fab fa-snapchat-ghost text-black text-xl"></i>
+                            </div>
+                            <h2 class="text-2xl font-bold text-white">Contact</h2>
+                        </div>
+                        <button onclick="closeModal('contactModal')" class="text-white/70 hover:text-white transition-colors" data-testid="button-close-contact-modal">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="space-y-6">
+                        <div class="text-center">
+                            <div class="inline-block p-4 bg-gradient-to-r from-yellow-400/20 to-pink-500/20 rounded-2xl mb-4 transform hover:rotate-3 transition-transform">
+                                <i class="fas fa-rocket text-4xl text-white"></i>
+                            </div>
+                            <h3 class="text-xl font-semibold text-white mb-2">Rejoignez-nous sur Snapchat!</h3>
+                            <p class="text-white/80 mb-6">Suivez nos dernières actualités et nouveautés sur notre Snap officiel.</p>
+                        </div>
+                        
+                        <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
+                            <div class="flex items-center space-x-3 mb-4">
+                                <i class="fab fa-snapchat text-yellow-400 text-2xl"></i>
+                                <span class="text-white font-semibold">OneBox Officiel</span>
+                            </div>
+                            <p class="text-white/80 text-sm mb-4">Scannez le code Snapchat ou cliquez sur le lien ci-dessous</p>
+                            
+                            <!-- Snapchat Link Button -->
+                            <a href="https://t.snapchat.com/EmDLdFsT" target="_blank" class="block w-full bg-gradient-to-r from-yellow-400 to-pink-500 text-black font-bold py-3 px-6 rounded-xl text-center transform transition-all duration-200 hover:scale-105 hover:shadow-lg active:scale-95">
+                                <i class="fab fa-snapchat mr-2"></i>
+                                Ouvrir sur Snapchat
+                            </a>
+                        </div>
+                        
+                        <div class="text-center">
+                            <div class="inline-flex items-center space-x-2 text-white/60 text-sm">
+                                <i class="fas fa-shield-alt"></i>
+                                <span>Lien officiel sécurisé</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Animated particles -->
+                <div class="absolute top-4 right-4 w-2 h-2 bg-yellow-400 rounded-full animate-bounce" style="animation-delay: 0.5s;"></div>
+                <div class="absolute bottom-6 left-6 w-1 h-1 bg-pink-500 rounded-full animate-bounce" style="animation-delay: 1s;"></div>
+                <div class="absolute top-1/3 left-4 w-1.5 h-1.5 bg-purple-400 rounded-full animate-bounce" style="animation-delay: 1.5s;"></div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
