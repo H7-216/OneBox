@@ -3,2060 +3,2002 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OneBox - Plateforme de Stockage Personnel</title>
-    <meta name="description" content="OneBox est un service de stockage local et sécurisé. Sauvegardez, organisez et éditez vos fichiers directement en local avec une interface moderne et intuitive.">
+    <title>OneBox - Cloud Personnel Sécurisé 💪🏾</title>
+    <meta name="description" content="OneBox - Stockez, organisez et accédez à vos fichiers en toute sécurité. Votre cloud personnel avec éditeur WYSIWYG intégré.">
     
-    <!-- Open Graph tags -->
-    <meta property="og:title" content="OneBox - Plateforme de Stockage Personnel">
-    <meta property="og:description" content="Votre cloud personnel sécurisé avec éditeur intégré et organisation de fichiers.">
-    <meta property="og:type" content="website">
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-    tailwind.config = {
-        darkMode: ["class"],
-        theme: {
-            extend: {
-                borderRadius: {
-                    lg: "var(--radius)",
-                    md: "calc(var(--radius) - 2px)",
-                    sm: "calc(var(--radius) - 4px)",
-                },
-                colors: {
-                    background: "hsl(var(--background))",
-                    foreground: "hsl(var(--foreground))",
-                    card: {
-                        DEFAULT: "hsl(var(--card))",
-                        foreground: "hsl(var(--card-foreground))",
-                    },
-                    popover: {
-                        DEFAULT: "hsl(var(--popover))",
-                        foreground: "hsl(var(--popover-foreground))",
-                    },
-                    primary: {
-                        DEFAULT: "hsl(var(--primary))",
-                        foreground: "hsl(var(--primary-foreground))",
-                    },
-                    secondary: {
-                        DEFAULT: "hsl(var(--secondary))",
-                        foreground: "hsl(var(--secondary-foreground))",
-                    },
-                    muted: {
-                        DEFAULT: "hsl(var(--muted))",
-                        foreground: "hsl(var(--muted-foreground))",
-                    },
-                    accent: {
-                        DEFAULT: "hsl(var(--accent))",
-                        foreground: "hsl(var(--accent-foreground))",
-                    },
-                    destructive: {
-                        DEFAULT: "hsl(var(--destructive))",
-                        foreground: "hsl(var(--destructive-foreground))",
-                    },
-                    border: "hsl(var(--border))",
-                    input: "hsl(var(--input))",
-                    ring: "hsl(var(--ring))",
-                },
-                fontFamily: {
-                    sans: ["Inter", "sans-serif"],
-                },
-                keyframes: {
-                    "accordion-down": {
-                        from: { height: "0" },
-                        to: { height: "var(--radix-accordion-content-height)" },
-                    },
-                    "accordion-up": {
-                        from: { height: "var(--radix-accordion-content-height)" },
-                        to: { height: "0" },
-                    },
-                    fadeIn: {
-                        from: { opacity: "0", transform: "translateY(20px)" },
-                        to: { opacity: "1", transform: "translateY(0)" },
-                    },
-                    spin: {
-                        from: { transform: "rotate(0deg)" },
-                        to: { transform: "rotate(360deg)" },
-                    },
-                    bounce: {
-                        "0%, 100%": { 
-                            transform: "translateY(-25%)",
-                            animationTimingFunction: "cubic-bezier(0.8, 0, 1, 1)"
-                        },
-                        "50%": { 
-                            transform: "translateY(0)",
-                            animationTimingFunction: "cubic-bezier(0, 0, 0.2, 1)"
-                        }
-                    }
-                },
-                animation: {
-                    "accordion-down": "accordion-down 0.2s ease-out",
-                    "accordion-up": "accordion-up 0.2s ease-out",
-                    "fade-in": "fadeIn 0.6s ease-out forwards",
-                    "spin": "spin 1s linear infinite",
-                    "bounce": "bounce 1s infinite",
-                },
-            },
-        }
-    };
-    </script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- CSS -->
     <style>
         :root {
-            --background: 222 84% 5%;
+            --primary: 171 100% 43%;
+            --accent: 171 100% 43%;
+            --background: 210 50% 8%;
             --foreground: 210 40% 98%;
-            --card: 222 84% 8%;
+            --card: 210 50% 10%;
             --card-foreground: 210 40% 98%;
-            --popover: 222 84% 8%;
-            --popover-foreground: 210 40% 98%;
-            --primary: 180 83% 55%;
-            --primary-foreground: 210 40% 98%;
-            --secondary: 217 32% 17%;
-            --secondary-foreground: 210 40% 98%;
-            --muted: 217 32% 14%;
-            --muted-foreground: 215 20% 65%;
-            --accent: 180 83% 55%;
-            --accent-foreground: 210 40% 98%;
-            --destructive: 0 84% 60%;
+            --border: 210 40% 20%;
+            --input: 210 40% 15%;
+            --ring: 171 100% 43%;
+            --muted: 210 40% 15%;
+            --muted-foreground: 210 40% 65%;
+            --destructive: 0 62% 30%;
             --destructive-foreground: 210 40% 98%;
-            --border: 217 32% 17%;
-            --input: 217 32% 17%;
-            --ring: 180 83% 55%;
-            --radius: 0.75rem;
         }
 
         * {
-            border-color: hsl(var(--border));
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         body {
             font-family: 'Inter', sans-serif;
-            background-color: hsl(var(--background));
+            background: hsl(var(--background));
+            color: hsl(var(--foreground));
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .font-poppins {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* Glass Effect */
+        .glass-effect {
+            background: rgba(13, 27, 42, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* 3D Effects */
+        .perspective-card {
+            transform-style: preserve-3d;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: perspective(1000px);
+        }
+
+        .perspective-card:hover {
+            transform: perspective(1000px) rotateX(8deg) rotateY(8deg) scale(1.05);
+        }
+
+        .neon-glow {
+            box-shadow: 0 0 30px rgba(6, 214, 160, 0.5), 0 0 60px rgba(6, 214, 160, 0.3);
+        }
+
+        .floating-btn {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateZ(0);
+        }
+
+        .floating-btn:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 12px 35px rgba(6, 214, 160, 0.6);
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(13, 27, 42, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1rem 0;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: hsl(var(--foreground));
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: hsl(var(--background));
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: hsl(var(--foreground));
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: rgba(6, 214, 160, 0.1);
+            color: hsl(var(--primary));
+        }
+
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: hsl(var(--foreground));
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* Sections */
+        .section {
+            display: none;
+            min-height: 100vh;
+            padding: 100px 0 50px;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 80px 0;
+        }
+
+        .hero-title {
+            font-size: 4rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            color: hsl(var(--muted-foreground));
+            margin-bottom: 3rem;
+        }
+
+        /* Cards */
+        .card {
+            background: hsl(var(--card));
+            border: 1px solid hsl(var(--border));
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .grid {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
+            color: hsl(var(--background));
+        }
+
+        .btn-secondary {
+            background: hsl(var(--muted));
             color: hsl(var(--foreground));
         }
 
-        .gradient-bg {
-            background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%);
+        .btn-outline {
+            background: transparent;
+            border: 2px solid hsl(var(--primary));
+            color: hsl(var(--primary));
         }
 
-        .hover-lift {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        /* Forms */
+        .form-group {
+            margin-bottom: 1.5rem;
         }
 
-        .hover-lift:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 20px 40px rgba(34, 197, 194, 0.2);
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
         }
 
-        .file-hover {
-            transition: all 0.2s ease;
-        }
-
-        .file-hover:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(34, 197, 194, 0.1);
-        }
-
-        .nav-item {
-            transition: all 0.2s ease;
-        }
-
-        .nav-item:hover {
-            transform: translateX(2px);
-        }
-
-        .loading-spinner {
-            border: 2px solid transparent;
-            border-top: 2px solid hsl(var(--primary));
-            border-radius: 50%;
-        }
-
-        .prose {
-            max-width: none;
-        }
-
-        .prose p {
-            margin-bottom: 1em;
-        }
-
-        .prose h1, .prose h2, .prose h3 {
-            margin-top: 2em;
-            margin-bottom: 1em;
-            font-weight: 600;
-        }
-
-        .cube {
-            width: 32px;
-            height: 32px;
-            position: relative;
-            transform-style: preserve-3d;
-            animation: rotateCube 6s infinite linear;
-        }
-
-        .cube-face {
-            position: absolute;
-            width: 32px;
-            height: 32px;
-            background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%);
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            padding: 12px;
             border: 1px solid hsl(var(--border));
+            border-radius: 8px;
+            background: hsl(var(--input));
+            color: hsl(var(--foreground));
+            font-size: 1rem;
         }
 
-        .cube-front { transform: translateZ(16px); }
-        .cube-back { transform: rotateY(180deg) translateZ(16px); }
-        .cube-right { transform: rotateY(90deg) translateZ(16px); }
-        .cube-left { transform: rotateY(-90deg) translateZ(16px); }
-        .cube-top { transform: rotateX(90deg) translateZ(16px); }
-        .cube-bottom { transform: rotateX(-90deg) translateZ(16px); }
-
-        @keyframes rotateCube {
-            from { transform: rotateX(0deg) rotateY(0deg); }
-            to { transform: rotateX(360deg) rotateY(360deg); }
+        .form-textarea {
+            resize: vertical;
+            min-height: 120px;
         }
 
-        .toast {
+        /* Footer */
+        .footer {
+            background: hsl(var(--card));
+            border-top: 1px solid hsl(var(--border));
+            padding: 3rem 0 2rem;
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 1rem;
+            color: hsl(var(--primary));
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section a {
+            color: hsl(var(--muted-foreground));
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-section a:hover {
+            color: hsl(var(--primary));
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .social-icon {
+            width: 40px;
+            height: 40px;
+            background: hsl(var(--muted));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: hsl(var(--foreground));
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .social-icon:hover {
+            background: hsl(var(--primary));
+            color: hsl(var(--background));
+            transform: translateY(-2px);
+        }
+
+        .snapchat-btn {
+            background: linear-gradient(135deg, #FFFC00, #FFD700);
+            color: #000;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .snapchat-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(255, 252, 0, 0.4);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
             position: fixed;
-            bottom: 20px;
-            right: 20px;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            backdrop-filter: blur(10px);
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
             background: hsl(var(--card));
             border: 1px solid hsl(var(--border));
-            border-radius: calc(var(--radius) - 2px);
-            padding: 16px 24px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-            z-index: 100;
-            transform: translateX(100%);
-            transition: transform 0.3s ease-in-out;
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9) translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: hsl(var(--muted-foreground));
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background: hsl(var(--muted));
+            color: hsl(var(--foreground));
+        }
+
+        /* File Grid */
+        .file-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .file-card {
+            background: hsl(var(--card));
+            border: 1px solid hsl(var(--border));
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .file-card:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 12px 35px rgba(6, 214, 160, 0.3);
+            border-color: hsl(var(--primary));
+        }
+
+        .file-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: hsl(var(--primary));
+            transition: all 0.3s ease;
+        }
+
+        .file-card:hover .file-icon {
+            transform: scale(1.1);
+        }
+
+        .file-preview-thumb {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            background: hsl(var(--muted));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .file-actions {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            margin-top: 1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .file-card:hover .file-actions {
+            opacity: 1;
+        }
+
+        .file-action-btn {
+            background: hsl(var(--muted));
+            border: none;
+            border-radius: 6px;
+            padding: 8px;
+            color: hsl(var(--foreground));
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .file-action-btn:hover {
+            background: hsl(var(--primary));
+            color: hsl(var(--background));
+        }
+
+        /* File Preview Modal */
+        .file-preview-modal .modal-content {
+            max-width: 90vw;
+            max-height: 90vh;
+            width: auto;
+            height: auto;
+            padding: 1rem;
+        }
+
+        .file-preview-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .file-preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid hsl(var(--border));
+            margin-bottom: 1rem;
+        }
+
+        .file-preview-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 400px;
+            background: hsl(var(--muted));
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .pdf-viewer, .image-viewer, .video-viewer {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 8px;
+        }
+
+        .text-viewer {
+            width: 100%;
+            height: 100%;
+            background: hsl(var(--card));
+            color: hsl(var(--foreground));
+            padding: 2rem;
+            font-family: 'Courier New', monospace;
+            border: none;
+            border-radius: 8px;
+            overflow: auto;
+            white-space: pre-wrap;
+        }
+
+        .file-info-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid hsl(var(--border));
+        }
+
+        .file-info-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: hsl(var(--muted-foreground));
+            font-size: 0.9rem;
+        }
+
+        .file-preview-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        /* Zoom controls */
+        .zoom-controls {
+            position: absolute;
+            top: 1rem;
+            right: 4rem;
+            display: flex;
+            gap: 0.5rem;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 8px;
+            padding: 0.5rem;
+        }
+
+        .zoom-btn {
+            background: hsl(var(--muted));
+            border: none;
+            border-radius: 4px;
+            padding: 8px 12px;
+            color: hsl(var(--foreground));
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .zoom-btn:hover {
+            background: hsl(var(--primary));
+        }
+
+        /* Loading spinner */
+        .loading-spinner {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 200px;
+            color: hsl(var(--primary));
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid hsl(var(--muted));
+            border-top: 3px solid hsl(var(--primary));
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Authentication */
+        .auth-container {
             max-width: 400px;
+            margin: 0 auto;
+            padding: 2rem;
         }
 
-        .toast.show {
-            transform: translateX(0);
+        .auth-card {
+            background: hsl(var(--card));
+            border: 1px solid hsl(var(--border));
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
         }
 
-        .toast.destructive {
-            border-color: hsl(var(--destructive));
-            background: hsl(var(--destructive) / 0.1);
+        /* Editor */
+        .editor-container {
+            background: hsl(var(--card));
+            border: 1px solid hsl(var(--border));
+            border-radius: 12px;
+            min-height: 400px;
+            padding: 2rem;
         }
 
-        .scrollbar-thin {
-            scrollbar-width: thin;
-            scrollbar-color: hsl(var(--muted)) transparent;
+        .editor-toolbar {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid hsl(var(--border));
         }
 
-        .scrollbar-thin::-webkit-scrollbar {
-            width: 6px;
+        .editor-btn {
+            background: hsl(var(--muted));
+            border: none;
+            border-radius: 6px;
+            padding: 8px 12px;
+            color: hsl(var(--foreground));
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
 
-        .scrollbar-thin::-webkit-scrollbar-track {
-            background: transparent;
+        .editor-btn:hover {
+            background: hsl(var(--primary));
+            color: hsl(var(--background));
         }
 
-        .scrollbar-thin::-webkit-scrollbar-thumb {
-            background-color: hsl(var(--muted));
-            border-radius: 20px;
+        .editor-content {
+            min-height: 300px;
+            outline: none;
+            line-height: 1.8;
         }
 
-        /* Responsive styles for mobile, tablet, and desktop */
-        @media (max-width: 640px) {
-            .cube {
-                width: 20px;
-                height: 20px;
-            }
-            
-            .cube-face {
-                width: 20px;
-                height: 20px;
-            }
-            
-            .cube-front { transform: translateZ(10px); }
-            .cube-back { transform: rotateY(180deg) translateZ(10px); }
-            .cube-right { transform: rotateY(90deg) translateZ(10px); }
-            .cube-left { transform: rotateY(-90deg) translateZ(10px); }
-            .cube-top { transform: rotateX(90deg) translateZ(10px); }
-            .cube-bottom { transform: rotateX(-90deg) translateZ(10px); }
-            
-            .toast {
-                left: 10px;
-                right: 10px;
-                bottom: 10px;
-                max-width: none;
-            }
-        }
-
+        /* Responsive */
         @media (max-width: 768px) {
-            .nav-mobile {
-                display: none;
-            }
-            
-            .mobile-menu {
+            .mobile-menu-toggle {
                 display: block;
             }
-        }
 
-        @media (min-width: 769px) {
-            .nav-mobile {
+            .nav-menu {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: rgba(13, 27, 42, 0.98);
+                flex-direction: column;
+                padding: 2rem;
+                gap: 1rem;
+            }
+
+            .nav-menu.active {
                 display: flex;
             }
-            
-            .mobile-menu {
-                display: none;
+
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .container {
+                padding: 0 1rem;
             }
         }
     </style>
 </head>
-<body class="bg-background text-foreground min-h-screen">
-
-    <!-- Toast Container -->
-    <div id="toastContainer" class="fixed bottom-2 sm:bottom-4 right-2 sm:right-4 left-2 sm:left-auto space-y-2 z-50"></div>
-
-    <!-- Authentication Modal -->
-    <div id="authModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center hidden">
-        <div class="bg-card border border-border rounded-xl p-6 sm:p-8 w-full max-w-md mx-4 shadow-2xl max-h-[90vh] overflow-y-auto">
-            <div id="loginForm" class="space-y-6">
-                <div class="text-center">
-                    <div class="flex justify-center mb-4">
-                        <div class="flex items-center space-x-3">
-                            <div class="cube">
-                                <div class="cube-face cube-front"></div>
-                                <div class="cube-face cube-back"></div>
-                                <div class="cube-face cube-right"></div>
-                                <div class="cube-face cube-left"></div>
-                                <div class="cube-face cube-top"></div>
-                                <div class="cube-face cube-bottom"></div>
-                            </div>
-                            <h2 class="text-2xl font-bold text-foreground">OneBox</h2>
-                        </div>
-                    </div>
-                    <h3 class="text-xl font-semibold text-foreground" data-testid="text-auth-prompt">Connexion</h3>
-                    <p class="text-muted-foreground mt-2" data-testid="text-auth-description">Connectez-vous à votre compte OneBox</p>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#" class="logo" onclick="showSection('home')">
+                <div class="logo-icon">
+                    <i class="fas fa-box"></i>
                 </div>
-                
-                <form class="space-y-4" onsubmit="handleLogin(event)">
-                    <div class="space-y-2">
-                        <label class="block text-sm font-medium">Nom d'utilisateur</label>
-                        <input type="text" id="loginUsername" required
-                               class="w-full px-3 py-2 bg-input border border-border rounded-md focus:ring-2 focus:ring-primary focus:border-transparent"
-                               placeholder="Entrez votre nom d'utilisateur"
-                               data-testid="input-username">
-                    </div>
-                    
-                    <div class="space-y-2">
-                        <label class="block text-sm font-medium">Mot de passe</label>
-                        <input type="password" id="loginPassword" required
-                               class="w-full px-3 py-2 bg-input border border-border rounded-md focus:ring-2 focus:ring-primary focus:border-transparent"
-                               placeholder="Entrez votre mot de passe"
-                               data-testid="input-password">
-                    </div>
-                    
-                    <div class="space-y-3">
-                        <button type="submit" class="w-full bg-primary text-primary-foreground py-2 px-4 rounded-md hover:opacity-90 transition-opacity"
-                                data-testid="button-login">
-                            <span id="loginButtonText">Se connecter</span>
-                            <div id="loginSpinner" class="loading-spinner w-5 h-5 mx-auto hidden animate-spin"></div>
-                        </button>
-                        <div class="text-center">
-                            <button type="button" onclick="showRegister()" 
-                                    class="text-sm text-accent hover:underline"
-                                    data-testid="button-toggle-mode">
-                                Pas de compte ? Créez-en un
-                            </button>
-                        </div>
-                    </div>
-                </form>
-            </div>
+                <span class="font-poppins">OneBox</span>
+            </a>
             
-            <div id="registerForm" class="space-y-6 hidden">
-                <div class="text-center">
-                    <div class="flex justify-center mb-4">
-                        <div class="flex items-center space-x-3">
-                            <div class="cube">
-                                <div class="cube-face cube-front"></div>
-                                <div class="cube-face cube-back"></div>
-                                <div class="cube-face cube-right"></div>
-                                <div class="cube-face cube-left"></div>
-                                <div class="cube-face cube-top"></div>
-                                <div class="cube-face cube-bottom"></div>
-                            </div>
-                            <h2 class="text-2xl font-bold text-foreground">OneBox</h2>
-                        </div>
-                    </div>
-                    <h3 class="text-xl font-semibold text-foreground" data-testid="text-auth-prompt">Créer un compte</h3>
-                    <p class="text-muted-foreground mt-2" data-testid="text-auth-description">Créez votre compte OneBox</p>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="#" class="nav-link active" onclick="showSection('home')" data-section="home">Accueil</a></li>
+                <li><a href="#" class="nav-link" onclick="showSection('files')" data-section="files">Mes Fichiers</a></li>
+                <li><a href="#" class="nav-link" onclick="showSection('editor')" data-section="editor">Éditeur</a></li>
+                <li><a href="#" class="nav-link" onclick="showSection('contact')" data-section="contact">Contact</a></li>
+                <li><a href="#" class="nav-link" onclick="showSection('auth')" data-section="auth">Connexion</a></li>
+            </ul>
+            
+            <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Home Section -->
+    <section id="home" class="section active">
+        <div class="container">
+            <div class="hero">
+                <div class="perspective-card neon-glow" style="display: inline-block; padding: 2rem; background: linear-gradient(135deg, rgba(6, 214, 160, 0.2), rgba(6, 214, 160, 0.1)); border-radius: 24px; margin-bottom: 2rem;">
+                    <h1 class="hero-title font-poppins">OneBox</h1>
                 </div>
-                
-                <form class="space-y-4" onsubmit="handleRegister(event)">
-                    <div class="space-y-2">
-                        <label class="block text-sm font-medium">Nom d'utilisateur</label>
-                        <input type="text" id="registerUsername" required
-                               class="w-full px-3 py-2 bg-input border border-border rounded-md focus:ring-2 focus:ring-primary focus:border-transparent"
-                               placeholder="Entrez votre nom d'utilisateur"
-                               data-testid="input-username">
-                    </div>
-                    
-                    <div class="space-y-2">
-                        <label class="block text-sm font-medium">Mot de passe</label>
-                        <input type="password" id="registerPassword" required
-                               class="w-full px-3 py-2 bg-input border border-border rounded-md focus:ring-2 focus:ring-primary focus:border-transparent"
-                               placeholder="Entrez votre mot de passe"
-                               data-testid="input-password">
-                    </div>
-                    
-                    <div class="space-y-3">
-                        <button type="submit" class="w-full bg-primary text-primary-foreground py-2 px-4 rounded-md hover:opacity-90 transition-opacity"
-                                data-testid="button-register">
-                            <span id="registerButtonText">Créer un compte</span>
-                            <div id="registerSpinner" class="loading-spinner w-5 h-5 mx-auto hidden animate-spin"></div>
-                        </button>
-                        <div class="text-center">
-                            <button type="button" onclick="showLogin()" 
-                                    class="text-sm text-accent hover:underline"
-                                    data-testid="button-toggle-mode">
-                                Déjà un compte ? Connectez-vous
-                            </button>
+                <h2 class="hero-subtitle">Votre cloud personnel sécurisé 💪🏾</h2>
+                <p class="hero-subtitle" style="font-size: 1.2rem; margin-bottom: 3rem;">
+                    Stockez, organisez et accédez à vos fichiers en toute sécurité. 
+                    Avec OneBox, vos documents sont toujours à portée de main, où que vous soyez.
+                </p>
+                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                    <button class="btn btn-primary floating-btn" onclick="showSection('auth')">
+                        <i class="fas fa-rocket"></i>
+                        Commencer maintenant
+                    </button>
+                    <button class="btn btn-outline floating-btn" onclick="openModal('demoModal')">
+                        <i class="fas fa-play"></i>
+                        Voir la démo
+                    </button>
+                </div>
+            </div>
+
+            <!-- Features -->
+            <div class="grid grid-3" style="margin-top: 4rem;">
+                <div class="card perspective-card">
+                    <div style="text-align: center;">
+                        <div style="width: 80px; height: 80px; background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent))); border-radius: 16px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem;">
+                            <i class="fas fa-cloud" style="font-size: 2rem; color: hsl(var(--background));"></i>
                         </div>
+                        <h3 style="margin-bottom: 1rem; color: hsl(var(--primary));">Stockage Cloud</h3>
+                        <p style="color: hsl(var(--muted-foreground));">
+                            Stockez vos fichiers en toute sécurité dans le cloud avec un accès instantané.
+                        </p>
                     </div>
-                </form>
+                </div>
+
+                <div class="card perspective-card">
+                    <div style="text-align: center;">
+                        <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #8B5CF6, #A855F7); border-radius: 16px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem;">
+                            <i class="fas fa-shield-alt" style="font-size: 2rem; color: white;"></i>
+                        </div>
+                        <h3 style="margin-bottom: 1rem; color: hsl(var(--primary));">Sécurité Avancée</h3>
+                        <p style="color: hsl(var(--muted-foreground));">
+                            Chiffrement de bout en bout et authentification sécurisée pour vos données.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="card perspective-card">
+                    <div style="text-align: center;">
+                        <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #10B981, #059669); border-radius: 16px; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem;">
+                            <i class="fas fa-edit" style="font-size: 2rem; color: white;"></i>
+                        </div>
+                        <h3 style="margin-bottom: 1rem; color: hsl(var(--primary));">Éditeur WYSIWYG</h3>
+                        <p style="color: hsl(var(--muted-foreground));">
+                            Créez et modifiez vos documents avec un éditeur professionnel intégré.
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
+    </section>
 
-    <!-- Main Application -->
-    <div id="mainApp" class="hidden">
-        <!-- Header -->
-        <header class="bg-card border-b border-border px-4 sm:px-6 py-4 flex items-center justify-between">
-            <div class="flex items-center space-x-2 sm:space-x-4">
-                <div class="flex items-center space-x-2 sm:space-x-3">
-                    <div class="cube" style="width: 20px; height: 20px;">
-                        <div class="cube-face cube-front" style="width: 20px; height: 20px;"></div>
-                        <div class="cube-face cube-back" style="width: 20px; height: 20px;"></div>
-                        <div class="cube-face cube-right" style="width: 20px; height: 20px;"></div>
-                        <div class="cube-face cube-left" style="width: 20px; height: 20px;"></div>
-                        <div class="cube-face cube-top" style="width: 20px; height: 20px;"></div>
-                        <div class="cube-face cube-bottom" style="width: 20px; height: 20px;"></div>
-                    </div>
-                    <h1 class="text-xl sm:text-2xl font-bold text-foreground">OneBox</h1>
-                </div>
-                
-                <!-- Desktop Navigation -->
-                <div class="nav-mobile">
-                    <div class="h-6 w-px bg-border"></div>
-                    <nav class="flex space-x-6">
-                        <button onclick="showSection('home')" class="nav-item text-foreground hover:text-primary transition-colors" data-section="home" data-testid="button-nav-home">
-                            <i class="fas fa-home mr-2"></i>Accueil
-                        </button>
-                        <button onclick="showSection('storage')" class="nav-item text-muted-foreground hover:text-primary transition-colors" data-section="storage" data-testid="button-nav-storage">
-                            <i class="fas fa-folder mr-2"></i>Mes fichiers
-                        </button>
-                        <button onclick="showSection('editor')" class="nav-item text-muted-foreground hover:text-primary transition-colors" data-section="editor" data-testid="button-nav-editor">
-                            <i class="fas fa-edit mr-2"></i>Éditeur
-                        </button>
-                        <button onclick="showSection('help')" class="nav-item text-muted-foreground hover:text-primary transition-colors" data-section="help" data-testid="button-nav-help">
-                            <i class="fas fa-question-circle mr-2"></i>Aide
-                        </button>
-                    </nav>
-                </div>
-                
-                <!-- Mobile Menu Button -->
-                <button onclick="toggleMobileMenu()" class="mobile-menu ml-4 p-2 rounded-md hover:bg-accent transition-colors md:hidden" data-testid="button-mobile-menu">
-                    <i class="fas fa-bars text-foreground"></i>
+    <!-- Files Section -->
+    <section id="files" class="section">
+        <div class="container">
+            <h2 style="text-align: center; margin-bottom: 3rem; font-size: 2.5rem; color: hsl(var(--primary));">Mes Fichiers</h2>
+            
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <button class="btn btn-primary floating-btn" onclick="openModal('uploadModal')">
+                    <i class="fas fa-upload"></i>
+                    Télécharger un fichier
                 </button>
             </div>
-            
-            <div class="flex items-center space-x-2 sm:space-x-4">
-                <div class="relative">
-                    <button onclick="toggleProfileMenu()" class="flex items-center space-x-1 sm:space-x-2 hover:bg-accent rounded-lg p-2 transition-colors">
-                        <div class="w-6 h-6 sm:w-8 sm:h-8 bg-primary rounded-full flex items-center justify-center">
-                            <i class="fas fa-user text-primary-foreground text-xs sm:text-sm"></i>
-                        </div>
-                        <span id="userNameDisplay" class="font-medium text-sm sm:text-base hidden sm:block">Utilisateur</span>
-                        <i class="fas fa-chevron-down text-xs sm:text-sm text-muted-foreground hidden sm:block"></i>
-                    </button>
-                    
-                    <div id="profileMenu" class="absolute right-0 mt-2 w-48 bg-card border border-border rounded-lg shadow-lg hidden z-10">
-                        <div class="p-2">
-                            <button onclick="showSection('profile')" class="w-full text-left px-3 py-2 hover:bg-accent rounded transition-colors" data-testid="button-profile">
-                                <i class="fas fa-user mr-3"></i>Profil
-                            </button>
-                            <div class="border-t border-border my-2"></div>
-                            <button onclick="handleLogout()" class="w-full text-left px-3 py-2 hover:bg-accent rounded transition-colors text-destructive" data-testid="button-logout">
-                                <i class="fas fa-sign-out-alt mr-3"></i>Se déconnecter
-                            </button>
-                        </div>
+
+            <div class="file-grid" id="fileGrid">
+                <!-- PDF File -->
+                <div class="file-card perspective-card" onclick="openFilePreview('Rapport_Annuel.pdf', 'pdf', 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf')">
+                    <div class="file-preview-thumb">
+                        <i class="fas fa-file-pdf" style="font-size: 3rem; color: #DC2626;"></i>
+                    </div>
+                    <h4>Rapport_Annuel.pdf</h4>
+                    <p style="color: hsl(var(--muted-foreground)); font-size: 0.9rem;">2.5 MB • PDF</p>
+                    <div class="file-actions">
+                        <button class="file-action-btn" onclick="event.stopPropagation(); openFilePreview('Rapport_Annuel.pdf', 'pdf', 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf')" title="Prévisualiser">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="file-action-btn" onclick="event.stopPropagation(); downloadFile('Rapport_Annuel.pdf')" title="Télécharger">
+                            <i class="fas fa-download"></i>
+                        </button>
+                        <button class="file-action-btn" onclick="event.stopPropagation(); shareFile('Rapport_Annuel.pdf')" title="Partager">
+                            <i class="fas fa-share"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Image File -->
+                <div class="file-card perspective-card" onclick="openFilePreview('Vacation_Photo.jpg', 'image', 'https://picsum.photos/800/600?random=1')">
+                    <div class="file-preview-thumb">
+                        <img src="https://picsum.photos/200/120?random=1" alt="Vacation Photo" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
+                    </div>
+                    <h4>Vacation_Photo.jpg</h4>
+                    <p style="color: hsl(var(--muted-foreground)); font-size: 0.9rem;">1.2 MB • JPEG</p>
+                    <div class="file-actions">
+                        <button class="file-action-btn" onclick="event.stopPropagation(); openFilePreview('Vacation_Photo.jpg', 'image', 'https://picsum.photos/800/600?random=1')" title="Prévisualiser">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="file-action-btn" onclick="event.stopPropagation(); downloadFile('Vacation_Photo.jpg')" title="Télécharger">
+                            <i class="fas fa-download"></i>
+                        </button>
+                        <button class="file-action-btn" onclick="event.stopPropagation(); editImage('Vacation_Photo.jpg')" title="Éditer">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Word Document -->
+                <div class="file-card perspective-card" onclick="openFilePreview('Contrat_Travail.docx', 'document', null)">
+                    <div class="file-preview-thumb">
+                        <i class="fas fa-file-word" style="font-size: 3rem; color: #2563EB;"></i>
+                    </div>
+                    <h4>Contrat_Travail.docx</h4>
+                    <p style="color: hsl(var(--muted-foreground)); font-size: 0.9rem;">0.8 MB • DOCX</p>
+                    <div class="file-actions">
+                        <button class="file-action-btn" onclick="event.stopPropagation(); openFilePreview('Contrat_Travail.docx', 'document', null)" title="Prévisualiser">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="file-action-btn" onclick="event.stopPropagation(); showSection('editor')" title="Éditer">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="file-action-btn" onclick="event.stopPropagation(); downloadFile('Contrat_Travail.docx')" title="Télécharger">
+                            <i class="fas fa-download"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Video File -->
+                <div class="file-card perspective-card" onclick="openFilePreview('Presentation_Projet.mp4', 'video', 'https://www.w3schools.com/html/mov_bbb.mp4')">
+                    <div class="file-preview-thumb" style="background: linear-gradient(135deg, #8B5CF6, #A855F7); display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-play" style="font-size: 2rem; color: white;"></i>
+                    </div>
+                    <h4>Presentation_Projet.mp4</h4>
+                    <p style="color: hsl(var(--muted-foreground)); font-size: 0.9rem;">15.3 MB • MP4</p>
+                    <div class="file-actions">
+                        <button class="file-action-btn" onclick="event.stopPropagation(); openFilePreview('Presentation_Projet.mp4', 'video', 'https://www.w3schools.com/html/mov_bbb.mp4')" title="Lire">
+                            <i class="fas fa-play"></i>
+                        </button>
+                        <button class="file-action-btn" onclick="event.stopPropagation(); downloadFile('Presentation_Projet.mp4')" title="Télécharger">
+                            <i class="fas fa-download"></i>
+                        </button>
+                        <button class="file-action-btn" onclick="event.stopPropagation(); shareFile('Presentation_Projet.mp4')" title="Partager">
+                            <i class="fas fa-share"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Text File -->
+                <div class="file-card perspective-card" onclick="openFilePreview('Notes_Reunion.txt', 'text', null)">
+                    <div class="file-preview-thumb">
+                        <i class="fas fa-file-alt" style="font-size: 3rem; color: #10B981;"></i>
+                    </div>
+                    <h4>Notes_Reunion.txt</h4>
+                    <p style="color: hsl(var(--muted-foreground)); font-size: 0.9rem;">45 KB • TXT</p>
+                    <div class="file-actions">
+                        <button class="file-action-btn" onclick="event.stopPropagation(); openFilePreview('Notes_Reunion.txt', 'text', null)" title="Prévisualiser">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="file-action-btn" onclick="event.stopPropagation(); showSection('editor')" title="Éditer">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="file-action-btn" onclick="event.stopPropagation(); shareFile('Notes_Reunion.txt')" title="Partager">
+                            <i class="fas fa-share"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Excel File -->
+                <div class="file-card perspective-card" onclick="openFilePreview('Budget_2024.xlsx', 'spreadsheet', null)">
+                    <div class="file-preview-thumb">
+                        <i class="fas fa-file-excel" style="font-size: 3rem; color: #059669;"></i>
+                    </div>
+                    <h4>Budget_2024.xlsx</h4>
+                    <p style="color: hsl(var(--muted-foreground)); font-size: 0.9rem;">1.8 MB • XLSX</p>
+                    <div class="file-actions">
+                        <button class="file-action-btn" onclick="event.stopPropagation(); openFilePreview('Budget_2024.xlsx', 'spreadsheet', null)" title="Prévisualiser">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="file-action-btn" onclick="event.stopPropagation(); downloadFile('Budget_2024.xlsx')" title="Télécharger">
+                            <i class="fas fa-download"></i>
+                        </button>
+                        <button class="file-action-btn" onclick="event.stopPropagation(); shareViaSnapchat('Budget_2024.xlsx')" title="Snapchat">
+                            <i class="fab fa-snapchat-ghost"></i>
+                        </button>
                     </div>
                 </div>
             </div>
-        </header>
-
-        <!-- Mobile Navigation Menu -->
-        <div id="mobileMenu" class="bg-card border-b border-border px-4 py-4 space-y-2 hidden md:hidden">
-            <button onclick="showSection('home'); closeMobileMenu()" class="w-full text-left px-3 py-2 rounded hover:bg-accent transition-colors" data-section="home" data-testid="button-nav-home-mobile">
-                <i class="fas fa-home mr-3"></i>Accueil
-            </button>
-            <button onclick="showSection('storage'); closeMobileMenu()" class="w-full text-left px-3 py-2 rounded hover:bg-accent transition-colors" data-section="storage" data-testid="button-nav-storage-mobile">
-                <i class="fas fa-folder mr-3"></i>Mes fichiers
-            </button>
-            <button onclick="showSection('editor'); closeMobileMenu()" class="w-full text-left px-3 py-2 rounded hover:bg-accent transition-colors" data-section="editor" data-testid="button-nav-editor-mobile">
-                <i class="fas fa-edit mr-3"></i>Éditeur
-            </button>
-            <button onclick="showSection('help'); closeMobileMenu()" class="w-full text-left px-3 py-2 rounded hover:bg-accent transition-colors" data-section="help" data-testid="button-nav-help-mobile">
-                <i class="fas fa-question-circle mr-3"></i>Aide
-            </button>
         </div>
+    </section>
 
-        <!-- Home Section -->
-        <div id="home" class="section" data-testid="home-page">
-            <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-12">
-                <div class="text-center space-y-6 sm:space-y-8">
-                    <div class="space-y-3 sm:space-y-4">
-                        <h1 class="text-3xl sm:text-4xl md:text-6xl font-bold text-foreground leading-tight" data-testid="text-hero-title">
-                            Votre cloud <span class="text-accent">personnel</span>
-                        </h1>
-                        <p class="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto px-4" data-testid="text-hero-description">
-                            OneBox est un service de stockage local et sécurisé. Sauvegardez, organisez et éditez vos fichiers directement en local avec une interface moderne et intuitive.
-                        </p>
-                    </div>
-                    
-                    <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4">
-                        <button onclick="showSection('storage')" class="bg-primary text-primary-foreground px-6 sm:px-8 py-3 rounded-lg text-base sm:text-lg font-medium hover:opacity-90 transition-opacity" data-testid="button-get-started">
-                            Commencer
-                        </button>
-                        <button onclick="showSection('help')" class="bg-secondary text-secondary-foreground px-6 sm:px-8 py-3 rounded-lg text-base sm:text-lg font-medium hover:bg-accent transition-colors" data-testid="button-learn-more">
-                            En savoir plus
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Features Grid -->
-                <div class="mt-12 sm:mt-20 grid sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 px-4">
-                    <div class="bg-card p-6 rounded-xl border border-border file-hover" data-testid="feature-security">
-                        <div class="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center mb-4">
-                            <i class="fas fa-shield-alt text-accent text-xl"></i>
-                        </div>
-                        <h3 class="text-xl font-semibold text-foreground mb-2" data-testid="text-feature-security-title">
-                            Sécurisé
-                        </h3>
-                        <p class="text-muted-foreground" data-testid="text-feature-security-description">
-                            Vos données restent locales avec une authentification Face ID avancée.
-                        </p>
-                    </div>
-
-                    <div class="bg-card p-6 rounded-xl border border-border file-hover" data-testid="feature-editor">
-                        <div class="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center mb-4">
-                            <i class="fas fa-edit text-accent text-xl"></i>
-                        </div>
-                        <h3 class="text-xl font-semibold text-foreground mb-2" data-testid="text-feature-editor-title">
-                            Éditeur intégré
-                        </h3>
-                        <p class="text-muted-foreground" data-testid="text-feature-editor-description">
-                            Créez et modifiez vos documents directement dans l'interface.
-                        </p>
-                    </div>
-
-                    <div class="bg-card p-6 rounded-xl border border-border file-hover" data-testid="feature-organization">
-                        <div class="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center mb-4">
-                            <i class="fas fa-folder-tree text-accent text-xl"></i>
-                        </div>
-                        <h3 class="text-xl font-semibold text-foreground mb-2" data-testid="text-feature-organization-title">
-                            Organisation
-                        </h3>
-                        <p class="text-muted-foreground" data-testid="text-feature-organization-description">
-                            Organisez vos fichiers en dossiers avec un partage local facile.
-                        </p>
-                    </div>
-                </div>
-            </main>
-        </div>
-
-        <!-- Storage Section -->
-        <div id="storage" class="section hidden" data-testid="storage-page">
-            <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
-                <!-- Storage Header -->
-                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 sm:mb-8">
-                    <div class="mb-4 sm:mb-0">
-                        <h1 class="text-2xl sm:text-3xl font-bold text-foreground" data-testid="text-page-title">
-                            Mes fichiers
-                        </h1>
-                        <p class="text-muted-foreground mt-1" data-testid="text-page-description">
-                            Gérez et organisez votre stockage local
-                        </p>
-                    </div>
-                    <div class="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
-                        <button onclick="showCreateFolder()" class="bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:opacity-90 transition-opacity" data-testid="button-new-folder">
-                            <i class="fas fa-plus mr-2"></i>Nouveau dossier
-                        </button>
-                        <button onclick="triggerFileUpload()" class="bg-secondary text-secondary-foreground px-4 py-2 rounded-lg hover:bg-accent transition-colors" data-testid="button-upload">
-                            <i class="fas fa-upload mr-2"></i>Importer
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Create folder input -->
-                <div id="createFolderSection" class="bg-card border border-border rounded-xl p-4 sm:p-6 mb-6 hidden">
-                    <div class="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
-                        <input type="text" id="newFolderName" 
-                               class="flex-1 px-3 py-2 bg-input border border-border rounded-md focus:ring-2 focus:ring-primary focus:border-transparent"
-                               placeholder="Nom du dossier"
-                               data-testid="input-folder-name">
-                        <div class="flex space-x-2">
-                            <button onclick="createFolder()" class="bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:opacity-90 transition-opacity" data-testid="button-create-folder">
-                                Créer
-                            </button>
-                            <button onclick="hideCreateFolder()" class="bg-secondary text-secondary-foreground px-4 py-2 rounded-lg hover:bg-accent transition-colors" data-testid="button-cancel-folder">
-                                Annuler
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Drag & Drop Upload Zone -->
-                <div id="uploadZone" class="bg-card border-2 border-dashed border-border hover:border-accent rounded-xl p-6 sm:p-8 mb-6 sm:mb-8 text-center transition-colors" data-testid="upload-zone">
-                    <div class="space-y-3 sm:space-y-4">
-                        <div class="w-12 h-12 sm:w-16 sm:h-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto">
-                            <i class="fas fa-cloud-upload-alt text-accent text-xl sm:text-2xl"></i>
-                        </div>
-                        <div>
-                            <p class="text-base sm:text-lg font-medium text-foreground" data-testid="text-upload-title">
-                                Glissez vos fichiers ici
-                            </p>
-                            <p class="text-sm sm:text-base text-muted-foreground" data-testid="text-upload-description">
-                                ou cliquez pour parcourir - Tous formats acceptés (images, documents, vidéos, etc.)
-                            </p>
-                        </div>
-                        <button onclick="triggerFileUpload()" class="bg-primary text-primary-foreground px-4 sm:px-6 py-2 rounded-lg hover:opacity-90 transition-opacity" data-testid="button-choose-files">
-                            Choisir des fichiers
-                        </button>
-                    </div>
-                </div>
-
-                <input type="file" id="fileInput" multiple accept="*/*" class="hidden" onchange="handleFileUpload(event)" data-testid="file-input">
-                
-                <!-- Files and Folders Grid -->
-                <div id="filesGrid" class="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 sm:gap-4 lg:gap-6">
-                    <!-- Empty state -->
-                    <div id="emptyState" class="col-span-full text-center py-8 sm:py-12" data-testid="empty-state">
-                        <div class="w-12 h-12 sm:w-16 sm:h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
-                            <i class="fas fa-folder text-muted-foreground text-xl sm:text-2xl"></i>
-                        </div>
-                        <h3 class="text-base sm:text-lg font-medium text-foreground mb-2">Aucun fichier</h3>
-                        <p class="text-sm sm:text-base text-muted-foreground px-4">Commencez par uploader vos premiers fichiers - Tous formats supportés</p>
-                    </div>
-                </div>
-            </main>
-        </div>
-
-        <!-- Editor Section -->
-        <div id="editor" class="section hidden min-h-screen flex flex-col" data-testid="editor-page">
-            <!-- Editor Header -->
-            <div class="bg-card border-b border-border px-2 sm:px-4 py-3 flex flex-col lg:flex-row gap-3 lg:gap-4">
-                <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 flex-1">
-                    <h1 class="text-sm sm:text-base lg:text-lg font-semibold text-foreground whitespace-nowrap" data-testid="text-editor-title">
-                        Éditeur de documents
-                    </h1>
-                    <input type="text" id="documentTitle" 
-                           class="px-3 py-2 bg-input border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent w-full sm:max-w-xs lg:max-w-sm text-sm sm:text-base"
-                           placeholder="Titre du document"
-                           value="Document sans titre"
-                           onchange="markUnsaved()"
-                           data-testid="input-document-title">
-                    <span id="unsavedIndicator" class="text-xs sm:text-sm text-amber-500 hidden animate-pulse" data-testid="text-unsaved-indicator">
-                        <i class="fas fa-circle text-xs mr-1"></i>Non sauvegardé
-                    </span>
-                </div>
-                <div class="flex items-center gap-2 justify-end">
-                    <button onclick="saveDocument()" class="bg-primary text-primary-foreground px-3 sm:px-4 py-2 rounded-lg hover:opacity-90 transition-all duration-200 font-medium text-sm sm:text-base" data-testid="button-save">
-                        <i class="fas fa-save mr-1 sm:mr-2"></i><span id="saveButtonText">Sauvegarder</span>
+    <!-- Editor Section -->
+    <section id="editor" class="section">
+        <div class="container">
+            <h2 style="text-align: center; margin-bottom: 3rem; font-size: 2.5rem; color: hsl(var(--primary));">Éditeur de Documents</h2>
+            
+            <div class="editor-container">
+                <div class="editor-toolbar">
+                    <button class="editor-btn" onclick="formatText('bold')" title="Gras">
+                        <i class="fas fa-bold"></i>
                     </button>
-                    <button onclick="toggleEditorTheme()" class="p-2 hover:bg-accent rounded-lg transition-colors" data-testid="button-toggle-theme">
-                        <i id="themeIcon" class="fas fa-sun text-muted-foreground text-sm sm:text-base"></i>
+                    <button class="editor-btn" onclick="formatText('italic')" title="Italique">
+                        <i class="fas fa-italic"></i>
+                    </button>
+                    <button class="editor-btn" onclick="formatText('underline')" title="Souligné">
+                        <i class="fas fa-underline"></i>
+                    </button>
+                    <button class="editor-btn" onclick="formatText('insertUnorderedList')" title="Liste">
+                        <i class="fas fa-list-ul"></i>
+                    </button>
+                    <button class="editor-btn" onclick="formatText('insertOrderedList')" title="Liste numérotée">
+                        <i class="fas fa-list-ol"></i>
+                    </button>
+                    <button class="editor-btn" onclick="saveDocument()" title="Sauvegarder">
+                        <i class="fas fa-save"></i>
                     </button>
                 </div>
-            </div>
-            
-            <!-- Editor Toolbar -->
-            <div class="bg-card border-b border-border px-2 sm:px-4 py-2">
-                <div class="flex items-center gap-1 overflow-x-auto pb-1">
-                    <!-- Formatting buttons -->
-                    <div class="flex items-center gap-1 flex-shrink-0">
-                        <button onclick="execCommand('bold')" class="p-2 hover:bg-accent rounded-lg transition-colors" data-testid="button-bold" title="Gras">
-                            <i class="fas fa-bold text-sm"></i>
-                        </button>
-                        <button onclick="execCommand('italic')" class="p-2 hover:bg-accent rounded-lg transition-colors" data-testid="button-italic" title="Italique">
-                            <i class="fas fa-italic text-sm"></i>
-                        </button>
-                        <button onclick="execCommand('underline')" class="p-2 hover:bg-accent rounded-lg transition-colors" data-testid="button-underline" title="Souligné">
-                            <i class="fas fa-underline text-sm"></i>
-                        </button>
-                    </div>
-                    
-                    <div class="w-px h-6 bg-border mx-2 flex-shrink-0"></div>
-                    
-                    <!-- Alignment buttons -->
-                    <div class="flex items-center gap-1 flex-shrink-0">
-                        <button onclick="execCommand('justifyLeft')" class="p-2 hover:bg-accent rounded-lg transition-colors" data-testid="button-align-left" title="Aligner à gauche">
-                            <i class="fas fa-align-left text-sm"></i>
-                        </button>
-                        <button onclick="execCommand('justifyCenter')" class="p-2 hover:bg-accent rounded-lg transition-colors" data-testid="button-align-center" title="Centrer">
-                            <i class="fas fa-align-center text-sm"></i>
-                        </button>
-                        <button onclick="execCommand('justifyRight')" class="p-2 hover:bg-accent rounded-lg transition-colors" data-testid="button-align-right" title="Aligner à droite">
-                            <i class="fas fa-align-right text-sm"></i>
-                        </button>
-                    </div>
-                    
-                    <div class="w-px h-6 bg-border mx-2 flex-shrink-0"></div>
-                    
-                    <!-- Lists -->
-                    <div class="flex items-center gap-1 flex-shrink-0">
-                        <button onclick="execCommand('insertUnorderedList')" class="p-2 hover:bg-accent rounded-lg transition-colors" data-testid="button-bullet-list" title="Liste à puces">
-                            <i class="fas fa-list-ul text-sm"></i>
-                        </button>
-                        <button onclick="execCommand('insertOrderedList')" class="p-2 hover:bg-accent rounded-lg transition-colors" data-testid="button-number-list" title="Liste numérotée">
-                            <i class="fas fa-list-ol text-sm"></i>
-                        </button>
-                    </div>
-                    
-                    <div class="w-px h-6 bg-border mx-2 flex-shrink-0"></div>
-                    
-                    <!-- Color Picker -->
-                    <div class="relative flex-shrink-0">
-                        <button onclick="toggleColorPicker()" class="p-2 hover:bg-accent rounded-lg transition-colors flex items-center gap-1" data-testid="button-text-color" title="Couleur du texte">
-                            <i class="fas fa-palette text-sm"></i>
-                            <div id="currentColor" class="w-4 h-4 rounded border border-border" style="background-color: #000000;"></div>
-                        </button>
-                        <div id="colorPicker" class="hidden absolute top-full left-0 mt-1 bg-card border border-border rounded-lg shadow-lg p-3 z-20 min-w-max">
-                            <div class="grid grid-cols-6 gap-1 mb-2">
-                                <button onclick="setTextColor('#000000')" class="w-6 h-6 rounded border border-border hover:scale-110 transition-transform" style="background-color: #000000;" title="Noir"></button>
-                                <button onclick="setTextColor('#ff0000')" class="w-6 h-6 rounded border border-border hover:scale-110 transition-transform" style="background-color: #ff0000;" title="Rouge"></button>
-                                <button onclick="setTextColor('#00ff00')" class="w-6 h-6 rounded border border-border hover:scale-110 transition-transform" style="background-color: #00ff00;" title="Vert"></button>
-                                <button onclick="setTextColor('#0000ff')" class="w-6 h-6 rounded border border-border hover:scale-110 transition-transform" style="background-color: #0000ff;" title="Bleu"></button>
-                                <button onclick="setTextColor('#ffff00')" class="w-6 h-6 rounded border border-border hover:scale-110 transition-transform" style="background-color: #ffff00;" title="Jaune"></button>
-                                <button onclick="setTextColor('#ff00ff')" class="w-6 h-6 rounded border border-border hover:scale-110 transition-transform" style="background-color: #ff00ff;" title="Magenta"></button>
-                                <button onclick="setTextColor('#00ffff')" class="w-6 h-6 rounded border border-border hover:scale-110 transition-transform" style="background-color: #00ffff;" title="Cyan"></button>
-                                <button onclick="setTextColor('#ff8800')" class="w-6 h-6 rounded border border-border hover:scale-110 transition-transform" style="background-color: #ff8800;" title="Orange"></button>
-                                <button onclick="setTextColor('#8800ff')" class="w-6 h-6 rounded border border-border hover:scale-110 transition-transform" style="background-color: #8800ff;" title="Violet"></button>
-                                <button onclick="setTextColor('#888888')" class="w-6 h-6 rounded border border-border hover:scale-110 transition-transform" style="background-color: #888888;" title="Gris"></button>
-                            </div>
-                            <input type="color" id="customColorInput" onchange="setTextColor(this.value)" class="w-full h-8 rounded border border-border" title="Couleur personnalisée">
-                        </div>
-                    </div>
-                    
-                    <div class="w-px h-6 bg-border mx-2 flex-shrink-0"></div>
-                    
-                    <!-- Insert elements -->
-                    <div class="flex items-center gap-1 flex-shrink-0">
-                        <button onclick="insertImage()" class="p-2 hover:bg-accent rounded-lg transition-colors" data-testid="button-insert-image" title="Insérer une image">
-                            <i class="fas fa-image text-sm"></i>
-                        </button>
-                        <button onclick="insertTable()" class="p-2 hover:bg-accent rounded-lg transition-colors" data-testid="button-insert-table" title="Insérer un tableau">
-                            <i class="fas fa-table text-sm"></i>
-                        </button>
-                        <button onclick="insertLink()" class="p-2 hover:bg-accent rounded-lg transition-colors" data-testid="button-insert-link" title="Insérer un lien">
-                            <i class="fas fa-link text-sm"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Editor Content -->
-            <div class="flex-1 bg-background p-2 sm:p-4 lg:p-8 overflow-auto">
-                <div id="editorContainer" class="max-w-none sm:max-w-4xl mx-auto rounded-lg shadow-lg min-h-full p-3 sm:p-6 lg:p-8 bg-card text-foreground transition-all duration-300">
-                    <div id="editorContent" 
-                         class="prose prose-sm sm:prose-base lg:prose-lg max-w-none outline-none min-h-[50vh] sm:min-h-[60vh] lg:min-h-[70vh] focus:ring-2 focus:ring-primary/20 rounded p-2"
-                         contenteditable="true"
-                         oninput="handleEditorChange()"
-                         style="word-wrap: break-word; overflow-wrap: break-word;"
-                         data-testid="editor-content">
-                        <p>Commencez à écrire votre document ici...</p>
-                    </div>
+                
+                <div class="editor-content" contenteditable="true" id="editor" placeholder="Commencez à écrire votre document...">
+                    <h1>Mon Nouveau Document</h1>
+                    <p>Commencez à écrire ici...</p>
                 </div>
             </div>
         </div>
+    </section>
 
-        <!-- Profile Section -->
-        <div id="profile" class="section hidden" data-testid="profile-page">
-            <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-12">
-                <div class="mb-6 sm:mb-8">
-                    <h1 class="text-2xl sm:text-3xl font-bold text-foreground mb-4" data-testid="text-page-title">
-                        Profil et paramètres
-                    </h1>
-                    <p class="text-muted-foreground" data-testid="text-page-description">
-                        Gérez votre compte et vos préférences
-                    </p>
-                </div>
-
-                <div class="grid gap-6 sm:gap-8">
-                    <!-- Personal Information -->
-                    <div class="bg-card border border-border rounded-xl p-4 sm:p-6" data-testid="card-personal-info">
-                        <div class="flex items-center gap-2 mb-4 sm:mb-6">
-                            <i class="fas fa-user text-primary"></i>
-                            <h2 class="text-lg sm:text-xl font-semibold">Informations personnelles</h2>
-                        </div>
-                        <div class="space-y-4">
-                            <div class="space-y-2">
-                                <label class="block text-sm font-medium">Nom d'utilisateur</label>
-                                <input type="text" id="profileUsername" 
-                                       class="w-full px-3 py-2 bg-input border border-border rounded-md focus:ring-2 focus:ring-primary focus:border-transparent"
-                                       data-testid="input-username">
+    <!-- Contact Section -->
+    <section id="contact" class="section">
+        <div class="container">
+            <h2 style="text-align: center; margin-bottom: 3rem; font-size: 2.5rem; color: hsl(var(--primary));">Contactez-nous</h2>
+            
+            <div class="grid grid-2">
+                <!-- Contact Info -->
+                <div>
+                    <div class="card perspective-card glass-effect">
+                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent))); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-envelope" style="color: hsl(var(--background));"></i>
                             </div>
-                            <button onclick="saveProfile()" class="bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:opacity-90 transition-opacity" data-testid="button-save-profile">
-                                Sauvegarder les modifications
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Security Settings -->
-                    <div class="bg-card border border-border rounded-xl p-4 sm:p-6" data-testid="card-security">
-                        <div class="flex items-center gap-2 mb-4 sm:mb-6">
-                            <i class="fas fa-shield-alt text-primary"></i>
-                            <h2 class="text-lg sm:text-xl font-semibold">Sécurité</h2>
-                        </div>
-                        <div class="space-y-6">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <p class="text-base font-medium">Face ID</p>
-                                    <p class="text-sm text-muted-foreground">
-                                        Utilisez Face ID pour vous connecter rapidement
-                                    </p>
-                                </div>
-                                <label class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" id="faceIdToggle" class="sr-only peer" data-testid="switch-face-id">
-                                    <div class="w-11 h-6 bg-secondary peer-focus:ring-4 peer-focus:ring-primary/25 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                                </label>
-                            </div>
-                            
-                            <div class="pt-4 border-t border-border">
-                                <button class="bg-secondary text-secondary-foreground px-4 py-2 rounded-lg hover:bg-accent transition-colors" data-testid="button-change-password">
-                                    Changer le mot de passe
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Appearance Settings -->
-                    <div class="bg-card border border-border rounded-xl p-4 sm:p-6" data-testid="card-appearance">
-                        <div class="flex items-center gap-2 mb-4 sm:mb-6">
-                            <i class="fas fa-palette text-primary"></i>
-                            <h2 class="text-lg sm:text-xl font-semibold">Apparence</h2>
-                        </div>
-                        <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-base font-medium">Mode sombre</p>
-                                <p class="text-sm text-muted-foreground">
-                                    Activer le thème sombre pour réduire la fatigue oculaire
-                                </p>
+                                <h3>Email</h3>
+                                <p style="color: hsl(var(--muted-foreground));">contact@onebox.app</p>
                             </div>
-                            <label class="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" id="darkModeToggle" class="sr-only peer" checked data-testid="switch-dark-mode">
-                                <div class="w-11 h-6 bg-secondary peer-focus:ring-4 peer-focus:ring-primary/25 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                            </label>
                         </div>
+                        <p style="color: hsl(var(--muted-foreground)); font-size: 0.9rem;">
+                            Nous répondons généralement sous 24 heures
+                        </p>
                     </div>
 
-                    <!-- Language Settings -->
-                    <div class="bg-card border border-border rounded-xl p-4 sm:p-6" data-testid="card-language">
-                        <div class="flex items-center gap-2 mb-4 sm:mb-6">
-                            <i class="fas fa-globe text-primary"></i>
-                            <h2 class="text-lg sm:text-xl font-semibold">Langue et région</h2>
+                    <div class="card perspective-card glass-effect">
+                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #8B5CF6, #A855F7); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-headphones" style="color: white;"></i>
+                            </div>
+                            <div>
+                                <h3>Support</h3>
+                                <p style="color: hsl(var(--muted-foreground));">Assistance technique</p>
+                            </div>
                         </div>
-                        <div class="space-y-2">
-                            <label class="block text-sm font-medium">Langue</label>
-                            <select id="languageSelect" 
-                                    class="w-full px-3 py-2 bg-input border border-border rounded-md focus:ring-2 focus:ring-primary focus:border-transparent"
-                                    data-testid="select-language">
-                                <option value="fr">Français</option>
-                                <option value="en">English</option>
-                                <option value="es">Español</option>
+                        <p style="color: hsl(var(--muted-foreground)); font-size: 0.9rem;">
+                            Support disponible 7j/7 de 9h à 18h
+                        </p>
+                    </div>
+
+                    <div class="card perspective-card glass-effect">
+                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #FFFC00, #FFD700); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fab fa-snapchat-ghost" style="color: #000;"></i>
+                            </div>
+                            <div>
+                                <h3>Snapchat</h3>
+                                <p style="color: hsl(var(--muted-foreground));">@onebox_support</p>
+                            </div>
+                        </div>
+                        <button class="snapchat-btn" onclick="openSnapchat()">
+                            <i class="fab fa-snapchat-ghost"></i>
+                            Contacter sur Snapchat
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Contact Form -->
+                <div class="card perspective-card glass-effect">
+                    <form onsubmit="submitContactForm(event)">
+                        <div class="form-group">
+                            <label class="form-label">Nom complet</label>
+                            <input type="text" class="form-input" placeholder="Votre nom" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-input" placeholder="votre@email.com" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Sujet</label>
+                            <select class="form-select" required>
+                                <option value="">Sélectionnez un sujet</option>
+                                <option value="support">Support technique</option>
+                                <option value="general">Question générale</option>
+                                <option value="feature">Suggestion d'amélioration</option>
+                                <option value="bug">Bug report</option>
                             </select>
                         </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Message</label>
+                            <textarea class="form-textarea" placeholder="Décrivez votre demande en détail..." required></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary floating-btn" style="width: 100%;">
+                            <i class="fas fa-paper-plane"></i>
+                            Envoyer le message
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Authentication Section -->
+    <section id="auth" class="section">
+        <div class="container">
+            <div class="auth-container">
+                <div class="auth-card perspective-card">
+                    <div style="text-align: center; margin-bottom: 2rem;">
+                        <div class="logo-icon" style="margin: 0 auto 1rem;">
+                            <i class="fas fa-box"></i>
+                        </div>
+                        <h2 class="font-poppins" style="color: hsl(var(--primary));">Connexion à OneBox</h2>
+                        <p style="color: hsl(var(--muted-foreground));">Accédez à votre espace personnel sécurisé</p>
                     </div>
 
-                    <!-- Account Actions -->
-                    <div class="bg-card border border-border rounded-xl p-6" data-testid="card-account-actions">
-                        <div class="flex items-center gap-2 mb-6">
-                            <i class="fas fa-cog text-primary"></i>
-                            <h2 class="text-xl font-semibold">Actions du compte</h2>
-                        </div>
-                        <div class="flex flex-col sm:flex-row gap-4">
-                            <button class="bg-secondary text-secondary-foreground px-4 py-2 rounded-lg hover:bg-accent transition-colors" data-testid="button-export-data">
-                                Exporter mes données
+                    <div id="loginForm">
+                        <form onsubmit="login(event)">
+                            <div class="form-group">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-input" placeholder="votre@email.com" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Mot de passe</label>
+                                <input type="password" class="form-input" placeholder="••••••••" required>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary floating-btn" style="width: 100%; margin-bottom: 1rem;">
+                                <i class="fas fa-sign-in-alt"></i>
+                                Se connecter
                             </button>
-                            <button onclick="handleLogout()" class="bg-destructive text-destructive-foreground px-4 py-2 rounded-lg hover:opacity-90 transition-opacity" data-testid="button-logout">
-                                Se déconnecter
+                        </form>
+
+                        <div style="text-align: center;">
+                            <p style="color: hsl(var(--muted-foreground)); margin-bottom: 1rem;">Pas encore de compte ?</p>
+                            <button class="btn btn-outline" onclick="showRegister()" style="width: 100%;">
+                                <i class="fas fa-user-plus"></i>
+                                Créer un compte
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="registerForm" style="display: none;">
+                        <form onsubmit="register(event)">
+                            <div class="form-group">
+                                <label class="form-label">Nom complet</label>
+                                <input type="text" class="form-input" placeholder="Votre nom" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-input" placeholder="votre@email.com" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Mot de passe</label>
+                                <input type="password" class="form-input" placeholder="••••••••" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Confirmer le mot de passe</label>
+                                <input type="password" class="form-input" placeholder="••••••••" required>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary floating-btn" style="width: 100%; margin-bottom: 1rem;">
+                                <i class="fas fa-user-plus"></i>
+                                Créer un compte
+                            </button>
+                        </form>
+
+                        <div style="text-align: center;">
+                            <p style="color: hsl(var(--muted-foreground)); margin-bottom: 1rem;">Déjà un compte ?</p>
+                            <button class="btn btn-outline" onclick="showLogin()" style="width: 100%;">
+                                <i class="fas fa-sign-in-alt"></i>
+                                Se connecter
                             </button>
                         </div>
                     </div>
                 </div>
-            </main>
+            </div>
         </div>
+    </section>
 
-        <!-- Help Section -->
-        <div id="help" class="section hidden" data-testid="help-page">
-            <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-                <div class="text-center mb-12">
-                    <h1 class="text-3xl font-bold text-foreground mb-4" data-testid="text-page-title">
-                        Centre d'aide
-                    </h1>
-                    <p class="text-xl text-muted-foreground" data-testid="text-page-description">
-                        Découvrez comment utiliser OneBox
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>OneBox</h3>
+                    <p style="color: hsl(var(--muted-foreground)); margin-bottom: 1rem;">
+                        Votre solution de stockage cloud personnel et sécurisé avec des fonctionnalités avancées.
                     </p>
-                </div>
-                
-                <div class="grid md:grid-cols-2 gap-8">
-                    <div class="bg-card border border-border rounded-xl p-6" data-testid="help-upload">
-                        <h3 class="text-xl font-semibold text-foreground mb-4" data-testid="text-help-upload-title">
-                            Comment uploader des fichiers ?
-                        </h3>
-                        <p class="text-muted-foreground mb-4" data-testid="text-help-upload-description">
-                            Glissez-déposez vos fichiers directement dans la zone de stockage ou utilisez le bouton "Importer".
-                        </p>
-                        <button onclick="showModal('uploadTutorialModal')" class="text-accent hover:underline font-medium" data-testid="button-help-upload-learn-more">
-                            Lire le tutoriel <i class="fas fa-arrow-right ml-1"></i>
-                        </button>
-                    </div>
-
-                    <div class="bg-card border border-border rounded-xl p-6" data-testid="help-editor">
-                        <h3 class="text-xl font-semibold text-foreground mb-4" data-testid="text-help-editor-title">
-                            Comment utiliser l'éditeur ?
-                        </h3>
-                        <p class="text-muted-foreground mb-4" data-testid="text-help-editor-description">
-                            L'éditeur intégré permet de créer et modifier des documents avec un formatage riche.
-                        </p>
-                        <button onclick="showModal('editorTutorialModal')" class="text-accent hover:underline font-medium" data-testid="button-help-editor-learn-more">
-                            Lire le tutoriel <i class="fas fa-arrow-right ml-1"></i>
-                        </button>
-                    </div>
-
-                    <div class="bg-card border border-border rounded-xl p-6" data-testid="help-sharing">
-                        <h3 class="text-xl font-semibold text-foreground mb-4" data-testid="text-help-sharing-title">
-                            Comment partager des fichiers ?
-                        </h3>
-                        <p class="text-muted-foreground mb-4" data-testid="text-help-sharing-description">
-                            Générez des liens internes pour partager vos fichiers localement en toute sécurité.
-                        </p>
-                        <button onclick="showModal('sharingTutorialModal')" class="text-accent hover:underline font-medium" data-testid="button-help-sharing-learn-more">
-                            Lire le tutoriel <i class="fas fa-arrow-right ml-1"></i>
-                        </button>
-                    </div>
-
-                    <div class="bg-card border border-border rounded-xl p-6" data-testid="help-contact">
-                        <h3 class="text-xl font-semibold text-foreground mb-4" data-testid="text-help-contact-title">
-                            Contact
-                        </h3>
-                        <p class="text-muted-foreground mb-4" data-testid="text-help-contact-description">
-                            Besoin d'aide ? Contactez notre équipe de support.
-                        </p>
-                        <button onclick="showModal('contactModal')" class="text-accent hover:underline font-medium" data-testid="button-help-contact-learn-more">
-                            Nous contacter <i class="fas fa-arrow-right ml-1"></i>
-                        </button>
+                    <div class="social-icons">
+                        <a href="#" class="social-icon" onclick="openSnapchat()">
+                            <i class="fab fa-snapchat-ghost"></i>
+                        </a>
+                        <a href="#" class="social-icon">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="social-icon">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="social-icon">
+                            <i class="fab fa-linkedin"></i>
+                        </a>
                     </div>
                 </div>
 
-                <!-- FAQ Section -->
-                <div class="mt-16">
-                    <h2 class="text-2xl font-bold text-foreground mb-8 text-center" data-testid="text-faq-title">
-                        Questions fréquentes
-                    </h2>
-                    
-                    <div class="space-y-6">
-                        <div class="bg-card border border-border rounded-xl p-6">
-                            <h3 class="text-lg font-semibold text-foreground mb-2" data-testid="text-faq-security-title">
-                                Mes données sont-elles sécurisées ?
-                            </h3>
-                            <p class="text-muted-foreground" data-testid="text-faq-security-answer">
-                                Oui, OneBox stocke toutes vos données localement sur votre appareil. Aucune donnée n'est envoyée vers des serveurs externes.
-                            </p>
-                        </div>
-
-                        <div class="bg-card border border-border rounded-xl p-6">
-                            <h3 class="text-lg font-semibold text-foreground mb-2" data-testid="text-faq-space-title">
-                                Quelle est la limite de stockage ?
-                            </h3>
-                            <p class="text-muted-foreground" data-testid="text-faq-space-answer">
-                                La limite de stockage dépend de l'espace disponible sur votre appareil. OneBox utilise le stockage local de votre navigateur.
-                            </p>
-                        </div>
-
-                        <div class="bg-card border border-border rounded-xl p-6">
-                            <h3 class="text-lg font-semibold text-foreground mb-2" data-testid="text-faq-access-title">
-                                Comment accéder à mes fichiers depuis un autre appareil ?
-                            </h3>
-                            <p class="text-muted-foreground" data-testid="text-faq-access-answer">
-                                OneBox est conçu pour un usage local. Pour accéder à vos fichiers depuis un autre appareil, vous devez les synchroniser manuellement.
-                            </p>
-                        </div>
-                    </div>
+                <div class="footer-section">
+                    <h3>Produit</h3>
+                    <ul>
+                        <li><a href="#" onclick="showSection('files')">Stockage</a></li>
+                        <li><a href="#" onclick="showSection('editor')">Éditeur</a></li>
+                        <li><a href="#" onclick="openModal('pricingModal')">Tarifs</a></li>
+                        <li><a href="#" onclick="openModal('featuresModal')">Fonctionnalités</a></li>
+                    </ul>
                 </div>
-            </main>
-        </div>
-    </div>
 
-    <script>
-        // Application State
-        let currentUser = null;
-        let currentSection = 'home';
-        let files = [];
-        let folders = [];
-        let documents = [];
-        let hasUnsavedChanges = false;
-        let editorDarkMode = true;
+                <div class="footer-section">
+                    <h3>Support</h3>
+                    <ul>
+                        <li><a href="#" onclick="showSection('contact')">Contact</a></li>
+                        <li><a href="#" onclick="openModal('helpModal')">Aide</a></li>
+                        <li><a href="#" onclick="openModal('faqModal')">FAQ</a></li>
+                        <li><a href="#" onclick="openSnapchat()">Snapchat Support</a></li>
+                    </ul>
+                </div>
 
-        // Initialize the application
-        (function() {
-            // Check for existing authentication
-            const savedUser = localStorage.getItem('oneboxUser');
-            const savedFiles = localStorage.getItem('oneboxFiles');
-            const savedFolders = localStorage.getItem('oneboxFolders');
-            const savedDocuments = localStorage.getItem('oneboxDocuments');
+                <div class="footer-section">
+                    <h3>Légal</h3>
+                    <ul>
+                        <li><a href="#" onclick="openModal('privacyModal')">Confidentialité</a></li>
+                        <li><a href="#" onclick="openModal('termsModal')">Conditions</a></li>
+                        <li><a href="#" onclick="openModal('cookiesModal')">Cookies</a></li>
+                    </ul>
+                </div>
+            </div>
 
-            if (savedUser) {
-                currentUser = JSON.parse(savedUser);
-                showMainApp();
-            } else {
-                showAuthModal();
-            }
-
-            if (savedFiles) {
-                files = JSON.parse(savedFiles);
-            }
-
-            if (savedFolders) {
-                folders = JSON.parse(savedFolders);
-            }
-
-            if (savedDocuments) {
-                documents = JSON.parse(savedDocuments);
-            }
-
-            // Setup drag and drop for upload zone
-            setupDragAndDrop();
-            
-            // Setup editor change tracking
-            setupEditorTracking();
-        })();
-
-        // Toast notification system
-        function showToast(title, description, variant = 'default') {
-            const toastContainer = document.getElementById('toastContainer');
-            const toast = document.createElement('div');
-            toast.className = `toast ${variant === 'destructive' ? 'destructive' : ''}`;
-            
-            toast.innerHTML = `
-                <div class="flex items-start space-x-3">
-                    <div class="flex-1">
-                        <p class="font-semibold text-sm">${title}</p>
-                        <p class="text-sm text-muted-foreground">${description}</p>
-                    </div>
-                    <button onclick="this.parentElement.parentElement.remove()" class="text-muted-foreground hover:text-foreground">
-                        <i class="fas fa-times text-sm"></i>
+            <div style="text-align: center; padding-top: 2rem; border-top: 1px solid hsl(var(--border)); color: hsl(var(--muted-foreground));">
+                <p>&copy; 2024 OneBox. Tous droits réservés. Made with 💪🏾</p>
+                <div style="margin-top: 1rem;">
+                    <button class="btn btn-primary floating-btn" onclick="openModal('newsletterModal')">
+                        <i class="fas fa-envelope"></i>
+                        Newsletter
+                    </button>
+                    <button class="snapchat-btn" onclick="openSnapchat()" style="margin-left: 1rem;">
+                        <i class="fab fa-snapchat-ghost"></i>
+                        Snapchat
                     </button>
                 </div>
-            `;
-            
-            toastContainer.appendChild(toast);
-            
-            // Show toast
-            setTimeout(() => toast.classList.add('show'), 100);
-            
-            // Auto-remove after 5 seconds
-            setTimeout(() => {
-                if (toast.parentElement) {
-                    toast.classList.remove('show');
-                    setTimeout(() => toast.remove(), 300);
-                }
-            }, 5000);
-        }
-
-        // Authentication Functions
-        function showAuthModal() {
-            document.getElementById('authModal').classList.remove('hidden');
-            document.getElementById('mainApp').classList.add('hidden');
-        }
-
-        function hideAuthModal() {
-            document.getElementById('authModal').classList.add('hidden');
-            document.getElementById('mainApp').classList.remove('hidden');
-        }
-
-        function showLogin() {
-            document.getElementById('loginForm').classList.remove('hidden');
-            document.getElementById('registerForm').classList.add('hidden');
-        }
-
-        function showRegister() {
-            document.getElementById('loginForm').classList.add('hidden');
-            document.getElementById('registerForm').classList.remove('hidden');
-        }
-
-        function handleLogin(event) {
-            event.preventDefault();
-            
-            const username = document.getElementById('loginUsername').value;
-            const password = document.getElementById('loginPassword').value;
-            
-            if (!username || !password) {
-                showToast('Champs requis', 'Veuillez remplir tous les champs', 'destructive');
-                return;
-            }
-            
-            // Show loading state
-            const buttonText = document.getElementById('loginButtonText');
-            const spinner = document.getElementById('loginSpinner');
-            buttonText.classList.add('hidden');
-            spinner.classList.remove('hidden');
-            
-            // Simulate authentication delay
-            setTimeout(() => {
-                currentUser = {
-                    id: generateId(),
-                    username: username,
-                    loginTime: new Date().toISOString()
-                };
-                
-                // Save to localStorage for persistence
-                localStorage.setItem('oneboxUser', JSON.stringify(currentUser));
-                
-                // Hide loading state
-                buttonText.classList.remove('hidden');
-                spinner.classList.add('hidden');
-                
-                // Show success message
-                showToast('Connexion réussie', 'Bienvenue dans OneBox !');
-                
-                // Show main application
-                showMainApp();
-            }, 1500);
-        }
-
-        function handleRegister(event) {
-            event.preventDefault();
-            
-            const username = document.getElementById('registerUsername').value;
-            const password = document.getElementById('registerPassword').value;
-            
-            if (!username || !password) {
-                showToast('Champs requis', 'Veuillez remplir tous les champs', 'destructive');
-                return;
-            }
-            
-            // Show loading state
-            const buttonText = document.getElementById('registerButtonText');
-            const spinner = document.getElementById('registerSpinner');
-            buttonText.classList.add('hidden');
-            spinner.classList.remove('hidden');
-            
-            // Simulate registration delay
-            setTimeout(() => {
-                currentUser = {
-                    id: generateId(),
-                    username: username,
-                    loginTime: new Date().toISOString()
-                };
-                
-                // Save to localStorage for persistence
-                localStorage.setItem('oneboxUser', JSON.stringify(currentUser));
-                
-                // Hide loading state
-                buttonText.classList.remove('hidden');
-                spinner.classList.add('hidden');
-                
-                // Show success message
-                showToast('Compte créé', 'Bienvenue dans OneBox !');
-                
-                // Show main application
-                showMainApp();
-            }, 1500);
-        }
-
-        function handleLogout() {
-            currentUser = null;
-            localStorage.removeItem('oneboxUser');
-            hideProfileMenu();
-            showAuthModal();
-            
-            // Reset forms
-            document.getElementById('loginUsername').value = '';
-            document.getElementById('loginPassword').value = '';
-            document.getElementById('registerUsername').value = '';
-            document.getElementById('registerPassword').value = '';
-            
-            showToast('Déconnexion', 'Vous avez été déconnecté avec succès');
-        }
-
-        function showMainApp() {
-            hideAuthModal();
-            if (currentUser) {
-                document.getElementById('userNameDisplay').textContent = currentUser.username;
-                document.getElementById('profileUsername').value = currentUser.username;
-            }
-            showSection('home');
-            renderFilesGrid();
-        }
-
-        // Navigation Functions
-        function showSection(sectionName) {
-            // Hide all sections
-            const sections = document.querySelectorAll('.section');
-            sections.forEach(section => section.classList.add('hidden'));
-            
-            // Show target section
-            document.getElementById(sectionName).classList.remove('hidden');
-            
-            // Update navigation active states
-            const navItems = document.querySelectorAll('.nav-item');
-            navItems.forEach(item => {
-                if (item.dataset.section === sectionName) {
-                    item.classList.remove('text-muted-foreground');
-                    item.classList.add('text-foreground');
-                } else {
-                    item.classList.remove('text-foreground');
-                    item.classList.add('text-muted-foreground');
-                }
-            });
-            
-            currentSection = sectionName;
-            
-            // Section-specific actions
-            if (sectionName === 'storage') {
-                renderFilesGrid();
-            }
-        }
-
-        // Profile Menu Functions
-        function toggleProfileMenu() {
-            const menu = document.getElementById('profileMenu');
-            menu.classList.toggle('hidden');
-        }
-
-        function hideProfileMenu() {
-            document.getElementById('profileMenu').classList.add('hidden');
-        }
-
-        // Storage Functions
-        function generateId() {
-            return Date.now().toString(36) + Math.random().toString(36).substr(2);
-        }
-
-        function showCreateFolder() {
-            document.getElementById('createFolderSection').classList.remove('hidden');
-            document.getElementById('newFolderName').focus();
-        }
-
-        function hideCreateFolder() {
-            document.getElementById('createFolderSection').classList.add('hidden');
-            document.getElementById('newFolderName').value = '';
-        }
-
-        function createFolder() {
-            const name = document.getElementById('newFolderName').value.trim();
-            if (!name) return;
-
-            const folder = {
-                id: generateId(),
-                name: name,
-                createdAt: new Date().toISOString(),
-                userId: currentUser.id
-            };
-
-            folders.push(folder);
-            localStorage.setItem('oneboxFolders', JSON.stringify(folders));
-            
-            hideCreateFolder();
-            renderFilesGrid();
-            showToast('Dossier créé', 'Le dossier a été créé avec succès');
-        }
-
-        function deleteFolder(folderId) {
-            folders = folders.filter(f => f.id !== folderId);
-            localStorage.setItem('oneboxFolders', JSON.stringify(folders));
-            renderFilesGrid();
-            showToast('Dossier supprimé', 'Le dossier a été supprimé avec succès');
-        }
-
-        function triggerFileUpload() {
-            document.getElementById('fileInput').click();
-        }
-
-        function handleFileUpload(event) {
-            const selectedFiles = Array.from(event.target.files);
-            selectedFiles.forEach(file => uploadFile(file));
-            event.target.value = ''; // Reset input
-        }
-
-        function uploadFile(file) {
-            const fileRecord = {
-                id: generateId(),
-                originalName: file.name,
-                size: file.size,
-                mimeType: file.type,
-                createdAt: new Date().toISOString(),
-                userId: currentUser.id
-            };
-
-            // Store file data as base64 (for demo purposes)
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                fileRecord.data = e.target.result;
-                files.push(fileRecord);
-                localStorage.setItem('oneboxFiles', JSON.stringify(files));
-                renderFilesGrid();
-                showToast('Fichier uploadé', 'Le fichier a été uploadé avec succès');
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function deleteFile(fileId) {
-            files = files.filter(f => f.id !== fileId);
-            localStorage.setItem('oneboxFiles', JSON.stringify(files));
-            renderFilesGrid();
-            showToast('Fichier supprimé', 'Le fichier a été supprimé avec succès');
-        }
-
-        function downloadFile(fileId) {
-            const file = files.find(f => f.id === fileId);
-            if (!file || !file.data) return;
-
-            const link = document.createElement('a');
-            link.href = file.data;
-            link.download = file.originalName;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-
-        function formatFileSize(bytes) {
-            if (bytes === 0) return '0 B';
-            const k = 1024;
-            const sizes = ['B', 'KB', 'MB', 'GB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
-        }
-
-        function formatDate(date) {
-            const d = new Date(date);
-            const now = new Date();
-            const diffTime = Math.abs(now.getTime() - d.getTime());
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            
-            if (diffDays === 1) return 'Il y a 1 jour';
-            if (diffDays < 7) return `Il y a ${diffDays} jours`;
-            return d.toLocaleDateString('fr-FR');
-        }
-
-        function getFileIcon(mimeType) {
-            if (mimeType.startsWith('image/')) return 'fas fa-image';
-            if (mimeType.includes('pdf')) return 'fas fa-file-pdf';
-            if (mimeType.includes('video/')) return 'fas fa-video';
-            if (mimeType.includes('audio/')) return 'fas fa-music';
-            if (mimeType.includes('document') || mimeType.includes('text') || mimeType.includes('word')) return 'fas fa-file-word';
-            if (mimeType.includes('spreadsheet') || mimeType.includes('excel') || mimeType.includes('csv')) return 'fas fa-file-excel';
-            if (mimeType.includes('presentation') || mimeType.includes('powerpoint')) return 'fas fa-file-powerpoint';
-            if (mimeType.includes('zip') || mimeType.includes('rar') || mimeType.includes('tar') || mimeType.includes('compress')) return 'fas fa-file-archive';
-            if (mimeType.includes('javascript') || mimeType.includes('html') || mimeType.includes('css') || mimeType.includes('json')) return 'fas fa-code';
-            return 'fas fa-file';
-        }
-
-        function renderFilesGrid() {
-            const grid = document.getElementById('filesGrid');
-            const emptyState = document.getElementById('emptyState');
-            
-            if (files.length === 0 && folders.length === 0) {
-                emptyState.classList.remove('hidden');
-                grid.innerHTML = '';
-                grid.appendChild(emptyState);
-                return;
-            }
-            
-            emptyState.classList.add('hidden');
-            
-            let html = '';
-            
-            // Render folders
-            folders.forEach(folder => {
-                html += `
-                    <div class="bg-card border border-border rounded-xl p-4 file-hover cursor-pointer" data-testid="folder-${folder.id}">
-                        <div class="flex items-center justify-between mb-3">
-                            <div class="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center">
-                                <i class="fas fa-folder text-green-400"></i>
-                            </div>
-                            <div class="relative">
-                                <button onclick="toggleDropdown('folder-${folder.id}')" class="p-1 hover:bg-accent rounded transition-colors" data-testid="button-folder-menu-${folder.id}">
-                                    <i class="fas fa-ellipsis-h text-sm"></i>
-                                </button>
-                                <div id="dropdown-folder-${folder.id}" class="hidden absolute right-0 mt-1 w-32 bg-card border border-border rounded-lg shadow-lg z-10">
-                                    <button onclick="deleteFolder('${folder.id}')" class="w-full text-left px-3 py-2 text-sm hover:bg-accent rounded transition-colors text-destructive" data-testid="button-delete-folder-${folder.id}">
-                                        <i class="fas fa-trash mr-2"></i>Supprimer
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        <h3 class="font-medium text-foreground truncate" data-testid="text-folder-name-${folder.id}">
-                            ${folder.name}
-                        </h3>
-                        <p class="text-sm text-muted-foreground" data-testid="text-folder-date-${folder.id}">
-                            Modifié ${formatDate(folder.createdAt)}
-                        </p>
-                    </div>
-                `;
-            });
-            
-            // Render files
-            files.forEach(file => {
-                const iconClass = getFileIcon(file.mimeType);
-                html += `
-                    <div class="bg-card border border-border rounded-xl p-4 file-hover cursor-pointer" onclick="showFilePreview('${file.id}')" data-testid="file-${file.id}">
-                        <div class="flex items-center justify-between mb-3">
-                            <div class="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center">
-                                <i class="${iconClass} text-blue-400"></i>
-                            </div>
-                            <div class="relative">
-                                <button onclick="event.stopPropagation(); toggleDropdown('file-${file.id}')" class="p-1 hover:bg-accent rounded transition-colors" data-testid="button-file-menu-${file.id}">
-                                    <i class="fas fa-ellipsis-h text-sm"></i>
-                                </button>
-                                <div id="dropdown-file-${file.id}" class="hidden absolute right-0 mt-1 w-32 bg-card border border-border rounded-lg shadow-lg z-10">
-                                    <button onclick="downloadFile('${file.id}')" class="w-full text-left px-3 py-2 text-sm hover:bg-accent rounded transition-colors" data-testid="button-download-${file.id}">
-                                        <i class="fas fa-download mr-2"></i>Télécharger
-                                    </button>
-                                    <button onclick="deleteFile('${file.id}')" class="w-full text-left px-3 py-2 text-sm hover:bg-accent rounded transition-colors text-destructive" data-testid="button-delete-file-${file.id}">
-                                        <i class="fas fa-trash mr-2"></i>Supprimer
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        <h3 class="font-medium text-foreground truncate" data-testid="text-file-name-${file.id}">
-                            ${file.originalName}
-                        </h3>
-                        <p class="text-sm text-muted-foreground" data-testid="text-file-details-${file.id}">
-                            ${formatFileSize(file.size)} • ${formatDate(file.createdAt)}
-                        </p>
-                    </div>
-                `;
-            });
-            
-            grid.innerHTML = html;
-        }
-
-        function toggleDropdown(id) {
-            // Close all other dropdowns first
-            document.querySelectorAll('[id^="dropdown-"]').forEach(dd => {
-                if (dd.id !== `dropdown-${id}`) {
-                    dd.classList.add('hidden');
-                }
-            });
-            
-            const dropdown = document.getElementById(`dropdown-${id}`);
-            if (dropdown) {
-                dropdown.classList.toggle('hidden');
-            }
-        }
-
-        // Close dropdowns when clicking outside
-        document.addEventListener('click', function(event) {
-            if (!event.target.closest('[id^="dropdown-"]') && !event.target.closest('button[onclick*="toggleDropdown"]')) {
-                document.querySelectorAll('[id^="dropdown-"]').forEach(dd => {
-                    dd.classList.add('hidden');
-                });
-            }
-        });
-
-        // Close color picker when clicking outside
-        document.addEventListener('click', function(event) {
-            const colorPicker = document.getElementById('colorPicker');
-            if (colorPicker && !event.target.closest('#colorPicker') && !event.target.closest('button[onclick*="toggleColorPicker"]')) {
-                colorPicker.classList.add('hidden');
-            }
-        });
-
-        function setupDragAndDrop() {
-            const uploadZone = document.getElementById('uploadZone');
-            
-            uploadZone.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                uploadZone.classList.add('border-accent', 'bg-accent/5');
-            });
-            
-            uploadZone.addEventListener('dragleave', (e) => {
-                e.preventDefault();
-                uploadZone.classList.remove('border-accent', 'bg-accent/5');
-            });
-            
-            uploadZone.addEventListener('drop', (e) => {
-                e.preventDefault();
-                uploadZone.classList.remove('border-accent', 'bg-accent/5');
-                
-                const droppedFiles = Array.from(e.dataTransfer.files);
-                droppedFiles.forEach(file => uploadFile(file));
-            });
-            
-            uploadZone.addEventListener('click', () => {
-                document.getElementById('fileInput').click();
-            });
-        }
-
-        // Editor Functions
-        function setupEditorTracking() {
-            const titleInput = document.getElementById('documentTitle');
-            const editorContent = document.getElementById('editorContent');
-            
-            titleInput.addEventListener('input', markUnsaved);
-            editorContent.addEventListener('input', markUnsaved);
-        }
-
-        function markUnsaved() {
-            hasUnsavedChanges = true;
-            document.getElementById('unsavedIndicator').classList.remove('hidden');
-        }
-
-        function handleEditorChange() {
-            markUnsaved();
-        }
-
-        function execCommand(command, value = null) {
-            document.execCommand(command, false, value);
-            document.getElementById('editorContent').focus();
-        }
-
-        function insertImage() {
-            const url = prompt('URL de l\'image:');
-            if (url) {
-                execCommand('insertImage', url);
-            }
-        }
-
-        function insertTable() {
-            const tableHTML = '<table border="1" style="border-collapse: collapse; width: 100%; margin: 10px 0;"><tr><td style="padding: 8px; border: 1px solid #ccc;">Cellule 1</td><td style="padding: 8px; border: 1px solid #ccc;">Cellule 2</td></tr><tr><td style="padding: 8px; border: 1px solid #ccc;">Cellule 3</td><td style="padding: 8px; border: 1px solid #ccc;">Cellule 4</td></tr></table>';
-            execCommand('insertHTML', tableHTML);
-        }
-
-        function insertLink() {
-            const url = prompt('URL du lien:');
-            if (url) {
-                const text = prompt('Texte du lien:', url);
-                if (text) {
-                    const linkHTML = `<a href="${url}" target="_blank" style="color: hsl(var(--primary)); text-decoration: underline;">${text}</a>`;
-                    execCommand('insertHTML', linkHTML);
-                }
-            }
-        }
-
-        function toggleColorPicker() {
-            const colorPicker = document.getElementById('colorPicker');
-            colorPicker.classList.toggle('hidden');
-        }
-        
-        function setTextColor(color) {
-            execCommand('foreColor', color);
-            document.getElementById('currentColor').style.backgroundColor = color;
-            document.getElementById('colorPicker').classList.add('hidden');
-            document.getElementById('editorContent').focus();
-        }
-
-        function toggleEditorTheme() {
-            editorDarkMode = !editorDarkMode;
-            const container = document.getElementById('editorContainer');
-            const icon = document.getElementById('themeIcon');
-            
-            if (editorDarkMode) {
-                container.className = 'max-w-4xl mx-auto rounded-lg shadow-lg min-h-full p-8 bg-card text-foreground';
-                icon.className = 'fas fa-sun text-muted-foreground';
-            } else {
-                container.className = 'max-w-4xl mx-auto rounded-lg shadow-lg min-h-full p-8 bg-white text-black';
-                icon.className = 'fas fa-moon text-muted-foreground';
-            }
-        }
-
-        function saveDocument() {
-            const title = document.getElementById('documentTitle').value || 'Document sans titre';
-            const content = document.getElementById('editorContent').innerHTML;
-            
-            const document = {
-                id: generateId(),
-                title: title,
-                content: content,
-                createdAt: new Date().toISOString(),
-                userId: currentUser.id
-            };
-            
-            documents.push(document);
-            localStorage.setItem('oneboxDocuments', JSON.stringify(documents));
-            
-            // Ajouter le document aussi comme fichier dans la section stockage
-            const fileRecord = {
-                id: generateId(),
-                originalName: title + '.html',
-                size: new Blob([content]).size,
-                mimeType: 'text/html',
-                createdAt: new Date().toISOString(),
-                userId: currentUser.id,
-                data: 'data:text/html;base64,' + btoa(content)
-            };
-            
-            files.push(fileRecord);
-            localStorage.setItem('oneboxFiles', JSON.stringify(files));
-            
-            hasUnsavedChanges = false;
-            document.getElementById('unsavedIndicator').classList.add('hidden');
-            
-            showToast('Document sauvegardé', 'Votre document a été sauvegardé avec succès et ajouté à vos fichiers');
-        }
-
-        // File Preview Functions
-        let currentPreviewFileId = null;
-        
-        function showFilePreview(fileId) {
-            const file = files.find(f => f.id === fileId);
-            if (!file) return;
-            
-            currentPreviewFileId = fileId;
-            
-            // Update modal content
-            document.getElementById('previewFileName').textContent = file.originalName;
-            document.getElementById('previewFileInfo').textContent = `${formatFileSize(file.size)} • ${file.mimeType}`;
-            document.getElementById('previewFileDate').textContent = `Créé le ${formatDate(file.createdAt)}`;
-            
-            // Generate preview content
-            const previewContent = document.getElementById('previewContent');
-            
-            if (file.mimeType.startsWith('image/')) {
-                previewContent.innerHTML = `
-                    <div class="text-center">
-                        <img src="${file.data}" alt="${file.originalName}" class="max-w-full max-h-96 mx-auto rounded-lg shadow-md" style="object-fit: contain;">
-                    </div>
-                `;
-            } else if (file.mimeType === 'text/plain' || file.mimeType.includes('text')) {
-                // Pour les fichiers texte, on essaie de décoder le contenu
-                try {
-                    const textContent = atob(file.data.split(',')[1]);
-                    previewContent.innerHTML = `
-                        <div class="bg-muted/20 rounded-lg p-4 max-h-64 overflow-y-auto">
-                            <pre class="whitespace-pre-wrap text-sm">${textContent}</pre>
-                        </div>
-                    `;
-                } catch (e) {
-                    previewContent.innerHTML = `
-                        <div class="text-center py-8">
-                            <i class="fas fa-file-alt text-6xl text-muted-foreground mb-4"></i>
-                            <p class="text-muted-foreground">Impossible de prévisualiser ce fichier texte</p>
-                        </div>
-                    `;
-                }
-            } else {
-                const iconClass = getFileIcon(file.mimeType);
-                previewContent.innerHTML = `
-                    <div class="text-center py-8">
-                        <i class="${iconClass} text-6xl text-muted-foreground mb-4"></i>
-                        <p class="text-muted-foreground">Prévisualisation non disponible pour ce type de fichier</p>
-                        <p class="text-sm text-muted-foreground mt-2">Utilisez le bouton télécharger pour ouvrir le fichier</p>
-                    </div>
-                `;
-            }
-            
-            // Show modal
-            document.getElementById('filePreviewModal').classList.remove('hidden');
-        }
-        
-        function closeFilePreview() {
-            document.getElementById('filePreviewModal').classList.add('hidden');
-            currentPreviewFileId = null;
-        }
-        
-        function downloadFileFromPreview() {
-            if (currentPreviewFileId) {
-                downloadFile(currentPreviewFileId);
-            }
-        }
-        
-        function deleteFileFromPreview() {
-            if (currentPreviewFileId) {
-                deleteFile(currentPreviewFileId);
-                closeFilePreview();
-            }
-        }
-
-        // Profile Functions
-        function saveProfile() {
-            const username = document.getElementById('profileUsername').value;
-            if (currentUser && username) {
-                currentUser.username = username;
-                localStorage.setItem('oneboxUser', JSON.stringify(currentUser));
-                document.getElementById('userNameDisplay').textContent = username;
-                showToast('Profil mis à jour', 'Vos modifications ont été sauvegardées');
-            }
-        }
-
-        // Global Event Listeners
-        document.addEventListener('click', function(event) {
-            const profileButton = event.target.closest('[onclick="toggleProfileMenu()"]');
-            const profileMenu = document.getElementById('profileMenu');
-            
-            if (!profileButton && !profileMenu.contains(event.target)) {
-                hideProfileMenu();
-            }
-
-            // Close mobile menu when clicking outside
-            const mobileMenuButton = event.target.closest('[onclick="toggleMobileMenu()"]');
-            const mobileMenu = document.getElementById('mobileMenu');
-            
-            if (!mobileMenuButton && !mobileMenu.contains(event.target)) {
-                closeMobileMenu();
-            }
-
-            // Close dropdowns when clicking outside
-            if (!event.target.closest('[onclick*="toggleDropdown"]') && !event.target.closest('[id*="dropdown-"]')) {
-                document.querySelectorAll('[id*="dropdown-"]').forEach(dropdown => {
-                    dropdown.classList.add('hidden');
-                });
-            }
-            
-            // Close color picker when clicking outside
-            const colorPickerButton = event.target.closest('[onclick="toggleColorPicker()"]');
-            const colorPicker = document.getElementById('colorPicker');
-            
-            if (!colorPickerButton && !colorPicker.contains(event.target)) {
-                colorPicker.classList.add('hidden');
-            }
-        });
-
-        // Keyboard shortcuts
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape') {
-                hideProfileMenu();
-                closeMobileMenu();
-                document.querySelectorAll('[id*="dropdown-"]').forEach(dropdown => {
-                    dropdown.classList.add('hidden');
-                });
-            }
-            
-            // Save document shortcut
-            if (event.ctrlKey && event.key === 's' && currentSection === 'editor') {
-                event.preventDefault();
-                saveDocument();
-            }
-            
-            // Navigation shortcuts (when authenticated)
-            if (currentUser && event.altKey) {
-                switch(event.key) {
-                    case '1':
-                        showSection('home');
-                        break;
-                    case '2':
-                        showSection('storage');
-                        break;
-                    case '3':
-                        showSection('editor');
-                        break;
-                    case '4':
-                        showSection('help');
-                        break;
-                }
-            }
-        });
-
-        // Form submit handlers for Enter key
-        document.getElementById('newFolderName').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                createFolder();
-            }
-        });
-
-        // Initialize interactive elements
-        document.addEventListener('DOMContentLoaded', function() {
-            // Add visual feedback for button clicks
-            const buttons = document.querySelectorAll('button');
-            buttons.forEach(button => {
-                button.addEventListener('click', function() {
-                    this.style.transform = 'scale(0.98)';
-                    setTimeout(() => {
-                        this.style.transform = '';
-                    }, 150);
-                });
-            });
-        });
-
-        // Mobile Menu Functions
-        function toggleMobileMenu() {
-            const mobileMenu = document.getElementById('mobileMenu');
-            mobileMenu.classList.toggle('hidden');
-        }
-
-        function closeMobileMenu() {
-            const mobileMenu = document.getElementById('mobileMenu');
-            mobileMenu.classList.add('hidden');
-        }
-
-        // Modal Functions
-        function showModal(modalId) {
-            document.getElementById(modalId).classList.remove('hidden');
-        }
-
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.add('hidden');
-        }
-
-        // Close modals when clicking outside
-        document.addEventListener('click', function(event) {
-            const modals = document.querySelectorAll('.modal');
-            modals.forEach(modal => {
-                if (event.target === modal) {
-                    modal.classList.add('hidden');
-                }
-            });
-        });
-
-        // Close modals with Escape key
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape') {
-                document.querySelectorAll('.modal').forEach(modal => {
-                    modal.classList.add('hidden');
-                });
-            }
-        });
-    </script>
-
-    <!-- Upload Tutorial Modal -->
-    <div id="uploadTutorialModal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" data-testid="modal-upload-tutorial">
-        <div class="bg-card border border-border rounded-xl p-8 max-w-2xl max-h-[80vh] overflow-y-auto m-4">
-            <div class="flex items-center justify-between mb-6">
-                <h2 class="text-2xl font-bold text-foreground">📁 Tutoriel : Upload de fichiers</h2>
-                <button onclick="closeModal('uploadTutorialModal')" class="text-muted-foreground hover:text-foreground" data-testid="button-close-upload-modal">
-                    <i class="fas fa-times text-xl"></i>
-                </button>
             </div>
-            
-            <div class="space-y-6 text-muted-foreground">
-                <div class="flex items-start space-x-3">
-                    <div class="w-8 h-8 bg-accent rounded-full flex items-center justify-center text-accent-foreground font-bold">1</div>
-                    <div>
-                        <h3 class="text-foreground font-semibold mb-2">Glisser-déposer</h3>
-                        <p>Faites simplement glisser vos fichiers depuis votre explorateur vers la zone de stockage OneBox. C'est la méthode la plus rapide !</p>
-                    </div>
+        </div>
+    </footer>
+
+    <!-- Modals -->
+    <!-- Demo Modal -->
+    <div id="demoModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('demoModal')">
+                <i class="fas fa-times"></i>
+            </button>
+            <h3 style="margin-bottom: 1.5rem; color: hsl(var(--primary));">Démo OneBox</h3>
+            <div style="text-align: center;">
+                <div style="background: hsl(var(--muted)); border-radius: 12px; padding: 3rem; margin-bottom: 1.5rem;">
+                    <i class="fas fa-play-circle" style="font-size: 4rem; color: hsl(var(--primary));"></i>
+                    <p style="margin-top: 1rem; color: hsl(var(--muted-foreground));">Vidéo de démonstration</p>
                 </div>
-                
-                <div class="flex items-start space-x-3">
-                    <div class="w-8 h-8 bg-accent rounded-full flex items-center justify-center text-accent-foreground font-bold">2</div>
-                    <div>
-                        <h3 class="text-foreground font-semibold mb-2">Bouton Importer</h3>
-                        <p>Cliquez sur le bouton "📁 Importer fichiers" dans la section Stockage pour ouvrir l'explorateur de fichiers et sélectionner vos documents.</p>
-                    </div>
-                </div>
-                
-                <div class="flex items-start space-x-3">
-                    <div class="w-8 h-8 bg-accent rounded-full flex items-center justify-center text-accent-foreground font-bold">3</div>
-                    <div>
-                        <h3 class="text-foreground font-semibold mb-2">Formats supportés</h3>
-                        <p>Tous les types de fichiers sont acceptés : images (JPG, PNG, GIF), documents (PDF, DOC, TXT), vidéos, et bien plus encore.</p>
-                    </div>
-                </div>
-                
-                <div class="bg-accent/10 border border-accent/20 rounded-lg p-4 mt-6">
-                    <h4 class="text-accent font-semibold mb-2">💡 Astuce pro</h4>
-                    <p class="text-sm">Vous pouvez sélectionner plusieurs fichiers à la fois en maintenant Ctrl (ou Cmd sur Mac) enfoncé !</p>
-                </div>
+                <p>Découvrez toutes les fonctionnalités de OneBox en quelques minutes.</p>
             </div>
-            
-            <div class="flex justify-end mt-8">
-                <button onclick="closeModal('uploadTutorialModal')" class="bg-accent text-accent-foreground px-6 py-2 rounded-lg hover:bg-accent/90 transition-colors">
-                    Compris !
+        </div>
+    </div>
+
+    <!-- Upload Modal -->
+    <div id="uploadModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('uploadModal')">
+                <i class="fas fa-times"></i>
+            </button>
+            <h3 style="margin-bottom: 1.5rem; color: hsl(var(--primary));">Télécharger un fichier</h3>
+            <div style="border: 2px dashed hsl(var(--border)); border-radius: 12px; padding: 3rem; text-align: center; margin-bottom: 1.5rem;">
+                <i class="fas fa-cloud-upload-alt" style="font-size: 3rem; color: hsl(var(--primary)); margin-bottom: 1rem;"></i>
+                <p>Glissez-déposez vos fichiers ici ou cliquez pour sélectionner</p>
+                <input type="file" multiple style="display: none;" id="fileInput">
+                <button class="btn btn-outline" onclick="document.getElementById('fileInput').click()">
+                    Choisir des fichiers
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Editor Tutorial Modal -->
-    <div id="editorTutorialModal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" data-testid="modal-editor-tutorial">
-        <div class="bg-card border border-border rounded-xl p-8 max-w-2xl max-h-[80vh] overflow-y-auto m-4">
-            <div class="flex items-center justify-between mb-6">
-                <h2 class="text-2xl font-bold text-foreground">✏️ Tutoriel : Éditeur de documents</h2>
-                <button onclick="closeModal('editorTutorialModal')" class="text-muted-foreground hover:text-foreground" data-testid="button-close-editor-modal">
-                    <i class="fas fa-times text-xl"></i>
+    <!-- Newsletter Modal -->
+    <div id="newsletterModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('newsletterModal')">
+                <i class="fas fa-times"></i>
+            </button>
+            <h3 style="margin-bottom: 1.5rem; color: hsl(var(--primary));">Newsletter OneBox</h3>
+            <p style="margin-bottom: 1.5rem; color: hsl(var(--muted-foreground));">
+                Restez informé des dernières nouveautés et mises à jour de OneBox.
+            </p>
+            <form onsubmit="subscribeNewsletter(event)">
+                <div class="form-group">
+                    <input type="email" class="form-input" placeholder="votre@email.com" required>
+                </div>
+                <button type="submit" class="btn btn-primary floating-btn" style="width: 100%;">
+                    <i class="fas fa-paper-plane"></i>
+                    S'abonner
                 </button>
-            </div>
-            
-            <div class="space-y-6 text-muted-foreground">
-                <div class="flex items-start space-x-3">
-                    <div class="w-8 h-8 bg-accent rounded-full flex items-center justify-center text-accent-foreground font-bold">1</div>
-                    <div>
-                        <h3 class="text-foreground font-semibold mb-2">Créer un document</h3>
-                        <p>Accédez à la section "Éditeur" depuis le menu. Un nouveau document vierge s'ouvrira automatiquement.</p>
-                    </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Pricing Modal -->
+    <div id="pricingModal" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <button class="modal-close" onclick="closeModal('pricingModal')">
+                <i class="fas fa-times"></i>
+            </button>
+            <h3 style="margin-bottom: 2rem; color: hsl(var(--primary)); text-align: center;">Nos Tarifs</h3>
+            <div class="grid grid-2" style="gap: 1rem;">
+                <div class="card">
+                    <h4 style="color: hsl(var(--primary)); margin-bottom: 1rem;">Gratuit</h4>
+                    <p style="font-size: 2rem; font-weight: bold; margin-bottom: 1rem;">0€</p>
+                    <ul style="list-style: none; margin-bottom: 1.5rem;">
+                        <li>✓ 5 GB de stockage</li>
+                        <li>✓ Éditeur de base</li>
+                        <li>✓ Support email</li>
+                    </ul>
+                    <button class="btn btn-outline" style="width: 100%;">Commencer</button>
                 </div>
-                
-                <div class="flex items-start space-x-3">
-                    <div class="w-8 h-8 bg-accent rounded-full flex items-center justify-center text-accent-foreground font-bold">2</div>
-                    <div>
-                        <h3 class="text-foreground font-semibold mb-2">Outils de formatage</h3>
-                        <p>Utilisez la barre d'outils pour formater votre texte : <strong>gras</strong>, <em>italique</em>, soulignement, alignement, et insertion d'images ou tableaux.</p>
-                    </div>
+                <div class="card">
+                    <h4 style="color: hsl(var(--primary)); margin-bottom: 1rem;">Pro</h4>
+                    <p style="font-size: 2rem; font-weight: bold; margin-bottom: 1rem;">9€<span style="font-size: 1rem;">/mois</span></p>
+                    <ul style="list-style: none; margin-bottom: 1.5rem;">
+                        <li>✓ 100 GB de stockage</li>
+                        <li>✓ Éditeur avancé</li>
+                        <li>✓ Support prioritaire</li>
+                        <li>✓ Snapchat intégration</li>
+                    </ul>
+                    <button class="btn btn-primary floating-btn" style="width: 100%;">Choisir Pro</button>
                 </div>
-                
-                <div class="flex items-start space-x-3">
-                    <div class="w-8 h-8 bg-accent rounded-full flex items-center justify-center text-accent-foreground font-bold">3</div>
-                    <div>
-                        <h3 class="text-foreground font-semibold mb-2">Sauvegarde automatique</h3>
-                        <p>Vos modifications sont détectées automatiquement. Cliquez sur "Sauvegarder" ou utilisez Ctrl+S pour enregistrer votre document.</p>
-                    </div>
-                </div>
-                
-                <div class="bg-accent/10 border border-accent/20 rounded-lg p-4 mt-6">
-                    <h4 class="text-accent font-semibold mb-2">⌨️ Raccourcis clavier</h4>
-                    <div class="text-sm space-y-1">
-                        <p><kbd class="bg-secondary px-2 py-1 rounded">Ctrl + S</kbd> : Sauvegarder le document</p>
-                        <p><kbd class="bg-secondary px-2 py-1 rounded">Ctrl + B</kbd> : Mettre en gras</p>
-                        <p><kbd class="bg-secondary px-2 py-1 rounded">Ctrl + I</kbd> : Mettre en italique</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="flex justify-end mt-8">
-                <button onclick="closeModal('editorTutorialModal')" class="bg-accent text-accent-foreground px-6 py-2 rounded-lg hover:bg-accent/90 transition-colors">
-                    Parfait !
-                </button>
             </div>
         </div>
     </div>
 
-    <!-- Sharing Tutorial Modal -->
-    <div id="sharingTutorialModal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" data-testid="modal-sharing-tutorial">
-        <div class="bg-card border border-border rounded-xl p-8 max-w-2xl max-h-[80vh] overflow-y-auto m-4">
-            <div class="flex items-center justify-between mb-6">
-                <h2 class="text-2xl font-bold text-foreground">🔗 Tutoriel : Partage de fichiers</h2>
-                <button onclick="closeModal('sharingTutorialModal')" class="text-muted-foreground hover:text-foreground" data-testid="button-close-sharing-modal">
-                    <i class="fas fa-times text-xl"></i>
-                </button>
-            </div>
-            
-            <div class="space-y-6 text-muted-foreground">
-                <div class="flex items-start space-x-3">
-                    <div class="w-8 h-8 bg-accent rounded-full flex items-center justify-center text-accent-foreground font-bold">1</div>
-                    <div>
-                        <h3 class="text-foreground font-semibold mb-2">Accès local uniquement</h3>
-                        <p>OneBox fonctionne en mode local pour votre sécurité. Vos fichiers restent sur votre appareil et ne sont pas partagés sur internet.</p>
-                    </div>
+    <!-- FAQ Modal -->
+    <div id="faqModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('faqModal')">
+                <i class="fas fa-times"></i>
+            </button>
+            <h3 style="margin-bottom: 2rem; color: hsl(var(--primary));">Questions Fréquentes</h3>
+            <div style="space-y: 1rem;">
+                <div style="margin-bottom: 1.5rem;">
+                    <h4 style="color: hsl(var(--foreground)); margin-bottom: 0.5rem;">Comment fonctionne OneBox ?</h4>
+                    <p style="color: hsl(var(--muted-foreground));">OneBox est une plateforme de stockage cloud sécurisée qui vous permet de stocker, organiser et éditer vos fichiers en ligne.</p>
                 </div>
-                
-                <div class="flex items-start space-x-3">
-                    <div class="w-8 h-8 bg-accent rounded-full flex items-center justify-center text-accent-foreground font-bold">2</div>
-                    <div>
-                        <h3 class="text-foreground font-semibold mb-2">Partage par téléchargement</h3>
-                        <p>Pour partager un fichier, utilisez le bouton "Télécharger" dans le menu du fichier, puis envoyez-le via email, messagerie, ou clé USB.</p>
-                    </div>
+                <div style="margin-bottom: 1.5rem;">
+                    <h4 style="color: hsl(var(--foreground)); margin-bottom: 0.5rem;">Mes données sont-elles sécurisées ?</h4>
+                    <p style="color: hsl(var(--muted-foreground));">Oui, nous utilisons un chiffrement de bout en bout et des protocoles de sécurité avancés pour protéger vos données.</p>
                 </div>
-                
-                <div class="flex items-start space-x-3">
-                    <div class="w-8 h-8 bg-accent rounded-full flex items-center justify-center text-accent-foreground font-bold">3</div>
-                    <div>
-                        <h3 class="text-foreground font-semibold mb-2">Synchronisation manuelle</h3>
-                        <p>Pour accéder à vos fichiers depuis un autre appareil, exportez vos données et importez-les sur l'autre appareil.</p>
-                    </div>
+                <div style="margin-bottom: 1.5rem;">
+                    <h4 style="color: hsl(var(--foreground)); margin-bottom: 0.5rem;">Comment contacter le support via Snapchat ?</h4>
+                    <p style="color: hsl(var(--muted-foreground));">Ajoutez @onebox_support sur Snapchat pour un support rapide et personnalisé avec notre équipe.</p>
                 </div>
-                
-                <div class="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-4 mt-6">
-                    <h4 class="text-yellow-500 font-semibold mb-2">🔒 Sécurité avant tout</h4>
-                    <p class="text-sm">Cette approche locale garantit que vos données privées ne quittent jamais votre appareil, offrant une sécurité maximale.</p>
-                </div>
-            </div>
-            
-            <div class="flex justify-end mt-8">
-                <button onclick="closeModal('sharingTutorialModal')" class="bg-accent text-accent-foreground px-6 py-2 rounded-lg hover:bg-accent/90 transition-colors">
-                    C'est noté !
-                </button>
             </div>
         </div>
     </div>
 
     <!-- File Preview Modal -->
-    <div id="filePreviewModal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" data-testid="modal-file-preview">
-        <div class="bg-card border border-border rounded-xl max-w-4xl max-h-[90vh] overflow-y-auto m-4 w-full">
-            <div class="flex items-center justify-between p-6 border-b border-border">
-                <h2 id="previewFileName" class="text-xl font-bold text-foreground">Prévisualisation du fichier</h2>
-                <button onclick="closeFilePreview()" class="text-muted-foreground hover:text-foreground" data-testid="button-close-preview">
-                    <i class="fas fa-times text-xl"></i>
-                </button>
-            </div>
-            
-            <div class="p-6">
-                <div id="previewContent" class="mb-6">
-                    <!-- Le contenu de prévisualisation sera inséré ici -->
+    <div id="filePreviewModal" class="modal file-preview-modal">
+        <div class="modal-content">
+            <div class="file-preview-container">
+                <div class="file-preview-header">
+                    <div>
+                        <h3 id="fileName" style="color: hsl(var(--primary)); margin: 0;">Fichier</h3>
+                        <p id="fileInfo" style="color: hsl(var(--muted-foreground)); margin: 0; font-size: 0.9rem;">Information du fichier</p>
+                    </div>
+                    <div class="zoom-controls" id="zoomControls" style="position: relative;">
+                        <button class="zoom-btn" onclick="zoomOut()" title="Zoom arrière">
+                            <i class="fas fa-search-minus"></i>
+                        </button>
+                        <button class="zoom-btn" onclick="resetZoom()" title="Taille réelle">
+                            <i class="fas fa-expand-arrows-alt"></i>
+                        </button>
+                        <button class="zoom-btn" onclick="zoomIn()" title="Zoom avant">
+                            <i class="fas fa-search-plus"></i>
+                        </button>
+                    </div>
+                    <button class="modal-close" onclick="closeModal('filePreviewModal')">
+                        <i class="fas fa-times"></i>
+                    </button>
                 </div>
                 
-                <div class="flex items-center justify-between bg-muted/20 rounded-lg p-4">
-                    <div>
-                        <p id="previewFileInfo" class="text-sm text-muted-foreground"></p>
-                        <p id="previewFileDate" class="text-xs text-muted-foreground mt-1"></p>
+                <div class="file-preview-content" id="filePreviewContent">
+                    <div class="loading-spinner" id="loadingSpinner">
+                        <div class="spinner"></div>
+                        <p style="margin-top: 1rem;">Chargement du fichier...</p>
                     </div>
-                    <div class="flex space-x-2">
-                        <button id="previewDownloadBtn" onclick="downloadFileFromPreview()" class="bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:opacity-90 transition-opacity" data-testid="button-preview-download">
-                            <i class="fas fa-download mr-2"></i>Télécharger
-                        </button>
-                        <button id="previewDeleteBtn" onclick="deleteFileFromPreview()" class="bg-destructive text-destructive-foreground px-4 py-2 rounded-lg hover:opacity-90 transition-opacity" data-testid="button-preview-delete">
-                            <i class="fas fa-trash mr-2"></i>Supprimer
-                        </button>
+                </div>
+
+                <div class="file-info-panel">
+                    <div class="file-info-item">
+                        <i class="fas fa-file"></i>
+                        <span id="fileType">Type de fichier</span>
                     </div>
+                    <div class="file-info-item">
+                        <i class="fas fa-hdd"></i>
+                        <span id="fileSize">Taille du fichier</span>
+                    </div>
+                    <div class="file-info-item">
+                        <i class="fas fa-calendar"></i>
+                        <span id="fileDate">Date de modification</span>
+                    </div>
+                    <div class="file-info-item">
+                        <i class="fas fa-eye"></i>
+                        <span id="fileViews">Vues: 0</span>
+                    </div>
+                </div>
+
+                <div class="file-preview-actions">
+                    <button class="btn btn-primary floating-btn" onclick="downloadCurrentFile()">
+                        <i class="fas fa-download"></i>
+                        Télécharger
+                    </button>
+                    <button class="btn btn-outline floating-btn" onclick="shareCurrentFile()">
+                        <i class="fas fa-share"></i>
+                        Partager
+                    </button>
+                    <button class="snapchat-btn" onclick="shareCurrentFileSnapchat()">
+                        <i class="fab fa-snapchat-ghost"></i>
+                        Snapchat
+                    </button>
+                    <button class="btn btn-secondary floating-btn" onclick="editCurrentFile()">
+                        <i class="fas fa-edit"></i>
+                        Éditer
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Contact Modal with 3D Snapchat Style -->
-    <div id="contactModal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" data-testid="modal-contact">
-        <div class="relative bg-gradient-to-br from-yellow-400 via-pink-500 to-purple-600 p-1 rounded-3xl transform transition-all duration-300 hover:scale-105 m-4">
-            <div class="bg-black rounded-3xl p-8 max-w-md relative overflow-hidden">
-                <!-- 3D Background Effect -->
-                <div class="absolute inset-0 bg-gradient-to-r from-purple-600/20 via-pink-500/20 to-yellow-400/20 animate-pulse"></div>
-                <div class="absolute -top-10 -right-10 w-32 h-32 bg-yellow-400/30 rounded-full blur-3xl"></div>
-                <div class="absolute -bottom-10 -left-10 w-32 h-32 bg-purple-600/30 rounded-full blur-3xl"></div>
-                
-                <!-- Content -->
-                <div class="relative z-10">
-                    <div class="flex items-center justify-between mb-6">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-12 h-12 bg-gradient-to-r from-yellow-400 to-pink-500 rounded-2xl flex items-center justify-center transform rotate-12">
-                                <i class="fab fa-snapchat-ghost text-black text-xl"></i>
-                            </div>
-                            <h2 class="text-2xl font-bold text-white">Contact</h2>
-                        </div>
-                        <button onclick="closeModal('contactModal')" class="text-white/70 hover:text-white transition-colors" data-testid="button-close-contact-modal">
-                            <i class="fas fa-times text-xl"></i>
-                        </button>
-                    </div>
-                    
-                    <div class="space-y-6">
-                        <div class="text-center">
-                            <div class="inline-block p-4 bg-gradient-to-r from-yellow-400/20 to-pink-500/20 rounded-2xl mb-4 transform hover:rotate-3 transition-transform">
-                                <i class="fas fa-rocket text-4xl text-white"></i>
-                            </div>
-                            <h3 class="text-xl font-semibold text-white mb-2">Rejoignez-nous sur Snapchat!</h3>
-                            <p class="text-white/80 mb-6">Suivez nos dernières actualités et nouveautés sur notre Snap officiel.</p>
-                        </div>
-                        
-                        <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
-                            <div class="flex items-center space-x-3 mb-4">
-                                <i class="fab fa-snapchat text-yellow-400 text-2xl"></i>
-                                <span class="text-white font-semibold">OneBox Officiel</span>
-                            </div>
-                            <p class="text-white/80 text-sm mb-4">Scannez le code Snapchat ou cliquez sur le lien ci-dessous</p>
-                            
-                            <!-- Snapchat Link Button -->
-                            <a href="https://t.snapchat.com/EmDLdFsT" target="_blank" class="block w-full bg-gradient-to-r from-yellow-400 to-pink-500 text-black font-bold py-3 px-6 rounded-xl text-center transform transition-all duration-200 hover:scale-105 hover:shadow-lg active:scale-95">
-                                <i class="fab fa-snapchat mr-2"></i>
-                                Ouvrir sur Snapchat
-                            </a>
-                        </div>
-                        
-                        <div class="text-center">
-                            <div class="inline-flex items-center space-x-2 text-white/60 text-sm">
-                                <i class="fas fa-shield-alt"></i>
-                                <span>Lien officiel sécurisé</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Animated particles -->
-                <div class="absolute top-4 right-4 w-2 h-2 bg-yellow-400 rounded-full animate-bounce" style="animation-delay: 0.5s;"></div>
-                <div class="absolute bottom-6 left-6 w-1 h-1 bg-pink-500 rounded-full animate-bounce" style="animation-delay: 1s;"></div>
-                <div class="absolute top-1/3 left-4 w-1.5 h-1.5 bg-purple-400 rounded-full animate-bounce" style="animation-delay: 1.5s;"></div>
-            </div>
+    <!-- Success Toast -->
+    <div id="toast" style="position: fixed; top: 20px; right: 20px; background: hsl(var(--card)); border: 1px solid hsl(var(--border)); border-radius: 12px; padding: 1rem; display: none; z-index: 3000; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);">
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <i class="fas fa-check-circle" style="color: hsl(var(--primary));"></i>
+            <span id="toastMessage">Message envoyé avec succès !</span>
         </div>
     </div>
+
+    <script>
+        // Navigation
+        function showSection(sectionId) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => section.classList.remove('active'));
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Update nav links
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => link.classList.remove('active'));
+            
+            const activeLink = document.querySelector(`[data-section="${sectionId}"]`);
+            if (activeLink) {
+                activeLink.classList.add('active');
+            }
+            
+            // Close mobile menu if open
+            const navMenu = document.getElementById('navMenu');
+            navMenu.classList.remove('active');
+        }
+
+        function toggleMobileMenu() {
+            const navMenu = document.getElementById('navMenu');
+            navMenu.classList.toggle('active');
+        }
+
+        // Modals
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close modal when clicking outside
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal')) {
+                closeModal(e.target.id);
+            }
+        });
+
+        // Authentication
+        function showLogin() {
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('registerForm').style.display = 'none';
+        }
+
+        function showRegister() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('registerForm').style.display = 'block';
+        }
+
+        function login(event) {
+            event.preventDefault();
+            showToast('Connexion réussie ! Bienvenue dans OneBox 💪🏾');
+            setTimeout(() => {
+                showSection('home');
+            }, 1500);
+        }
+
+        function register(event) {
+            event.preventDefault();
+            showToast('Compte créé avec succès ! Bienvenue dans OneBox 💪🏾');
+            setTimeout(() => {
+                showSection('home');
+            }, 1500);
+        }
+
+        // Editor
+        function formatText(command) {
+            document.execCommand(command, false, null);
+            document.getElementById('editor').focus();
+        }
+
+        function saveDocument() {
+            const content = document.getElementById('editor').innerHTML;
+            showToast('Document sauvegardé avec succès !');
+            // Here you would typically send the content to a server
+        }
+
+        // Contact Form
+        function submitContactForm(event) {
+            event.preventDefault();
+            showToast('Message envoyé avec succès ! Nous vous répondrons rapidement.');
+            event.target.reset();
+        }
+
+        // Newsletter
+        function subscribeNewsletter(event) {
+            event.preventDefault();
+            showToast('Inscription à la newsletter réussie !');
+            closeModal('newsletterModal');
+            event.target.reset();
+        }
+
+        // Snapchat Integration
+        function openSnapchat() {
+            // Try to open Snapchat app first, fallback to web
+            const snapchatUrl = 'https://www.snapchat.com/add/onebox_support';
+            const appUrl = 'snapchat://add/onebox_support';
+            
+            // Create a hidden iframe to try opening the app
+            const iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            iframe.src = appUrl;
+            document.body.appendChild(iframe);
+            
+            // Fallback to web after a short delay
+            setTimeout(() => {
+                window.open(snapchatUrl, '_blank');
+                document.body.removeChild(iframe);
+            }, 1000);
+            
+            showToast('Redirection vers Snapchat... 💪🏾');
+        }
+
+        // Toast notifications
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            toastMessage.textContent = message;
+            
+            toast.style.display = 'block';
+            toast.style.animation = 'slideInRight 0.3s ease';
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideOutRight 0.3s ease';
+                setTimeout(() => {
+                    toast.style.display = 'none';
+                }, 300);
+            }, 3000);
+        }
+
+        // File upload handling
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const files = e.target.files;
+            if (files.length > 0) {
+                showToast(`${files.length} fichier(s) téléchargé(s) avec succès !`);
+                closeModal('uploadModal');
+                // Here you would typically upload the files to a server
+            }
+        });
+
+        // 3D effects on scroll
+        window.addEventListener('scroll', function() {
+            const cards = document.querySelectorAll('.perspective-card');
+            const scrolled = window.pageYOffset;
+            
+            cards.forEach(card => {
+                const rect = card.getBoundingClientRect();
+                const centerY = rect.top + rect.height / 2;
+                const centerX = rect.left + rect.width / 2;
+                const windowCenterY = window.innerHeight / 2;
+                const windowCenterX = window.innerWidth / 2;
+                
+                const rotateX = (centerY - windowCenterY) * 0.01;
+                const rotateY = (centerX - windowCenterX) * 0.01;
+                
+                if (rect.top < window.innerHeight && rect.bottom > 0) {
+                    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+                }
+            });
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Ctrl/Cmd + S to save in editor
+            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                e.preventDefault();
+                if (document.getElementById('editor').style.display !== 'none') {
+                    saveDocument();
+                }
+            }
+            
+            // Escape to close modals
+            if (e.key === 'Escape') {
+                const activeModal = document.querySelector('.modal.active');
+                if (activeModal) {
+                    closeModal(activeModal.id);
+                }
+            }
+        });
+
+        // File Preview Functions
+        let currentFile = null;
+        let currentZoom = 1;
+
+        function openFilePreview(fileName, fileType, fileUrl) {
+            currentFile = { name: fileName, type: fileType, url: fileUrl };
+            currentZoom = 1;
+            
+            // Update modal header
+            document.getElementById('fileName').textContent = fileName;
+            document.getElementById('fileInfo').textContent = `Prévisualisation de ${fileName}`;
+            
+            // Update file info panel
+            document.getElementById('fileType').textContent = getFileTypeDisplay(fileType);
+            document.getElementById('fileSize').textContent = getRandomFileSize();
+            document.getElementById('fileDate').textContent = new Date().toLocaleDateString('fr-FR');
+            document.getElementById('fileViews').textContent = `Vues: ${Math.floor(Math.random() * 100)}`;
+            
+            // Show loading
+            const content = document.getElementById('filePreviewContent');
+            content.innerHTML = `
+                <div class="loading-spinner">
+                    <div class="spinner"></div>
+                    <p style="margin-top: 1rem;">Chargement du fichier...</p>
+                </div>
+            `;
+            
+            // Open modal
+            openModal('filePreviewModal');
+            
+            // Load file content based on type
+            setTimeout(() => {
+                loadFileContent(fileName, fileType, fileUrl);
+            }, 800);
+        }
+
+        function loadFileContent(fileName, fileType, fileUrl) {
+            const content = document.getElementById('filePreviewContent');
+            const zoomControls = document.getElementById('zoomControls');
+            
+            switch (fileType) {
+                case 'pdf':
+                    content.innerHTML = `
+                        <iframe class="pdf-viewer" src="${fileUrl}" style="min-height: 600px;">
+                            <p>Votre navigateur ne supporte pas l'affichage des PDFs. 
+                            <a href="${fileUrl}" target="_blank">Cliquez ici pour télécharger le fichier.</a></p>
+                        </iframe>
+                    `;
+                    zoomControls.style.display = 'flex';
+                    break;
+                    
+                case 'image':
+                    content.innerHTML = `
+                        <img class="image-viewer" src="${fileUrl}" alt="${fileName}" 
+                             style="max-width: 100%; max-height: 100%; object-fit: contain;" 
+                             id="zoomableImage">
+                    `;
+                    zoomControls.style.display = 'flex';
+                    break;
+                    
+                case 'video':
+                    content.innerHTML = `
+                        <video class="video-viewer" controls style="max-width: 100%; max-height: 100%;">
+                            <source src="${fileUrl}" type="video/mp4">
+                            Votre navigateur ne supporte pas la lecture vidéo.
+                        </video>
+                    `;
+                    zoomControls.style.display = 'none';
+                    break;
+                    
+                case 'text':
+                    const sampleText = `# Notes de Réunion - ${new Date().toLocaleDateString('fr-FR')}
+
+## Participants
+- Marie Dubois (Chef de projet)
+- Jean Martin (Développeur)
+- Sophie Laurent (Designer)
+
+## Points abordés
+1. **Révision du design OneBox**
+   - Amélioration des effets 3D
+   - Optimisation mobile
+   - Intégration Snapchat
+
+2. **Fonctionnalités à développer**
+   - Prévisualisation PDF améliorée
+   - Zoom sur images
+   - Partage social
+
+## Actions à mener
+- [ ] Finaliser la modal de prévisualisation
+- [ ] Tester sur différents navigateurs
+- [ ] Déployer en production
+
+## Prochaine réunion
+Date: ${new Date(Date.now() + 7*24*60*60*1000).toLocaleDateString('fr-FR')}
+Heure: 14:00`;
+
+                    content.innerHTML = `
+                        <div class="text-viewer">${sampleText}</div>
+                    `;
+                    zoomControls.style.display = 'flex';
+                    break;
+                    
+                case 'document':
+                    content.innerHTML = `
+                        <div class="text-viewer" style="background: white; color: #333; font-family: 'Times New Roman', serif;">
+                            <h1 style="color: #1e40af; margin-bottom: 2rem; text-align: center;">CONTRAT DE TRAVAIL</h1>
+                            
+                            <p><strong>Entre les soussignés :</strong></p>
+                            
+                            <p>La société <strong>ONEBOX SAS</strong><br>
+                            Siège social : 123 Avenue de la Innovation, 75001 Paris<br>
+                            SIRET : 123 456 789 00012<br>
+                            Représentée par M. Jean DUPONT, Directeur Général</p>
+                            
+                            <p>d'une part,</p>
+                            
+                            <p>Et M./Mme <strong>[NOM PRÉNOM]</strong><br>
+                            Né(e) le [DATE] à [LIEU]<br>
+                            Demeurant : [ADRESSE]</p>
+                            
+                            <p>d'autre part,</p>
+                            
+                            <h2 style="color: #1e40af; margin-top: 2rem;">Article 1 - Engagement</h2>
+                            <p>La société OneBox SAS engage M./Mme [NOM] en qualité de Développeur Full-Stack, à compter du [DATE].</p>
+                            
+                            <h2 style="color: #1e40af;">Article 2 - Fonctions</h2>
+                            <p>L'employé(e) exercera les fonctions de développement d'applications cloud, maintenance des serveurs et support client.</p>
+                            
+                            <h2 style="color: #1e40af;">Article 3 - Rémunération</h2>
+                            <p>La rémunération mensuelle brute est fixée à [MONTANT] euros, payable le dernier jour ouvré de chaque mois.</p>
+                        </div>
+                    `;
+                    zoomControls.style.display = 'flex';
+                    break;
+                    
+                case 'spreadsheet':
+                    content.innerHTML = `
+                        <div class="text-viewer" style="background: white; color: #333;">
+                            <h2 style="color: #059669; text-align: center; margin-bottom: 2rem;">Budget 2024 - OneBox</h2>
+                            <table style="width: 100%; border-collapse: collapse; font-family: Arial, sans-serif;">
+                                <thead style="background: #059669; color: white;">
+                                    <tr>
+                                        <th style="border: 1px solid #ccc; padding: 12px; text-align: left;">Catégorie</th>
+                                        <th style="border: 1px solid #ccc; padding: 12px; text-align: right;">Q1 2024</th>
+                                        <th style="border: 1px solid #ccc; padding: 12px; text-align: right;">Q2 2024</th>
+                                        <th style="border: 1px solid #ccc; padding: 12px; text-align: right;">Q3 2024</th>
+                                        <th style="border: 1px solid #ccc; padding: 12px; text-align: right;">Q4 2024</th>
+                                        <th style="border: 1px solid #ccc; padding: 12px; text-align: right;">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr style="background: #f0f9ff;">
+                                        <td style="border: 1px solid #ccc; padding: 12px; font-weight: bold;">Revenus</td>
+                                        <td style="border: 1px solid #ccc; padding: 12px; text-align: right;">25 000€</td>
+                                        <td style="border: 1px solid #ccc; padding: 12px; text-align: right;">35 000€</td>
+                                        <td style="border: 1px solid #ccc; padding: 12px; text-align: right;">45 000€</td>
+                                        <td style="border: 1px solid #ccc; padding: 12px; text-align: right;">55 000€</td>
+                                        <td style="border: 1px solid #ccc; padding: 12px; text-align: right; font-weight: bold;">160 000€</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border: 1px solid #ccc; padding: 12px;">Salaires</td>
+                                        <td style="border: 1px solid #ccc; padding: 12px; text-align: right;">15 000€</td>
+                                        <td style="border: 1px solid #ccc; padding: 12px; text-align: right;">18 000€</td>
+                                        <td style="border: 1px solid #ccc; padding: 12px; text-align: right;">20 000€</td>
+                                        <td style="border: 1px solid #ccc; padding: 12px; text-align: right;">22 000€</td>
+                                        <td style="border: 1px solid #ccc; padding: 12px; text-align: right;">75 000€</td>
+                                    </tr>
+                                    <tr style="background: #f8f9fa;">
+                                        <td style="border: 1px solid #ccc; padding: 12px;">Infrastructure</td>
+                                        <td style="border: 1px solid #ccc; padding: 12px; text-align: right;">3 000€</td>
+                                        <td style="border: 1px solid #ccc; padding: 12px; text-align: right;">4 000€</td>
+                                        <td style="border: 1px solid #ccc; padding: 12px; text-align: right;">5 000€</td>
+                                        <td style="border: 1px solid #ccc; padding: 12px; text-align: right;">6 000€</td>
+                                        <td style="border: 1px solid #ccc; padding: 12px; text-align: right;">18 000€</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border: 1px solid #ccc; padding: 12px;">Marketing</td>
+                                        <td style="border: 1px solid #ccc; padding: 12px; text-align: right;">2 000€</td>
+                                        <td style="border: 1px solid #ccc; padding: 12px; text-align: right;">5 000€</td>
+                                        <td style="border: 1px solid #ccc; padding: 12px; text-align: right;">8 000€</td>
+                                        <td style="border: 1px solid #ccc; padding: 12px; text-align: right;">10 000€</td>
+                                        <td style="border: 1px solid #ccc; padding: 12px; text-align: right;">25 000€</td>
+                                    </tr>
+                                    <tr style="background: #dcfce7; font-weight: bold;">
+                                        <td style="border: 1px solid #ccc; padding: 12px;">Bénéfice Net</td>
+                                        <td style="border: 1px solid #ccc; padding: 12px; text-align: right;">5 000€</td>
+                                        <td style="border: 1px solid #ccc; padding: 12px; text-align: right;">8 000€</td>
+                                        <td style="border: 1px solid #ccc; padding: 12px; text-align: right;">12 000€</td>
+                                        <td style="border: 1px solid #ccc; padding: 12px; text-align: right;">17 000€</td>
+                                        <td style="border: 1px solid #ccc; padding: 12px; text-align: right; color: #059669;">42 000€</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <p style="margin-top: 2rem; font-style: italic; color: #6b7280;">
+                                * Données prévisionnelles basées sur les tendances du marché<br>
+                                ** Mise à jour: ${new Date().toLocaleDateString('fr-FR')}
+                            </p>
+                        </div>
+                    `;
+                    zoomControls.style.display = 'flex';
+                    break;
+                    
+                default:
+                    content.innerHTML = `
+                        <div style="text-align: center; padding: 3rem; color: hsl(var(--muted-foreground));">
+                            <i class="fas fa-file" style="font-size: 4rem; margin-bottom: 1rem;"></i>
+                            <h3>Aperçu non disponible</h3>
+                            <p>Ce type de fichier ne peut pas être prévisualisé directement.</p>
+                            <button class="btn btn-primary floating-btn" onclick="downloadCurrentFile()" style="margin-top: 1rem;">
+                                <i class="fas fa-download"></i>
+                                Télécharger le fichier
+                            </button>
+                        </div>
+                    `;
+                    zoomControls.style.display = 'none';
+            }
+        }
+
+        // Zoom functions
+        function zoomIn() {
+            currentZoom = Math.min(currentZoom * 1.2, 3);
+            applyZoom();
+        }
+
+        function zoomOut() {
+            currentZoom = Math.max(currentZoom / 1.2, 0.5);
+            applyZoom();
+        }
+
+        function resetZoom() {
+            currentZoom = 1;
+            applyZoom();
+        }
+
+        function applyZoom() {
+            const image = document.getElementById('zoomableImage');
+            const textViewer = document.querySelector('.text-viewer');
+            const pdfViewer = document.querySelector('.pdf-viewer');
+            
+            if (image) {
+                image.style.transform = `scale(${currentZoom})`;
+                image.style.transformOrigin = 'center center';
+            }
+            
+            if (textViewer) {
+                textViewer.style.fontSize = `${currentZoom}rem`;
+            }
+            
+            if (pdfViewer) {
+                pdfViewer.style.zoom = currentZoom;
+            }
+            
+            showToast(`Zoom: ${Math.round(currentZoom * 100)}%`);
+        }
+
+        // File actions
+        function downloadCurrentFile() {
+            if (currentFile) {
+                showToast(`Téléchargement de ${currentFile.name} démarré ! 💪🏾`);
+                // In a real app, this would trigger an actual download
+            }
+        }
+
+        function shareCurrentFile() {
+            if (currentFile) {
+                if (navigator.share) {
+                    navigator.share({
+                        title: `OneBox - ${currentFile.name}`,
+                        text: `Consultez ce fichier depuis OneBox`,
+                        url: window.location.href
+                    });
+                } else {
+                    // Fallback
+                    navigator.clipboard.writeText(window.location.href);
+                    showToast(`Lien copié pour partager ${currentFile.name} !`);
+                }
+            }
+        }
+
+        function shareCurrentFileSnapchat() {
+            if (currentFile) {
+                openSnapchat();
+                showToast(`Partage de ${currentFile.name} via Snapchat ! 💪🏾`);
+            }
+        }
+
+        function editCurrentFile() {
+            if (currentFile) {
+                closeModal('filePreviewModal');
+                showSection('editor');
+                showToast(`Ouverture de ${currentFile.name} dans l'éditeur !`);
+            }
+        }
+
+        // File management functions
+        function downloadFile(fileName) {
+            showToast(`Téléchargement de ${fileName} démarré ! 💪🏾`);
+        }
+
+        function shareFile(fileName) {
+            showToast(`${fileName} partagé avec succès !`);
+        }
+
+        function shareViaSnapchat(fileName) {
+            openSnapchat();
+            showToast(`${fileName} partagé via Snapchat ! 💪🏾`);
+        }
+
+        function editImage(fileName) {
+            showToast(`Ouverture de ${fileName} dans l'éditeur d'images !`);
+            // In a real app, this would open an image editor
+        }
+
+        // Helper functions
+        function getFileTypeDisplay(type) {
+            const types = {
+                'pdf': 'Document PDF',
+                'image': 'Image JPEG',
+                'video': 'Vidéo MP4',
+                'text': 'Fichier Texte',
+                'document': 'Document Word',
+                'spreadsheet': 'Feuille de calcul Excel'
+            };
+            return types[type] || 'Fichier';
+        }
+
+        function getRandomFileSize() {
+            const sizes = ['45 KB', '1.2 MB', '2.5 MB', '0.8 MB', '15.3 MB', '1.8 MB'];
+            return sizes[Math.floor(Math.random() * sizes.length)];
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add smooth scrolling
+            document.documentElement.style.scrollBehavior = 'smooth';
+            
+            // Add loading animation
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.5s ease';
+            
+            setTimeout(() => {
+                document.body.style.opacity = '1';
+            }, 100);
+            
+            // Welcome message
+            setTimeout(() => {
+                showToast('Bienvenue sur OneBox ! Votre cloud personnel sécurisé 💪🏾');
+            }, 2000);
+
+            // Add keyboard shortcuts for file preview
+            document.addEventListener('keydown', function(e) {
+                if (document.getElementById('filePreviewModal').classList.contains('active')) {
+                    if (e.key === '+' || e.key === '=') {
+                        e.preventDefault();
+                        zoomIn();
+                    } else if (e.key === '-') {
+                        e.preventDefault();
+                        zoomOut();
+                    } else if (e.key === '0') {
+                        e.preventDefault();
+                        resetZoom();
+                    }
+                }
+            });
+        });
+
+        // Add more 3D animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideInRight {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            
+            @keyframes slideOutRight {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+            }
+            
+            .perspective-card {
+                will-change: transform;
+            }
+            
+            .floating-btn {
+                will-change: transform, box-shadow;
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
 </body>
 </html>
