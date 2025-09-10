@@ -620,6 +620,64 @@
             100% { transform: rotate(360deg); }
         }
 
+        @keyframes rotate {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        /* Editor improvements */
+        .editor-save-panel {
+            background: hsl(var(--card));
+            border: 1px solid hsl(var(--border));
+            border-radius: 12px;
+            padding: 1rem;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .editor-filters {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: hsl(var(--muted));
+            border: none;
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            color: hsl(var(--foreground));
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .filter-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(6, 214, 160, 0.3);
+        }
+
+        .filter-btn.active {
+            background: hsl(var(--primary));
+            color: hsl(var(--background));
+        }
+
+        /* iPhone-style color filters */
+        .color-filter-vivid { filter: contrast(1.2) saturate(1.3) brightness(1.1); }
+        .color-filter-dramatic { filter: contrast(1.5) saturate(0.8) brightness(0.9) hue-rotate(10deg); }
+        .color-filter-mono { filter: grayscale(1) contrast(1.2); }
+        .color-filter-silvertone { filter: grayscale(0.5) contrast(1.1) brightness(1.1); }
+        .color-filter-noir { filter: grayscale(1) contrast(1.4) brightness(0.8); }
+        .color-filter-warm { filter: sepia(0.3) saturate(1.2) contrast(1.1) hue-rotate(-10deg); }
+        .color-filter-cool { filter: hue-rotate(180deg) saturate(0.9) brightness(1.05); }
+
         /* Authentication */
         .auth-container {
             max-width: 400px;
@@ -953,9 +1011,105 @@
                     <button class="editor-btn" onclick="formatText('insertOrderedList')" title="Liste numérotée">
                         <i class="fas fa-list-ol"></i>
                     </button>
-                    <button class="editor-btn" onclick="saveDocument()" title="Sauvegarder">
+                    <div style="border-left: 1px solid hsl(var(--border)); margin: 0 0.5rem; height: 30px;"></div>
+                    <button class="editor-btn" onclick="toggleSavePanel()" title="Sauvegarder le document">
                         <i class="fas fa-save"></i>
                     </button>
+                    <button class="editor-btn" onclick="toggleFilters()" title="Filtres couleur iPhone">
+                        <i class="fas fa-palette"></i>
+                    </button>
+                    <button class="editor-btn" onclick="newDocument()" title="Nouveau document">
+                        <i class="fas fa-file-plus"></i>
+                    </button>
+                    <button class="snapchat-btn" onclick="shareDocumentSnapchat()" title="Partager sur Snapchat" style="padding: 0.5rem; margin-left: 0.5rem;">
+                        <i class="fab fa-snapchat-ghost"></i>
+                    </button>
+                </div>
+
+                <!-- Save Panel -->
+                <div class="editor-save-panel" id="savePanelEditor">
+                    <h4 style="color: hsl(var(--primary)); margin-bottom: 1rem;">
+                        <i class="fas fa-save"></i> Enregistrer le document
+                    </h4>
+                    <div class="form-group">
+                        <label class="form-label">Nom du document</label>
+                        <input type="text" class="form-input" id="documentName" placeholder="Mon document" value="Mon Nouveau Document">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Dossier</label>
+                        <select class="form-select" id="documentFolder">
+                            <option value="mes-documents">📁 Mes Documents</option>
+                            <option value="projets">💼 Projets</option>
+                            <option value="personnel">👤 Personnel</option>
+                            <option value="travail">🏢 Travail</option>
+                            <option value="ecole">🎓 École</option>
+                            <option value="nouveau-dossier">➕ Nouveau dossier...</option>
+                        </select>
+                    </div>
+                    <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                        <button class="btn btn-primary floating-btn" onclick="saveDocumentToFolder()">
+                            <i class="fas fa-save"></i>
+                            Enregistrer
+                        </button>
+                        <button class="btn btn-outline" onclick="toggleSavePanel()">
+                            <i class="fas fa-times"></i>
+                            Annuler
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Color Filters iPhone-style -->
+                <div class="editor-save-panel" id="filtersPanel">
+                    <h4 style="color: hsl(var(--primary)); margin-bottom: 1rem;">
+                        <i class="fas fa-palette"></i> Filtres couleur iPhone
+                    </h4>
+                    <p style="color: hsl(var(--muted-foreground)); margin-bottom: 1rem; font-size: 0.9rem;">
+                        Appliquez des filtres visuels à votre document comme sur les photos iPhone
+                    </p>
+                    <div class="editor-filters">
+                        <button class="filter-btn active" onclick="applyDocumentFilter('none')" data-filter="none">
+                            <i class="fas fa-circle" style="color: #666;"></i>
+                            Original
+                        </button>
+                        <button class="filter-btn" onclick="applyDocumentFilter('vivid')" data-filter="vivid">
+                            <i class="fas fa-circle" style="color: #FF6B6B;"></i>
+                            Éclatant
+                        </button>
+                        <button class="filter-btn" onclick="applyDocumentFilter('dramatic')" data-filter="dramatic">
+                            <i class="fas fa-circle" style="color: #4ECDC4;"></i>
+                            Spectaculaire
+                        </button>
+                        <button class="filter-btn" onclick="applyDocumentFilter('mono')" data-filter="mono">
+                            <i class="fas fa-circle" style="color: #333;"></i>
+                            Mono
+                        </button>
+                        <button class="filter-btn" onclick="applyDocumentFilter('silvertone')" data-filter="silvertone">
+                            <i class="fas fa-circle" style="color: #999;"></i>
+                            Argenté
+                        </button>
+                        <button class="filter-btn" onclick="applyDocumentFilter('noir')" data-filter="noir">
+                            <i class="fas fa-circle" style="color: #000;"></i>
+                            Noir
+                        </button>
+                        <button class="filter-btn" onclick="applyDocumentFilter('warm')" data-filter="warm">
+                            <i class="fas fa-circle" style="color: #F39C12;"></i>
+                            Chaud
+                        </button>
+                        <button class="filter-btn" onclick="applyDocumentFilter('cool')" data-filter="cool">
+                            <i class="fas fa-circle" style="color: #3498DB;"></i>
+                            Froid
+                        </button>
+                    </div>
+                    <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                        <button class="btn btn-secondary floating-btn" onclick="resetDocumentFilter()">
+                            <i class="fas fa-undo"></i>
+                            Réinitialiser
+                        </button>
+                        <button class="btn btn-outline" onclick="toggleFilters()">
+                            <i class="fas fa-times"></i>
+                            Fermer
+                        </button>
+                    </div>
                 </div>
                 
                 <div class="editor-content" contenteditable="true" id="editor" placeholder="Commencez à écrire votre document...">
@@ -969,92 +1123,94 @@
     <!-- Contact Section -->
     <section id="contact" class="section">
         <div class="container">
-            <h2 style="text-align: center; margin-bottom: 3rem; font-size: 2.5rem; color: hsl(var(--primary));">Contactez-nous</h2>
-            
-            <div class="grid grid-2">
-                <!-- Contact Info -->
-                <div>
-                    <div class="card perspective-card glass-effect">
-                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
-                            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent))); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
-                                <i class="fas fa-envelope" style="color: hsl(var(--background));"></i>
-                            </div>
-                            <div>
-                                <h3>Email</h3>
-                                <p style="color: hsl(var(--muted-foreground));">contact@onebox.app</p>
-                            </div>
-                        </div>
-                        <p style="color: hsl(var(--muted-foreground)); font-size: 0.9rem;">
-                            Nous répondons généralement sous 24 heures
-                        </p>
-                    </div>
-
-                    <div class="card perspective-card glass-effect">
-                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
-                            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #8B5CF6, #A855F7); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
-                                <i class="fas fa-headphones" style="color: white;"></i>
-                            </div>
-                            <div>
-                                <h3>Support</h3>
-                                <p style="color: hsl(var(--muted-foreground));">Assistance technique</p>
-                            </div>
-                        </div>
-                        <p style="color: hsl(var(--muted-foreground)); font-size: 0.9rem;">
-                            Support disponible 7j/7 de 9h à 18h
-                        </p>
-                    </div>
-
-                    <div class="card perspective-card glass-effect">
-                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
-                            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #FFFC00, #FFD700); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
-                                <i class="fab fa-snapchat-ghost" style="color: #000;"></i>
-                            </div>
-                            <div>
-                                <h3>Snapchat</h3>
-                                <p style="color: hsl(var(--muted-foreground));">@onebox_support</p>
-                            </div>
-                        </div>
-                        <button class="snapchat-btn" onclick="openSnapchat()">
-                            <i class="fab fa-snapchat-ghost"></i>
-                            Contacter sur Snapchat
-                        </button>
-                    </div>
+            <div style="text-align: center; margin-bottom: 4rem;">
+                <!-- 3D Header with Snapchat Branding -->
+                <div class="perspective-card neon-glow" style="display: inline-block; padding: 2rem 3rem; background: linear-gradient(135deg, #FFFC00, #FFD700, #FFA500); border-radius: 25px; margin-bottom: 2rem; transform: rotateX(5deg) rotateY(-5deg); box-shadow: 0 15px 40px rgba(255, 252, 0, 0.4);">
+                    <i class="fab fa-snapchat-ghost" style="font-size: 4rem; color: #000; margin-bottom: 1rem; display: block; animation: bounce 2s infinite;"></i>
+                    <h2 style="font-size: 2.5rem; color: #000; font-weight: 800; margin: 0; text-shadow: 2px 2px 4px rgba(0,0,0,0.1);">
+                        Contactez-nous sur Snapchat ! 💪🏾
+                    </h2>
                 </div>
-
-                <!-- Contact Form -->
-                <div class="card perspective-card glass-effect">
-                    <form onsubmit="submitContactForm(event)">
-                        <div class="form-group">
-                            <label class="form-label">Nom complet</label>
-                            <input type="text" class="form-input" placeholder="Votre nom" required>
+                
+                <p style="font-size: 1.2rem; color: hsl(var(--muted-foreground)); max-width: 600px; margin: 0 auto;">
+                    Pour un support <strong>rapide</strong> et <strong>personnalisé</strong>, contactez-nous directement via Snapchat ! 
+                    Notre équipe vous répond en temps réel avec des solutions adaptées.
+                </p>
+            </div>
+            
+            <!-- Main Snapchat Contact Card -->
+            <div style="max-width: 800px; margin: 0 auto;">
+                <div class="card perspective-card glass-effect neon-glow" style="background: linear-gradient(135deg, rgba(255, 252, 0, 0.1), rgba(255, 215, 0, 0.1)); border: 2px solid #FFFC00; padding: 3rem; text-align: center; transform: scale(1.05); box-shadow: 0 20px 60px rgba(255, 252, 0, 0.3);">
+                    
+                    <!-- Snapchat Logo 3D -->
+                    <div style="position: relative; margin-bottom: 2rem;">
+                        <div class="floating-btn" style="width: 120px; height: 120px; background: linear-gradient(135deg, #FFFC00, #FFD700); border-radius: 50%; margin: 0 auto; display: flex; align-items: center; justify-content: center; border: 4px solid #FFA500; box-shadow: 0 10px 30px rgba(255, 165, 0, 0.5);">
+                            <i class="fab fa-snapchat-ghost" style="font-size: 4rem; color: #000;"></i>
                         </div>
+                        
+                        <!-- Animated circles around logo -->
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 140px; height: 140px; border: 2px dashed #FFFC00; border-radius: 50%; animation: rotate 10s linear infinite; opacity: 0.6;"></div>
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 160px; height: 160px; border: 1px solid #FFD700; border-radius: 50%; animation: rotate 15s linear infinite reverse; opacity: 0.4;"></div>
+                    </div>
 
-                        <div class="form-group">
-                            <label class="form-label">Email</label>
-                            <input type="email" class="form-input" placeholder="votre@email.com" required>
+                    <h3 style="font-size: 2rem; color: hsl(var(--foreground)); margin-bottom: 1rem; font-weight: 700;">
+                        🚀 Support Instantané via Snapchat
+                    </h3>
+                    
+                    <div style="margin: 2rem 0;">
+                        <p style="font-size: 1.1rem; color: hsl(var(--muted-foreground)); margin-bottom: 1rem;">
+                            <strong>✨ Pourquoi Snapchat ?</strong>
+                        </p>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+                            <div class="perspective-card" style="background: rgba(6, 214, 160, 0.1); border-radius: 12px; padding: 1rem;">
+                                <i class="fas fa-bolt" style="color: #FFFC00; font-size: 1.5rem; margin-bottom: 0.5rem;"></i>
+                                <p style="margin: 0; color: hsl(var(--foreground)); font-weight: 600;">Réponse Instantanée</p>
+                            </div>
+                            <div class="perspective-card" style="background: rgba(6, 214, 160, 0.1); border-radius: 12px; padding: 1rem;">
+                                <i class="fas fa-camera" style="color: #FFFC00; font-size: 1.5rem; margin-bottom: 0.5rem;"></i>
+                                <p style="margin: 0; color: hsl(var(--foreground)); font-weight: 600;">Support Visuel</p>
+                            </div>
+                            <div class="perspective-card" style="background: rgba(6, 214, 160, 0.1); border-radius: 12px; padding: 1rem;">
+                                <i class="fas fa-heart" style="color: #FFFC00; font-size: 1.5rem; margin-bottom: 0.5rem;"></i>
+                                <p style="margin: 0; color: hsl(var(--foreground)); font-weight: 600;">Support Humain</p>
+                            </div>
                         </div>
+                    </div>
 
-                        <div class="form-group">
-                            <label class="form-label">Sujet</label>
-                            <select class="form-select" required>
-                                <option value="">Sélectionnez un sujet</option>
-                                <option value="support">Support technique</option>
-                                <option value="general">Question générale</option>
-                                <option value="feature">Suggestion d'amélioration</option>
-                                <option value="bug">Bug report</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Message</label>
-                            <textarea class="form-textarea" placeholder="Décrivez votre demande en détail..." required></textarea>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary floating-btn" style="width: 100%;">
-                            <i class="fas fa-paper-plane"></i>
-                            Envoyer le message
+                    <!-- Main CTA Button -->
+                    <div style="margin: 2rem 0;">
+                        <button class="floating-btn" onclick="window.open('https://snapchat.com/t/ZVBBKbCo', '_blank')" style="background: linear-gradient(135deg, #FFFC00, #FFD700); color: #000; font-size: 1.3rem; padding: 1rem 2rem; border-radius: 50px; border: none; font-weight: 800; cursor: pointer; box-shadow: 0 10px 30px rgba(255, 252, 0, 0.5); transform: scale(1.1); transition: all 0.3s ease;">
+                            <i class="fab fa-snapchat-ghost" style="margin-right: 0.5rem; font-size: 1.5rem;"></i>
+                            Ouvrir Snapchat - Support OneBox
                         </button>
-                    </form>
+                    </div>
+
+                    <!-- Quick Info -->
+                    <div style="background: rgba(0, 0, 0, 0.2); border-radius: 12px; padding: 1.5rem; margin-top: 2rem;">
+                        <div style="display: flex; align-items: center; justify-content: center; gap: 1rem; margin-bottom: 1rem;">
+                            <i class="fas fa-clock" style="color: #FFFC00;"></i>
+                            <span style="color: hsl(var(--foreground)); font-weight: 600;">Support disponible 24h/24 - 7j/7</span>
+                        </div>
+                        <p style="color: hsl(var(--muted-foreground)); margin: 0; font-size: 0.95rem;">
+                            📱 Scannez, envoyez un message ou cliquez directement sur le bouton ci-dessus !<br>
+                            Notre équipe OneBox vous accompagne instantanément pour toute question ou problème.
+                        </p>
+                    </div>
+
+                    <!-- Alternative if Snapchat not available -->
+                    <div style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid rgba(255, 252, 0, 0.3);">
+                        <p style="color: hsl(var(--muted-foreground)); font-size: 0.9rem; margin-bottom: 1rem;">
+                            Snapchat non disponible ? Pas de problème !
+                        </p>
+                        <button class="btn btn-outline floating-btn" onclick="copySnapchatLink()" style="margin-right: 1rem;">
+                            <i class="fas fa-copy"></i>
+                            Copier le lien
+                        </button>
+                        <button class="btn btn-secondary floating-btn" onclick="shareSnapchatLink()">
+                            <i class="fas fa-share"></i>
+                            Partager
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1322,6 +1478,196 @@
                 <div style="margin-bottom: 1.5rem;">
                     <h4 style="color: hsl(var(--foreground)); margin-bottom: 0.5rem;">Comment contacter le support via Snapchat ?</h4>
                     <p style="color: hsl(var(--muted-foreground));">Ajoutez @onebox_support sur Snapchat pour un support rapide et personnalisé avec notre équipe.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Modal -->
+    <div id="featuresModal" class="modal">
+        <div class="modal-content" style="max-width: 700px;">
+            <button class="modal-close" onclick="closeModal('featuresModal')">
+                <i class="fas fa-times"></i>
+            </button>
+            <h3 style="margin-bottom: 2rem; color: hsl(var(--primary)); text-align: center;">Fonctionnalités OneBox</h3>
+            <div class="grid grid-2" style="gap: 1.5rem;">
+                <div class="card perspective-card">
+                    <div class="neon-glow" style="padding: 1rem;">
+                        <i class="fas fa-cloud-upload-alt" style="font-size: 2.5rem; color: hsl(var(--primary)); margin-bottom: 1rem;"></i>
+                        <h4>Stockage Cloud Sécurisé</h4>
+                        <p style="color: hsl(var(--muted-foreground));">Stockez tous vos fichiers en toute sécurité dans le cloud avec chiffrement de bout en bout.</p>
+                    </div>
+                </div>
+                <div class="card perspective-card">
+                    <div class="neon-glow" style="padding: 1rem;">
+                        <i class="fas fa-edit" style="font-size: 2.5rem; color: hsl(var(--primary)); margin-bottom: 1rem;"></i>
+                        <h4>Éditeur WYSIWYG</h4>
+                        <p style="color: hsl(var(--muted-foreground));">Créez et éditez vos documents avec un éditeur visuel puissant et intuitif.</p>
+                    </div>
+                </div>
+                <div class="card perspective-card">
+                    <div class="neon-glow" style="padding: 1rem;">
+                        <i class="fab fa-snapchat-ghost" style="font-size: 2.5rem; color: hsl(var(--primary)); margin-bottom: 1rem;"></i>
+                        <h4>Intégration Snapchat</h4>
+                        <p style="color: hsl(var(--muted-foreground));">Partagez instantanément vos fichiers et documents via Snapchat.</p>
+                    </div>
+                </div>
+                <div class="card perspective-card">
+                    <div class="neon-glow" style="padding: 1rem;">
+                        <i class="fas fa-mobile-alt" style="font-size: 2.5rem; color: hsl(var(--primary)); margin-bottom: 1rem;"></i>
+                        <h4>Design Responsive</h4>
+                        <p style="color: hsl(var(--muted-foreground));">Accédez à vos fichiers depuis n'importe quel appareil avec une interface adaptative.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Help Modal -->
+    <div id="helpModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('helpModal')">
+                <i class="fas fa-times"></i>
+            </button>
+            <h3 style="margin-bottom: 2rem; color: hsl(var(--primary));">Centre d'Aide OneBox</h3>
+            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                <div class="card perspective-card">
+                    <h4 style="color: hsl(var(--primary)); margin-bottom: 1rem;">
+                        <i class="fas fa-rocket"></i> Premiers pas
+                    </h4>
+                    <p style="color: hsl(var(--muted-foreground));">Apprenez les bases de OneBox : téléchargement de fichiers, navigation, et utilisation de l'éditeur.</p>
+                    <button class="btn btn-outline" style="margin-top: 1rem;">Voir le guide</button>
+                </div>
+                
+                <div class="card perspective-card">
+                    <h4 style="color: hsl(var(--primary)); margin-bottom: 1rem;">
+                        <i class="fab fa-snapchat-ghost"></i> Support Snapchat
+                    </h4>
+                    <p style="color: hsl(var(--muted-foreground));">Besoin d'aide rapide ? Contactez-nous directement via Snapchat pour un support personnalisé.</p>
+                    <button class="snapchat-btn floating-btn" onclick="window.open('https://snapchat.com/t/ZVBBKbCo', '_blank')" style="margin-top: 1rem;">
+                        <i class="fab fa-snapchat-ghost"></i>
+                        Contacter sur Snapchat
+                    </button>
+                </div>
+
+                <div class="card perspective-card">
+                    <h4 style="color: hsl(var(--primary)); margin-bottom: 1rem;">
+                        <i class="fas fa-book"></i> Documentation
+                    </h4>
+                    <p style="color: hsl(var(--muted-foreground));">Consultez notre documentation complète pour maîtriser toutes les fonctionnalités avancées.</p>
+                    <button class="btn btn-outline" style="margin-top: 1rem;">Consulter la documentation</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Privacy Modal -->
+    <div id="privacyModal" class="modal">
+        <div class="modal-content" style="max-width: 600px; max-height: 80vh; overflow-y: auto;">
+            <button class="modal-close" onclick="closeModal('privacyModal')">
+                <i class="fas fa-times"></i>
+            </button>
+            <h3 style="margin-bottom: 2rem; color: hsl(var(--primary));">Politique de Confidentialité</h3>
+            <div style="line-height: 1.6; color: hsl(var(--muted-foreground));">
+                <h4 style="color: hsl(var(--foreground)); margin: 1.5rem 0 1rem 0;">1. Collecte des données</h4>
+                <p>OneBox collecte uniquement les données nécessaires au fonctionnement de la plateforme : informations de compte, fichiers téléchargés, et métadonnées associées.</p>
+
+                <h4 style="color: hsl(var(--foreground)); margin: 1.5rem 0 1rem 0;">2. Utilisation des données</h4>
+                <p>Vos données sont utilisées exclusivement pour fournir nos services de stockage cloud et d'édition de documents. Nous ne vendons jamais vos données personnelles.</p>
+
+                <h4 style="color: hsl(var(--foreground)); margin: 1.5rem 0 1rem 0;">3. Sécurité</h4>
+                <p>Tous vos fichiers sont chiffrés de bout en bout. Nous utilisons des protocoles de sécurité de niveau entreprise pour protéger vos données.</p>
+
+                <h4 style="color: hsl(var(--foreground)); margin: 1.5rem 0 1rem 0;">4. Intégration Snapchat</h4>
+                <p>L'intégration Snapchat est optionnelle et ne partage que les fichiers que vous choisissez explicitement de partager.</p>
+
+                <h4 style="color: hsl(var(--foreground)); margin: 1.5rem 0 1rem 0;">5. Vos droits</h4>
+                <p>Vous pouvez à tout moment accéder, modifier ou supprimer vos données personnelles via votre compte OneBox.</p>
+                
+                <div style="margin-top: 2rem; padding: 1rem; background: hsl(var(--card)); border-radius: 8px;">
+                    <p><strong>Dernière mise à jour :</strong> 10 septembre 2024</p>
+                    <button class="snapchat-btn floating-btn" onclick="window.open('https://snapchat.com/t/ZVBBKbCo', '_blank')" style="margin-top: 1rem;">
+                        <i class="fab fa-snapchat-ghost"></i>
+                        Questions ? Snapchat
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Terms Modal -->
+    <div id="termsModal" class="modal">
+        <div class="modal-content" style="max-width: 600px; max-height: 80vh; overflow-y: auto;">
+            <button class="modal-close" onclick="closeModal('termsModal')">
+                <i class="fas fa-times"></i>
+            </button>
+            <h3 style="margin-bottom: 2rem; color: hsl(var(--primary));">Conditions d'Utilisation</h3>
+            <div style="line-height: 1.6; color: hsl(var(--muted-foreground));">
+                <h4 style="color: hsl(var(--foreground)); margin: 1.5rem 0 1rem 0;">1. Acceptation des conditions</h4>
+                <p>En utilisant OneBox, vous acceptez ces conditions d'utilisation dans leur intégralité. Si vous n'acceptez pas ces conditions, veuillez ne pas utiliser notre service.</p>
+
+                <h4 style="color: hsl(var(--foreground)); margin: 1.5rem 0 1rem 0;">2. Services fournis</h4>
+                <p>OneBox fournit une plateforme de stockage cloud sécurisée avec des fonctionnalités d'édition de documents et d'intégration sociale via Snapchat.</p>
+
+                <h4 style="color: hsl(var(--foreground)); margin: 1.5rem 0 1rem 0;">3. Utilisation acceptable</h4>
+                <p>Vous vous engagez à utiliser OneBox de manière légale et responsable. Tout contenu illégal, offensant ou malveillant est strictement interdit.</p>
+
+                <h4 style="color: hsl(var(--foreground)); margin: 1.5rem 0 1rem 0;">4. Propriété intellectuelle</h4>
+                <p>Vos fichiers vous appartiennent. OneBox ne revendique aucun droit sur le contenu que vous téléchargez, à l'exception des droits nécessaires pour fournir le service.</p>
+
+                <h4 style="color: hsl(var(--foreground)); margin: 1.5rem 0 1rem 0;">5. Limitation de responsabilité</h4>
+                <p>OneBox s'efforce de maintenir un service de haute qualité mais ne peut garantir une disponibilité de 100%. Nous recommandons de conserver des sauvegardes de vos fichiers importants.</p>
+
+                <h4 style="color: hsl(var(--foreground)); margin: 1.5rem 0 1rem 0;">6. Résiliation</h4>
+                <p>Vous pouvez résilier votre compte à tout moment. OneBox se réserve le droit de suspendre des comptes qui violeraient ces conditions.</p>
+                
+                <div style="margin-top: 2rem; padding: 1rem; background: hsl(var(--card)); border-radius: 8px;">
+                    <p><strong>Dernière mise à jour :</strong> 10 septembre 2024</p>
+                    <p><strong>OneBox SAS</strong> - 123 Avenue Innovation, 75001 Paris, France</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cookies Modal -->
+    <div id="cookiesModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('cookiesModal')">
+                <i class="fas fa-times"></i>
+            </button>
+            <h3 style="margin-bottom: 2rem; color: hsl(var(--primary));">Politique des Cookies</h3>
+            <div style="line-height: 1.6; color: hsl(var(--muted-foreground));">
+                <h4 style="color: hsl(var(--foreground)); margin: 1.5rem 0 1rem 0;">Qu'est-ce qu'un cookie ?</h4>
+                <p>Les cookies sont de petits fichiers texte stockés sur votre appareil pour améliorer votre expérience sur OneBox.</p>
+
+                <h4 style="color: hsl(var(--foreground)); margin: 1.5rem 0 1rem 0;">Types de cookies utilisés</h4>
+                <div style="margin: 1rem 0;">
+                    <div class="card" style="margin-bottom: 1rem;">
+                        <h5 style="color: hsl(var(--primary)); margin-bottom: 0.5rem;">🔐 Cookies essentiels</h5>
+                        <p>Nécessaires pour le fonctionnement de base de OneBox (connexion, sécurité).</p>
+                    </div>
+                    <div class="card" style="margin-bottom: 1rem;">
+                        <h5 style="color: hsl(var(--primary)); margin-bottom: 0.5rem;">📊 Cookies analytiques</h5>
+                        <p>Nous aident à comprendre l'utilisation de OneBox pour améliorer l'expérience.</p>
+                    </div>
+                    <div class="card" style="margin-bottom: 1rem;">
+                        <h5 style="color: hsl(var(--primary)); margin-bottom: 0.5rem;">🎯 Cookies de préférence</h5>
+                        <p>Mémorisent vos préférences (thème, langue, paramètres d'affichage).</p>
+                    </div>
+                </div>
+
+                <h4 style="color: hsl(var(--foreground)); margin: 1.5rem 0 1rem 0;">Gestion des cookies</h4>
+                <p>Vous pouvez gérer vos préférences de cookies dans les paramètres de votre navigateur. Note : Désactiver certains cookies peut affecter les fonctionnalités de OneBox.</p>
+                
+                <div style="margin-top: 2rem; text-align: center;">
+                    <button class="btn btn-primary floating-btn" onclick="acceptAllCookies()">
+                        <i class="fas fa-check"></i>
+                        Accepter tous les cookies
+                    </button>
+                    <button class="btn btn-outline" onclick="manageCookiePreferences()" style="margin-left: 1rem;">
+                        <i class="fas fa-cog"></i>
+                        Gérer les préférences
+                    </button>
                 </div>
             </div>
         </div>
@@ -1930,6 +2276,191 @@ Heure: 14:00`;
             return sizes[Math.floor(Math.random() * sizes.length)];
         }
 
+        // Editor Functions
+        let savedDocuments = JSON.parse(localStorage.getItem('oneboxDocuments')) || {};
+        let currentDocumentFilter = 'none';
+
+        function toggleSavePanel() {
+            const panel = document.getElementById('savePanelEditor');
+            const filtersPanel = document.getElementById('filtersPanel');
+            
+            if (panel.style.display === 'block') {
+                panel.style.display = 'none';
+            } else {
+                panel.style.display = 'block';
+                filtersPanel.style.display = 'none';
+                
+                // Generate automatic name if empty
+                const editorContent = document.getElementById('editor').textContent;
+                const firstLine = editorContent.split('\n')[0].slice(0, 30);
+                if (firstLine && firstLine !== 'Mon Nouveau Document') {
+                    document.getElementById('documentName').value = firstLine + '...';
+                }
+            }
+        }
+
+        function toggleFilters() {
+            const panel = document.getElementById('filtersPanel');
+            const savePanel = document.getElementById('savePanelEditor');
+            
+            if (panel.style.display === 'block') {
+                panel.style.display = 'none';
+            } else {
+                panel.style.display = 'block';
+                savePanel.style.display = 'none';
+            }
+        }
+
+        function saveDocumentToFolder() {
+            const name = document.getElementById('documentName').value || 'Document sans nom';
+            const folder = document.getElementById('documentFolder').value;
+            const content = document.getElementById('editor').innerHTML;
+            
+            // Create folder structure if needed
+            if (!savedDocuments[folder]) {
+                savedDocuments[folder] = {};
+            }
+            
+            // Save document with timestamp
+            const timestamp = new Date().toISOString();
+            savedDocuments[folder][name] = {
+                content: content,
+                created: timestamp,
+                filter: currentDocumentFilter
+            };
+            
+            // Save to localStorage
+            localStorage.setItem('oneboxDocuments', JSON.stringify(savedDocuments));
+            
+            // Add to file grid (simulate)
+            addDocumentToFileGrid(name, folder);
+            
+            // Close panel and show success
+            toggleSavePanel();
+            showToast(`Document "${name}" enregistré dans ${getFolderDisplayName(folder)} ! 💪🏾`);
+        }
+
+        function getFolderDisplayName(folder) {
+            const folders = {
+                'mes-documents': '📁 Mes Documents',
+                'projets': '💼 Projets', 
+                'personnel': '👤 Personnel',
+                'travail': '🏢 Travail',
+                'ecole': '🎓 École'
+            };
+            return folders[folder] || folder;
+        }
+
+        function addDocumentToFileGrid(name, folder) {
+            // This would add the document to the file grid in a real app
+            // For demo purposes, we'll show a toast
+            showToast(`Document ajouté à la grille de fichiers !`);
+        }
+
+        function newDocument() {
+            if (confirm('Créer un nouveau document ? Le contenu actuel sera perdu si non sauvegardé.')) {
+                document.getElementById('editor').innerHTML = '<h1>Mon Nouveau Document</h1><p>Commencez à écrire ici...</p>';
+                document.getElementById('documentName').value = 'Mon Nouveau Document';
+                resetDocumentFilter();
+                showToast('Nouveau document créé ! ✨');
+            }
+        }
+
+        function shareDocumentSnapchat() {
+            const content = document.getElementById('editor').textContent;
+            if (content.length > 10) {
+                window.open('https://snapchat.com/t/ZVBBKbCo', '_blank');
+                showToast('Document partagé via Snapchat ! 💪🏾');
+            } else {
+                showToast('Écrivez du contenu avant de partager !');
+            }
+        }
+
+        // Color Filter Functions
+        function applyDocumentFilter(filter) {
+            const editor = document.getElementById('editor');
+            currentDocumentFilter = filter;
+            
+            // Remove all existing filter classes
+            editor.classList.remove(
+                'color-filter-vivid', 'color-filter-dramatic', 'color-filter-mono',
+                'color-filter-silvertone', 'color-filter-noir', 'color-filter-warm',
+                'color-filter-cool'
+            );
+            
+            // Apply new filter if not 'none'
+            if (filter !== 'none') {
+                editor.classList.add(`color-filter-${filter}`);
+            }
+            
+            // Update button states
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-filter="${filter}"]`).classList.add('active');
+            
+            showToast(`Filtre "${getFilterDisplayName(filter)}" appliqué !`);
+        }
+
+        function getFilterDisplayName(filter) {
+            const filters = {
+                'none': 'Original',
+                'vivid': 'Éclatant',
+                'dramatic': 'Spectaculaire', 
+                'mono': 'Mono',
+                'silvertone': 'Argenté',
+                'noir': 'Noir',
+                'warm': 'Chaud',
+                'cool': 'Froid'
+            };
+            return filters[filter] || filter;
+        }
+
+        function resetDocumentFilter() {
+            applyDocumentFilter('none');
+        }
+
+        // Snapchat Contact Functions
+        function copySnapchatLink() {
+            const link = 'https://snapchat.com/t/ZVBBKbCo';
+            navigator.clipboard.writeText(link).then(() => {
+                showToast('Lien Snapchat copié ! 📱');
+            });
+        }
+
+        function shareSnapchatLink() {
+            const link = 'https://snapchat.com/t/ZVBBKbCo';
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Support OneBox - Snapchat',
+                    text: 'Contactez le support OneBox via Snapchat',
+                    url: link
+                });
+            } else {
+                copySnapchatLink();
+            }
+        }
+
+        // Cookie Management Functions
+        function acceptAllCookies() {
+            localStorage.setItem('oneboxCookies', 'accepted');
+            closeModal('cookiesModal');
+            showToast('Tous les cookies acceptés ! 🍪');
+        }
+
+        function manageCookiePreferences() {
+            showToast('Paramètres de cookies ouverts !');
+            // In a real app, this would open detailed cookie preferences
+        }
+
+        // Newsletter Functions
+        function subscribeNewsletter(event) {
+            event.preventDefault();
+            const email = event.target.querySelector('input[type="email"]').value;
+            showToast(`Inscription newsletter réussie pour ${email} ! 📧`);
+            closeModal('newsletterModal');
+        }
+
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
             // Add smooth scrolling
@@ -1963,6 +2494,24 @@ Heure: 14:00`;
                     }
                 }
             });
+
+            // Auto-save functionality
+            let autoSaveTimeout;
+            document.getElementById('editor').addEventListener('input', function() {
+                clearTimeout(autoSaveTimeout);
+                autoSaveTimeout = setTimeout(() => {
+                    // Auto-save draft to localStorage
+                    localStorage.setItem('oneboxDraft', this.innerHTML);
+                }, 2000);
+            });
+
+            // Restore draft if available
+            const savedDraft = localStorage.getItem('oneboxDraft');
+            if (savedDraft && savedDraft !== '<h1>Mon Nouveau Document</h1><p>Commencez à écrire ici...</p>') {
+                if (confirm('Un brouillon a été trouvé. Voulez-vous le restaurer ?')) {
+                    document.getElementById('editor').innerHTML = savedDraft;
+                }
+            }
         });
 
         // Add more 3D animations
