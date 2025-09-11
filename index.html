@@ -1607,13 +1607,28 @@
             <button class="modal-close" onclick="closeModal('demoModal')">
                 <i class="fas fa-times"></i>
             </button>
-            <h3 style="margin-bottom: 1.5rem; color: hsl(var(--primary));">Démo OneBox</h3>
+            <h3 style="margin-bottom: 1.5rem; color: hsl(var(--primary)); text-align: center;">🎬 Démo OneBox</h3>
             <div style="text-align: center;">
-                <div style="background: hsl(var(--muted)); border-radius: 12px; padding: 3rem; margin-bottom: 1.5rem;">
-                    <i class="fas fa-play-circle" style="font-size: 4rem; color: hsl(var(--primary));"></i>
-                    <p style="margin-top: 1rem; color: hsl(var(--muted-foreground));">Vidéo de démonstration</p>
+                <div style="position: relative; width: 100%; height: 315px; border-radius: 12px; overflow: hidden; margin-bottom: 1.5rem;">
+                    <iframe 
+                        id="demoVideo"
+                        width="100%" 
+                        height="315" 
+                        src="https://www.youtube.com/embed/3r0O2LaszPk?si=demo123" 
+                        title="OneBox - Cloud Storage Demo" 
+                        frameborder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                        allowfullscreen
+                        style="border-radius: 12px;">
+                    </iframe>
                 </div>
-                <p>Découvrez toutes les fonctionnalités de OneBox en quelques minutes.</p>
+                <p style="color: hsl(var(--muted-foreground)); margin-bottom: 1rem;">
+                    🚀 Découvrez toutes les fonctionnalités de OneBox : stockage cloud, éditeur, Face ID iPhone, et bien plus !
+                </p>
+                <button class="btn btn-primary floating-btn" onclick="window.open('https://snapchat.com/t/ZVBBKbCo', '_blank')">
+                    <i class="fab fa-snapchat-ghost"></i>
+                    Questions ? Contact Snapchat
+                </button>
             </div>
         </div>
     </div>
@@ -1905,6 +1920,224 @@
         </div>
     </div>
 
+    <!-- Guide Modal -->
+    <div id="guideModal" class="modal">
+        <div class="modal-content" style="max-width: 800px; max-height: 90vh; overflow-y: auto;">
+            <button class="modal-close" onclick="closeModal('guideModal')">
+                <i class="fas fa-times"></i>
+            </button>
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <div class="floating-btn" style="width: 80px; height: 80px; background: linear-gradient(135deg, #06D6A0, #118AB2); border-radius: 50%; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-rocket" style="font-size: 2rem; color: white;"></i>
+                </div>
+                <h3 style="color: hsl(var(--primary)); font-size: 2rem;">🚀 Guide OneBox</h3>
+                <p style="color: hsl(var(--muted-foreground));">Apprenez à maîtriser votre espace personnel</p>
+            </div>
+
+            <div style="display: grid; gap: 1.5rem;">
+                <!-- Section 1: Premiers pas -->
+                <div class="card perspective-card">
+                    <h4 style="color: hsl(var(--primary)); margin-bottom: 1rem;">
+                        <i class="fas fa-play"></i> 1. Premiers Pas
+                    </h4>
+                    <ul style="color: hsl(var(--muted-foreground)); line-height: 1.8;">
+                        <li>✅ <strong>Inscription :</strong> Créez votre compte avec juste un nom d'utilisateur et mot de passe</li>
+                        <li>✅ <strong>Face ID :</strong> Activez l'authentification iPhone pour une connexion rapide</li>
+                        <li>✅ <strong>Navigation :</strong> Utilisez le menu pour accéder aux différentes sections</li>
+                    </ul>
+                </div>
+
+                <!-- Section 2: Gestion des fichiers -->
+                <div class="card perspective-card">
+                    <h4 style="color: hsl(var(--primary)); margin-bottom: 1rem;">
+                        <i class="fas fa-folder"></i> 2. Gestion des Fichiers
+                    </h4>
+                    <ul style="color: hsl(var(--muted-foreground)); line-height: 1.8;">
+                        <li>📂 <strong>Télécharger :</strong> Glissez-déposez vos fichiers ou cliquez "Télécharger"</li>
+                        <li>👁️ <strong>Prévisualiser :</strong> Cliquez sur un fichier pour l'ouvrir en aperçu</li>
+                        <li>📤 <strong>Partager :</strong> Envoyez vos fichiers via les options de partage</li>
+                        <li>🗂️ <strong>Organiser :</strong> Créez des dossiers pour classer vos documents</li>
+                    </ul>
+                </div>
+
+                <!-- Section 3: Éditeur -->
+                <div class="card perspective-card">
+                    <h4 style="color: hsl(var(--primary)); margin-bottom: 1rem;">
+                        <i class="fas fa-edit"></i> 3. Éditeur WYSIWYG
+                    </h4>
+                    <ul style="color: hsl(var(--muted-foreground)); line-height: 1.8;">
+                        <li>✏️ <strong>Créer :</strong> Nouveau document avec mise en forme avancée</li>
+                        <li>💾 <strong>Sauvegarder :</strong> Vos modifications sont automatiquement sauvées</li>
+                        <li>📄 <strong>Exporter :</strong> Téléchargez en PDF, Word, ou autres formats</li>
+                        <li>🎨 <strong>Styliser :</strong> Polices, couleurs, images et tableaux</li>
+                    </ul>
+                </div>
+
+                <!-- Section 4: Mes Documents -->
+                <div class="card perspective-card">
+                    <h4 style="color: hsl(var(--primary)); margin-bottom: 1rem;">
+                        <i class="fas fa-file-alt"></i> 4. Mes Documents
+                    </h4>
+                    <ul style="color: hsl(var(--muted-foreground)); line-height: 1.8;">
+                        <li>📚 <strong>Organisation :</strong> Tous vos documents dans un seul endroit</li>
+                        <li>🔍 <strong>Recherche :</strong> Trouvez rapidement vos fichiers par nom</li>
+                        <li>📅 <strong>Tri :</strong> Par date, nom, type ou taille</li>
+                        <li>💾 <strong>Persistence :</strong> Vos documents sont sauvés en local</li>
+                    </ul>
+                </div>
+
+                <!-- Section 5: Support -->
+                <div class="card perspective-card" style="background: linear-gradient(135deg, #FFFC00, #FFD700); color: #000;">
+                    <h4 style="color: #000; margin-bottom: 1rem;">
+                        <i class="fab fa-snapchat-ghost"></i> 5. Support Snapchat Premium
+                    </h4>
+                    <ul style="color: #333; line-height: 1.8;">
+                        <li>📞 <strong>Contact Direct :</strong> Support personnalisé via Snapchat</li>
+                        <li>⚡ <strong>Réponse Rapide :</strong> Équipe disponible pour vos questions</li>
+                        <li>🔧 <strong>Assistance Technique :</strong> Aide pour toutes les fonctionnalités</li>
+                        <li>💎 <strong>Premium :</strong> Accès privilégié avec le plan Pro</li>
+                    </ul>
+                    <button class="snapchat-btn floating-btn" onclick="window.open('https://snapchat.com/t/ZVBBKbCo', '_blank')" style="margin-top: 1rem; background: #000; color: #FFFC00;">
+                        <i class="fab fa-snapchat-ghost"></i>
+                        Contacter le Support
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Documentation Modal -->
+    <div id="documentationModal" class="modal">
+        <div class="modal-content" style="max-width: 900px; max-height: 90vh; overflow-y: auto;">
+            <button class="modal-close" onclick="closeModal('documentationModal')">
+                <i class="fas fa-times"></i>
+            </button>
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <div class="floating-btn" style="width: 80px; height: 80px; background: linear-gradient(135deg, #118AB2, #06D6A0); border-radius: 50%; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-book" style="font-size: 2rem; color: white;"></i>
+                </div>
+                <h3 style="color: hsl(var(--primary)); font-size: 2rem;">📚 Documentation OneBox</h3>
+                <p style="color: hsl(var(--muted-foreground));">Documentation technique complète</p>
+            </div>
+
+            <div style="display: grid; gap: 2rem;">
+                <!-- Architecture -->
+                <div class="card perspective-card">
+                    <h4 style="color: hsl(var(--primary)); margin-bottom: 1rem;">
+                        <i class="fas fa-cogs"></i> Architecture Technique
+                    </h4>
+                    <div style="color: hsl(var(--muted-foreground)); line-height: 1.8;">
+                        <p><strong>Frontend :</strong> HTML5, CSS3, JavaScript ES6+</p>
+                        <p><strong>Stockage :</strong> LocalStorage pour persistence des données</p>
+                        <p><strong>Design :</strong> CSS Grid, Flexbox, animations 3D</p>
+                        <p><strong>Responsive :</strong> Mobile-first avec breakpoints adaptatifs</p>
+                        <p><strong>Authentification :</strong> Simulation Face ID iPhone avec localStorage</p>
+                    </div>
+                </div>
+
+                <!-- API & Fonctionnalités -->
+                <div class="card perspective-card">
+                    <h4 style="color: hsl(var(--primary)); margin-bottom: 1rem;">
+                        <i class="fas fa-code"></i> API & Fonctionnalités
+                    </h4>
+                    <div style="color: hsl(var(--muted-foreground)); line-height: 1.8;">
+                        <p><strong>Gestion Utilisateurs :</strong></p>
+                        <ul>
+                            <li><code>registerNewUser()</code> - Inscription simplifiée</li>
+                            <li><code>loginWithCredentials()</code> - Connexion classique</li>
+                            <li><code>authenticateWithFaceId()</code> - Authentification biométrique</li>
+                        </ul>
+                        
+                        <p><strong>Gestion Fichiers :</strong></p>
+                        <ul>
+                            <li><code>uploadFile()</code> - Téléchargement de fichiers</li>
+                            <li><code>previewFile()</code> - Aperçu multi-format</li>
+                            <li><code>downloadFile()</code> - Téléchargement local</li>
+                            <li><code>shareFile()</code> - Partage social</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Stockage & Persistence -->
+                <div class="card perspective-card">
+                    <h4 style="color: hsl(var(--primary)); margin-bottom: 1rem;">
+                        <i class="fas fa-database"></i> Stockage & Persistence
+                    </h4>
+                    <div style="color: hsl(var(--muted-foreground)); line-height: 1.8;">
+                        <p><strong>LocalStorage Keys :</strong></p>
+                        <ul>
+                            <li><code>oneboxUsers</code> - Base de données utilisateurs</li>
+                            <li><code>oneboxCurrentUser</code> - Session utilisateur actuel</li>
+                            <li><code>oneboxDocuments</code> - Documents sauvegardés</li>
+                            <li><code>oneboxSettings</code> - Préférences utilisateur</li>
+                        </ul>
+                        
+                        <p><strong>Structure Données :</strong></p>
+                        <pre style="background: hsl(var(--muted)); padding: 1rem; border-radius: 8px; overflow-x: auto; font-size: 0.9rem;">
+{
+  "username": "string",
+  "password": "string", 
+  "faceIdEnabled": boolean,
+  "documents": [...],
+  "settings": {...}
+}</pre>
+                    </div>
+                </div>
+
+                <!-- Sécurité -->
+                <div class="card perspective-card">
+                    <h4 style="color: hsl(var(--primary)); margin-bottom: 1rem;">
+                        <i class="fas fa-shield-alt"></i> Sécurité & Bonnes Pratiques
+                    </h4>
+                    <div style="color: hsl(var(--muted-foreground)); line-height: 1.8;">
+                        <p><strong>Authentification :</strong></p>
+                        <ul>
+                            <li>🔐 Mots de passe stockés localement (demo uniquement)</li>
+                            <li>📱 Face ID avec animation authentique iPhone</li>
+                            <li>🔄 Sessions persistantes avec localStorage</li>
+                        </ul>
+                        
+                        <p><strong>Données :</strong></p>
+                        <ul>
+                            <li>💾 Stockage local sécurisé</li>
+                            <li>🔄 Sauvegarde automatique des documents</li>
+                            <li>🚫 Aucune donnée envoyée vers serveurs externes</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Configuration -->
+                <div class="card perspective-card">
+                    <h4 style="color: hsl(var(--primary)); margin-bottom: 1rem;">
+                        <i class="fas fa-wrench"></i> Configuration & Personnalisation
+                    </h4>
+                    <div style="color: hsl(var(--muted-foreground)); line-height: 1.8;">
+                        <p><strong>Variables CSS :</strong> Système de thème avec custom properties</p>
+                        <p><strong>Responsive :</strong> Breakpoints à 768px et 480px</p>
+                        <p><strong>Animations :</strong> CSS3 transforms et keyframes 3D</p>
+                        <p><strong>Icons :</strong> FontAwesome 6.0+ pour icônes</p>
+                        <p><strong>Performance :</strong> SPA optimisé, lazy loading modales</p>
+                    </div>
+                </div>
+
+                <!-- Contact Support -->
+                <div class="card perspective-card" style="background: linear-gradient(135deg, #FFFC00, #FFD700); color: #000;">
+                    <h4 style="color: #000; margin-bottom: 1rem;">
+                        <i class="fab fa-snapchat-ghost"></i> Support Développeur
+                    </h4>
+                    <p style="color: #333; margin-bottom: 1rem;">
+                        Questions techniques ? Besoin d'aide pour l'intégration ? 
+                        Notre équipe de développement est disponible sur Snapchat !
+                    </p>
+                    <button class="snapchat-btn floating-btn" onclick="window.open('https://snapchat.com/t/ZVBBKbCo', '_blank')" style="background: #000; color: #FFFC00;">
+                        <i class="fab fa-snapchat-ghost"></i>
+                        Support Technique
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- File Preview Modal -->
     <div id="filePreviewModal" class="modal file-preview-modal">
         <div class="modal-content">
@@ -2024,6 +2257,17 @@
         function closeModal(modalId) {
             document.getElementById(modalId).classList.remove('active');
             document.body.style.overflow = 'auto';
+            
+            // Stop video when closing demo modal
+            if (modalId === 'demoModal') {
+                const demoVideo = document.getElementById('demoVideo');
+                if (demoVideo) {
+                    // Reset iframe to stop video playback
+                    const src = demoVideo.src;
+                    demoVideo.src = '';
+                    demoVideo.src = src;
+                }
+            }
         }
 
         // Close modal when clicking outside
@@ -2855,14 +3099,12 @@ Heure: 14:00`;
         // Help Functions  
         function showGuide() {
             closeModal('helpModal');
-            showToast('Guide de démarrage ouvert ! 📖');
-            // In real app would open guide modal or page
+            openModal('guideModal');
         }
 
         function showDocumentation() {
             closeModal('helpModal');
-            showToast('Documentation technique ouverte ! 📚');
-            // In real app would open documentation
+            openModal('documentationModal');
         }
 
         // Pricing Functions
