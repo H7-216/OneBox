@@ -3049,7 +3049,7 @@ Heure: 14:00`;
             updateFaceIdVisibility();
         }
 
-        // Loading screen and redirect function
+        // Loading screen and redirect function (3 seconds exact)
         function showLoadingAndRedirect(targetSection) {
             const loadingScreen = document.getElementById('loadingScreen');
             const loadingBar = document.getElementById('loadingBar');
@@ -3057,10 +3057,14 @@ Heure: 14:00`;
             // Show loading screen
             loadingScreen.style.display = 'flex';
             
-            // Animate loading bar
+            // Animate loading bar - exactly 3 seconds
             let progress = 0;
+            const totalTime = 3000; // 3 seconds
+            const intervalTime = 100; // Update every 100ms
+            const increment = 100 / (totalTime / intervalTime); // ~3.33% per update
+            
             const interval = setInterval(() => {
-                progress += Math.random() * 15;
+                progress += increment;
                 if (progress > 100) progress = 100;
                 
                 loadingBar.style.width = progress + '%';
@@ -3068,26 +3072,24 @@ Heure: 14:00`;
                 if (progress >= 100) {
                     clearInterval(interval);
                     
-                    setTimeout(() => {
-                        // Hide loading screen
-                        loadingScreen.style.display = 'none';
-                        
-                        // Hide auth section
-                        document.getElementById('auth').classList.remove('active');
-                        document.getElementById('auth').style.display = 'none';
-                        
-                        // Show navigation
-                        document.getElementById('mainNavbar').style.display = 'block';
-                        
-                        // Show target section
-                        showSection(targetSection);
-                        
-                        // Reset loading bar for next time
-                        loadingBar.style.width = '0%';
-                        
-                    }, 500);
+                    // Immediate transition after 3 seconds
+                    // Hide loading screen
+                    loadingScreen.style.display = 'none';
+                    
+                    // Hide auth section
+                    document.getElementById('auth').classList.remove('active');
+                    document.getElementById('auth').style.display = 'none';
+                    
+                    // Show navigation
+                    document.getElementById('mainNavbar').style.display = 'block';
+                    
+                    // Show target section
+                    showSection(targetSection);
+                    
+                    // Reset loading bar for next time
+                    loadingBar.style.width = '0%';
                 }
-            }, 200);
+            }, intervalTime);
         }
 
         // Enhanced section showing function
