@@ -2926,8 +2926,18 @@ Heure: 14:00`;
             
             showToast(`Compte créé avec succès ! Bienvenue ${username} ! 🎉`);
             
-            // Show loading screen and redirect to home
-            showLoadingAndRedirect('home');
+            // Direct access for new users - no loading screen needed!
+            setTimeout(() => {
+                // Hide auth section
+                document.getElementById('auth').classList.remove('active');
+                document.getElementById('auth').style.display = 'none';
+                
+                // Show navigation
+                document.getElementById('mainNavbar').style.display = 'block';
+                
+                // Show home section directly
+                showSection('home');
+            }, 800); // Quick transition for new users
             
             // Update Face ID option visibility
             updateFaceIdVisibility();
@@ -3004,14 +3014,12 @@ Heure: 14:00`;
                 
                 showToast(`✅ Face ID réussi ! Bienvenue ${username} ! 🚀`);
                 
-                setTimeout(() => {
-                    // Reset Face ID animation
-                    faceIdDiv.style.animation = 'faceIdPulse 2s infinite';
-                    faceIdDiv.style.background = 'radial-gradient(circle, transparent 30%, rgba(6, 214, 160, 0.3) 70%)';
-                    
-                    // Show loading screen and redirect to home
-                    showLoadingAndRedirect('home');
-                }, 1000);
+                // Reset Face ID animation immediately and start 3D loading
+                faceIdDiv.style.animation = 'faceIdPulse 2s infinite';
+                faceIdDiv.style.background = 'radial-gradient(circle, transparent 30%, rgba(6, 214, 160, 0.3) 70%)';
+                
+                // Show loading screen and redirect to home (exactly 3 seconds)
+                showLoadingAndRedirect('home');
                 
             }, 3000);
         }
