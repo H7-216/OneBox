@@ -414,24 +414,30 @@
             color: hsl(var(--foreground));
         }
 
-        /* File Grid */
+        /* File Grid - Style ordinateur 2x2 */
         .file-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 1.5rem;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
             margin-top: 2rem;
+            max-width: 600px;
         }
 
         .file-card {
             background: hsl(var(--card));
             border: 1px solid hsl(var(--border));
-            border-radius: 12px;
-            padding: 1.5rem;
+            border-radius: 8px;
+            padding: 0.75rem;
             text-align: center;
             transition: all 0.3s ease;
             cursor: pointer;
             position: relative;
             overflow: hidden;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
 
         .file-card:hover {
@@ -453,10 +459,13 @@
 
         .file-preview-thumb {
             width: 100%;
-            height: 120px;
+            height: 60px;
             object-fit: cover;
             border-radius: 8px;
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             background: hsl(var(--muted));
             display: flex;
             align-items: center;
@@ -801,7 +810,7 @@
         @media (max-width: 768px) {
             .hero-subtitle { font-size: 1rem; }
             .grid-3, .grid-2, .grid { grid-template-columns: 1fr; }
-            .file-grid { grid-template-columns: 1fr; }
+            .file-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
             .auth-card { margin: 1rem; padding: 1.5rem; transform: none; }
             .modal-content { margin: 1rem; max-height: 90vh; overflow-y: auto; border-radius: 15px 15px 0 0; }
             .container { padding: 0 1rem; }
@@ -1614,8 +1623,8 @@
                         id="demoVideo"
                         width="100%" 
                         height="315" 
-                        src="https://www.kapwing.com/videos/68c31739551bd4420c5cbfef" 
-                        title="OneBox - Cloud Storage Demo" 
+                        src="https://player.kapwing.com/68c31739551bd4420c5cbfef" 
+                        title="OneBox - Démonstration Complète" 
                         frameborder="0" 
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
                         allowfullscreen
@@ -1643,7 +1652,7 @@
             <div style="border: 2px dashed hsl(var(--border)); border-radius: 12px; padding: 3rem; text-align: center; margin-bottom: 1.5rem;">
                 <i class="fas fa-cloud-upload-alt" style="font-size: 3rem; color: hsl(var(--primary)); margin-bottom: 1rem;"></i>
                 <p>Glissez-déposez vos fichiers ici ou cliquez pour sélectionner</p>
-                <input type="file" multiple style="display: none;" id="fileInput">
+                <input type="file" multiple style="display: none;" id="fileInput" onchange="uploadFiles(this.files)">
                 <button class="btn btn-outline" onclick="document.getElementById('fileInput').click()">
                     Choisir des fichiers
                 </button>
@@ -2369,15 +2378,7 @@
             }, 3000);
         }
 
-        // File upload handling
-        document.getElementById('fileInput').addEventListener('change', function(e) {
-            const files = e.target.files;
-            if (files.length > 0) {
-                showToast(`${files.length} fichier(s) téléchargé(s) avec succès !`);
-                closeModal('uploadModal');
-                // Here you would typically upload the files to a server
-            }
-        });
+        // File upload handling is now handled by onchange="uploadFiles(this.files)" in HTML
 
         // 3D effects on scroll
         window.addEventListener('scroll', function() {
@@ -2716,6 +2717,77 @@ Heure: 14:00`;
         }
 
         // File management functions
+        function uploadFiles(files) {
+            if (files && files.length > 0) {
+                showToast(`${files.length} fichier(s) téléchargé(s) avec succès ! 💪🏾`);
+                closeModal('uploadModal');
+                
+                // Ajouter les fichiers à la grille
+                const fileGrid = document.getElementById('fileGrid');
+                
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    const fileCard = createFileCard(file);
+                    fileGrid.appendChild(fileCard);
+                }
+            }
+        }
+        
+        function createFileCard(file) {
+            const fileCard = document.createElement('div');
+            fileCard.className = 'file-card perspective-card';
+            
+            // Détermine l'icône selon le type de fichier
+            let icon = 'fas fa-file';
+            let color = '#64748B';
+            
+            if (file.type.startsWith('image/')) {
+                icon = 'fas fa-image';
+                color = '#06D6A0';
+            } else if (file.type.includes('pdf')) {
+                icon = 'fas fa-file-pdf';
+                color = '#DC2626';
+            } else if (file.type.includes('word') || file.name.endsWith('.docx')) {
+                icon = 'fas fa-file-word';
+                color = '#2563EB';
+            } else if (file.type.includes('video')) {
+                icon = 'fas fa-video';
+                color = '#7C3AED';
+            }
+            
+            fileCard.onclick = () => previewUploadedFile(file);
+            
+            fileCard.innerHTML = `
+                <div class="file-preview-thumb">
+                    <i class="${icon}" style="font-size: 2rem; color: ${color};"></i>
+                </div>
+                <h4>${file.name.length > 15 ? file.name.substring(0, 15) + '...' : file.name}</h4>
+                <p style="color: hsl(var(--muted-foreground)); font-size: 0.75rem;">${(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                <div class="file-actions">
+                    <button class="file-action-btn" onclick="event.stopPropagation(); downloadUploadedFile('${file.name}')" title="Télécharger">
+                        <i class="fas fa-download"></i>
+                    </button>
+                    <button class="file-action-btn" onclick="event.stopPropagation(); shareUploadedFile('${file.name}')" title="Partager">
+                        <i class="fas fa-share-alt"></i>
+                    </button>
+                </div>
+            `;
+            
+            return fileCard;
+        }
+        
+        function previewUploadedFile(file) {
+            showToast(`Aperçu de ${file.name} - fonctionnalité à venir ! 👁️`);
+        }
+        
+        function downloadUploadedFile(fileName) {
+            showToast(`Téléchargement de ${fileName} démarré ! 💪🏾`);
+        }
+        
+        function shareUploadedFile(fileName) {
+            showToast(`${fileName} partagé avec succès ! 📤`);
+        }
+
         function downloadFile(fileName) {
             showToast(`Téléchargement de ${fileName} démarré ! 💪🏾`);
         }
