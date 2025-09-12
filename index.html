@@ -1618,13 +1618,16 @@
             </button>
             <h3 style="margin-bottom: 1.5rem; color: hsl(var(--primary)); text-align: center;">🎬 Démo OneBox</h3>
             <div style="text-align: center;">
-                <div style="position: relative; width: 100%; height: 315px; border-radius: 12px; overflow: hidden; margin-bottom: 1.5rem; background: linear-gradient(135deg, #06D6A0, #118AB2); display: flex; align-items: center; justify-content: center; flex-direction: column;">
-                    <i class="fas fa-play-circle" style="font-size: 4rem; color: white; margin-bottom: 1rem;"></i>
-                    <h4 style="color: white; margin-bottom: 1rem;">Démonstration OneBox</h4>
-                    <button class="btn btn-primary floating-btn" onclick="window.open('https://photos.app.goo.gl/QXMqKJNKGjZWbFhp9', '_blank')" style="background: rgba(255, 255, 255, 0.2); border: 2px solid white;">
-                        <i class="fas fa-external-link-alt"></i>
-                        Voir la Démo Complète
-                    </button>
+                <div style="position: relative; width: 100%; height: 315px; border-radius: 12px; overflow: hidden; margin-bottom: 1.5rem;">
+                    <iframe 
+                        src="https://drive.google.com/file/d/1yFwiDKzE6p-BlBHC9SbI-Qd6DttrAd7l/preview" 
+                        width="100%" 
+                        height="315" 
+                        frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen
+                        style="border-radius: 12px;">
+                    </iframe>
                 </div>
                 <p style="color: hsl(var(--muted-foreground)); margin-bottom: 1rem;">
                     🚀 Découvrez toutes les fonctionnalités de OneBox : stockage cloud, éditeur, Face ID iPhone, et bien plus !
@@ -2760,33 +2763,98 @@ Heure: 14:00`;
             
             const fileName = file.name;
             const fileSize = isUploaded ? (file.size / 1024 / 1024).toFixed(2) : '2.5';
+            const fileId = isUploaded ? file.id : fileName;
             
-            fileCard.onclick = () => isUploaded ? previewUploadedFile(file) : openFilePreview(fileName, file.type || 'pdf', '#');
-            
-            fileCard.innerHTML = `
-                <div class="file-preview-thumb">
-                    <i class="${icon}" style="font-size: 2rem; color: ${color};"></i>
-                </div>
-                <h4>${fileName.length > 15 ? fileName.substring(0, 15) + '...' : fileName}</h4>
-                <p style="color: hsl(var(--muted-foreground)); font-size: 0.75rem;">${fileSize} MB</p>
-                <div class="file-actions">
-                    <button class="file-action-btn" onclick="event.stopPropagation(); previewFile('${fileName}')" title="Prévisualiser">
-                        <i class="fas fa-eye"></i>
-                    </button>
-                    <button class="file-action-btn" onclick="event.stopPropagation(); downloadFile('${fileName}')" title="Télécharger">
-                        <i class="fas fa-download"></i>
-                    </button>
-                    <button class="file-action-btn" onclick="event.stopPropagation(); shareFile('${fileName}')" title="Partager">
-                        <i class="fas fa-share-alt"></i>
-                    </button>
-                </div>
-            `;
+            // Actions différentes pour fichiers uploadés vs démos
+            if (isUploaded) {
+                fileCard.onclick = () => previewUploadedFileWithData(file);
+                
+                fileCard.innerHTML = `
+                    <div class="file-preview-thumb">
+                        <i class="${icon}" style="font-size: 2rem; color: ${color};"></i>
+                    </div>
+                    <h4>${fileName.length > 15 ? fileName.substring(0, 15) + '...' : fileName}</h4>
+                    <p style="color: hsl(var(--muted-foreground)); font-size: 0.75rem;">${fileSize} MB • Uploadé</p>
+                    <div class="file-actions">
+                        <button class="file-action-btn" onclick="event.stopPropagation(); previewUploadedFileWithData(findFileById('${fileId}'))" title="Prévisualiser">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="file-action-btn" onclick="event.stopPropagation(); downloadUploadedFile('${fileId}')" title="Télécharger">
+                            <i class="fas fa-download"></i>
+                        </button>
+                        <button class="file-action-btn" onclick="event.stopPropagation(); shareUploadedFile('${fileId}')" title="Partager">
+                            <i class="fas fa-share-alt"></i>
+                        </button>
+                    </div>
+                `;
+            } else {
+                fileCard.onclick = () => openFilePreview(fileName, file.type || 'pdf', '#');
+                
+                fileCard.innerHTML = `
+                    <div class="file-preview-thumb">
+                        <i class="${icon}" style="font-size: 2rem; color: ${color};"></i>
+                    </div>
+                    <h4>${fileName.length > 15 ? fileName.substring(0, 15) + '...' : fileName}</h4>
+                    <p style="color: hsl(var(--muted-foreground)); font-size: 0.75rem;">${fileSize} MB • Démo</p>
+                    <div class="file-actions">
+                        <button class="file-action-btn" onclick="event.stopPropagation(); previewFile('${fileName}')" title="Prévisualiser">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="file-action-btn" onclick="event.stopPropagation(); downloadFile('${fileName}')" title="Télécharger">
+                            <i class="fas fa-download"></i>
+                        </button>
+                        <button class="file-action-btn" onclick="event.stopPropagation(); shareFile('${fileName}')" title="Partager">
+                            <i class="fas fa-share-alt"></i>
+                        </button>
+                    </div>
+                `;
+            }
             
             return fileCard;
         }
         
-        function previewUploadedFile(file) {
-            showToast(`Aperçu de ${file.name} - fonctionnalité à venir ! 👁️`);
+        function findFileById(fileId) {
+            const currentUser = JSON.parse(localStorage.getItem('oneboxCurrentUser') || 'null');
+            if (!currentUser) return null;
+            
+            const userFiles = JSON.parse(localStorage.getItem(`oneboxFiles_${currentUser.username}`) || '[]');
+            return userFiles.find(file => file.id === fileId);
+        }
+        
+        function downloadUploadedFile(fileId) {
+            const file = findFileById(fileId);
+            if (file && file.data) {
+                const link = document.createElement('a');
+                link.href = file.data;
+                link.download = file.name;
+                link.click();
+                showToast(`Téléchargement de ${file.name} démarré ! 💾`);
+            } else {
+                showToast(`Fichier non trouvé ou données manquantes ! ⚠️`);
+            }
+        }
+        
+        function shareUploadedFile(fileId) {
+            const file = findFileById(fileId);
+            if (file) {
+                if (navigator.share) {
+                    // Utiliser l'API de partage native si disponible
+                    navigator.share({
+                        title: `Partager ${file.name}`,
+                        text: `Je partage ce fichier depuis OneBox : ${file.name}`
+                    });
+                } else {
+                    // Fallback : copier les infos dans le presse-papier
+                    const shareText = `📁 Fichier OneBox : ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`;
+                    navigator.clipboard.writeText(shareText).then(() => {
+                        showToast(`Informations du fichier copiées ! 📋`);
+                    }).catch(() => {
+                        showToast(`Partage de ${file.name} ! 📤`);
+                    });
+                }
+            } else {
+                showToast(`Fichier non trouvé ! ⚠️`);
+            }
         }
         
         function previewFile(fileName) {
