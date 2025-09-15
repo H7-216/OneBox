@@ -3331,33 +3331,53 @@ Heure: 14:00`;
         function registerNewUser(event) {
             event.preventDefault();
             
-            const username = document.getElementById('regUsername').value;
+            const username = document.getElementById('regUsername').value.trim();
             const password = document.getElementById('regPassword').value;
             const confirmPassword = document.getElementById('regPasswordConfirm').value;
             const faceIdEnabled = document.getElementById('enableFaceId').checked;
             
-            // Validation
+            // Enhanced validation
+            if (!username || username.length < 3) {
+                showToast('Le nom d\'utilisateur doit contenir au moins 3 caractères !');
+                return;
+            }
+            
+            if (!password || password.length < 4) {
+                showToast('Le mot de passe doit contenir au moins 4 caractères !');
+                return;
+            }
+            
             if (password !== confirmPassword) {
                 showToast('Les mots de passe ne correspondent pas !');
                 return;
             }
             
+            // Refresh registered users from localStorage
+            registeredUsers = JSON.parse(localStorage.getItem('oneboxUsers')) || {};
+            
             if (registeredUsers[username]) {
-                showToast('Ce nom d\'utilisateur existe déjà !');
+                showToast('Ce nom d\'utilisateur existe déjà ! Choisissez-en un autre.');
                 return;
             }
             
-            // Save user (simplified without email)
+            // Save user data with enhanced information
             registeredUsers[username] = {
                 password: password, // In real app, this would be hashed
                 faceIdEnabled: faceIdEnabled,
-                createdAt: new Date().toISOString()
+                createdAt: new Date().toISOString(),
+                lastLogin: new Date().toISOString(),
+                loginCount: 1
             };
             
+            // Save to localStorage immediately
             localStorage.setItem('oneboxUsers', JSON.stringify(registeredUsers));
             
-            // Auto login with loading screen
-            currentUser = { username, faceIdEnabled };
+            // Auto login with enhanced user data
+            currentUser = { 
+                username, 
+                faceIdEnabled,
+                lastLogin: new Date().toISOString()
+            };
             localStorage.setItem('oneboxCurrentUser', JSON.stringify(currentUser));
             
             showToast(`Compte créé avec succès ! Bienvenue ${username} ! 🎉`);
@@ -3373,6 +3393,9 @@ Heure: 14:00`;
                 
                 // Show home section directly
                 showSection('home');
+                
+                // Load user data
+                loadUserFiles();
             }, 800); // Quick transition for new users
             
             // Update Face ID option visibility
@@ -3386,15 +3409,18 @@ Heure: 14:00`;
             const password = document.getElementById('loginPassword').value;
             const rememberMe = document.getElementById('rememberMe').checked;
             
+            // Refresh registeredUsers from localStorage to get latest data
+            registeredUsers = JSON.parse(localStorage.getItem('oneboxUsers')) || {};
+            
             // Check if user exists
             if (!registeredUsers[username]) {
-                showToast('Nom d\'utilisateur introuvable !');
+                showToast('Nom d\'utilisateur introuvable ! Vérifiez vos identifiants.');
                 return;
             }
             
             // Check password
             if (registeredUsers[username].password !== password) {
-                showToast('Mot de passe incorrect !');
+                showToast('Mot de passe incorrect ! Vérifiez vos identifiants.');
                 return;
             }
             
@@ -3402,12 +3428,16 @@ Heure: 14:00`;
             const userData = registeredUsers[username];
             currentUser = { 
                 username, 
-                faceIdEnabled: userData.faceIdEnabled 
+                faceIdEnabled: userData.faceIdEnabled,
+                lastLogin: new Date().toISOString()
             };
             
-            if (rememberMe) {
-                localStorage.setItem('oneboxCurrentUser', JSON.stringify(currentUser));
-            }
+            // Always save current user to localStorage for cross-browser access
+            localStorage.setItem('oneboxCurrentUser', JSON.stringify(currentUser));
+            
+            // Update user's last login time
+            registeredUsers[username].lastLogin = new Date().toISOString();
+            localStorage.setItem('oneboxUsers', JSON.stringify(registeredUsers));
             
             showToast(`Connexion réussie ! Bienvenue ${username} ! 💪🏾`);
             
@@ -3420,6 +3450,9 @@ Heure: 14:00`;
         }
 
         function authenticateWithFaceId() {
+            // Refresh registered users from localStorage to get latest data
+            registeredUsers = JSON.parse(localStorage.getItem('oneboxUsers')) || {};
+            
             // Check if any user has Face ID enabled
             const faceIdUsers = Object.entries(registeredUsers).filter(([_, user]) => user.faceIdEnabled);
             
@@ -3444,10 +3477,17 @@ Heure: 14:00`;
                 const [username, userData] = faceIdUsers[0];
                 currentUser = { 
                     username, 
-                    faceIdEnabled: userData.faceIdEnabled 
+                    faceIdEnabled: userData.faceIdEnabled,
+                    lastLogin: new Date().toISOString()
                 };
                 
+                // Save current user and update last login
                 localStorage.setItem('oneboxCurrentUser', JSON.stringify(currentUser));
+                
+                // Update user's last login time and increment login count
+                registeredUsers[username].lastLogin = new Date().toISOString();
+                registeredUsers[username].loginCount = (registeredUsers[username].loginCount || 0) + 1;
+                localStorage.setItem('oneboxUsers', JSON.stringify(registeredUsers));
                 
                 showToast(`✅ Face ID réussi ! Bienvenue ${username} ! 🚀`);
                 
@@ -3457,6 +3497,7 @@ Heure: 14:00`;
                 
                 // Show loading screen and redirect to home (exactly 3 seconds)
                 showLoadingAndRedirect('home');
+                setTimeout(() => loadUserFiles(), 4000); // Charger après le loading screen
                 
             }, 3000);
         }
