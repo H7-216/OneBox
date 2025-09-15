@@ -2981,73 +2981,33 @@ Heure: 14:00`;
             }
         }
 
-        async function saveDocumentToFolder() {
-            if (!currentUser || !currentUser.id) {
-                showToast('Vous devez être connecté pour sauvegarder !');
-                return;
-            }
-            
+        function saveDocumentToFolder() {
             const name = document.getElementById('documentName').value || 'Document sans nom';
             const folder = document.getElementById('documentFolder').value;
             const content = document.getElementById('editor').innerHTML;
             
-            try {
-                // Check if we're in static mode (localStorage) or server mode
-                const isStatic = isStaticMode();
-                
-                let result = { documentId: Date.now() }; // Default document ID
-                
-                if (isStatic) {
-                    // localStorage mode for GitHub Pages
-                    // Update local documents object
-                    if (!savedDocuments[folder]) {
-                        savedDocuments[folder] = {};
-                    }
-                    
-                    const timestamp = new Date().toISOString();
-                    savedDocuments[folder][name] = {
-                        content: content,
-                        created: timestamp,
-                        filter: currentDocumentFilter || 'none',
-                        documentId: result.documentId
-                    };
-                    
-                    // Save to localStorage
-                    localStorage.setItem(`oneboxDocuments_${currentUser.id}`, JSON.stringify(savedDocuments));
-                } else {
-                    // Server mode - use API calls
-                    result = await apiCall('POST', '/api/html/documents', {
-                        userId: currentUser.id,
-                        name: name,
-                        folder: folder,
-                        content: content,
-                        filter: currentDocumentFilter || 'none'
-                    });
-                    
-                    // Update local cache
-                    if (!savedDocuments[folder]) {
-                        savedDocuments[folder] = {};
-                    }
-                    
-                    const timestamp = new Date().toISOString();
-                    savedDocuments[folder][name] = {
-                        content: content,
-                        created: timestamp,
-                        filter: currentDocumentFilter || 'none',
-                        documentId: result.documentId // Store server ID
-                    };
-                }
-                
-                // Add to file grid (simulate)
-                addDocumentToFileGrid(name, folder);
-                
-                // Close panel and show success
-                toggleSavePanel();
-                showToast(`Document "${name}" enregistré dans ${getFolderDisplayName(folder)} ! 💪🏾`);
-                
-            } catch (error) {
-                showToast(`Erreur lors de la sauvegarde : ${error.message}`);
+            // Create folder structure if needed
+            if (!savedDocuments[folder]) {
+                savedDocuments[folder] = {};
             }
+            
+            // Save document with timestamp
+            const timestamp = new Date().toISOString();
+            savedDocuments[folder][name] = {
+                content: content,
+                created: timestamp,
+                filter: currentDocumentFilter
+            };
+            
+            // Save to localStorage
+            localStorage.setItem('oneboxDocuments', JSON.stringify(savedDocuments));
+            
+            // Add to file grid (simulate)
+            addDocumentToFileGrid(name, folder);
+            
+            // Close panel and show success
+            toggleSavePanel();
+            showToast(`Document "${name}" enregistré dans ${getFolderDisplayName(folder)} ! 💪🏾`);
         }
 
         function getFolderDisplayName(folder) {
@@ -3071,7 +3031,7 @@ Heure: 14:00`;
 
         // Documents Management Functions
         function refreshDocuments() {
-            const savedDocs = savedDocuments; // Use loaded documents from server
+            const savedDocs = JSON.parse(localStorage.getItem('oneboxDocuments')) || {};
             const foldersGrid = document.getElementById('foldersGrid');
             const documentsList = document.getElementById('documentsList');
             const emptyState = document.getElementById('emptyState');
@@ -3210,58 +3170,19 @@ Heure: 14:00`;
             openDocument(docName, docData);
         }
 
-        async function deleteDocument(docName, folder) {
+        function deleteDocument(docName, folder) {
             if (confirm(`Supprimer définitivement le document "${docName}" ?`)) {
-                try {
-                    // Get document ID from local cache
-                    const docData = savedDocuments[folder] && savedDocuments[folder][docName];
-                    if (!docData) {
-                        showToast('Document introuvable !');
-                        return;
-                    }
-                    
-                    // Check if we're in static mode (localStorage) or server mode
-                    const isStatic = window.location.hostname.includes('github.io') || 
-                                   window.location.protocol === 'file:' || 
-                                   window.ONEBOX_STATIC === true;
-                    
-                    if (isStatic) {
-                        // localStorage mode for GitHub Pages
-                        // Update local cache
-                        delete savedDocuments[folder][docName];
-                        
-                        // Remove folder if empty
-                        if (Object.keys(savedDocuments[folder]).length === 0) {
-                            delete savedDocuments[folder];
-                        }
-                        
-                        // Save to localStorage
-                        localStorage.setItem(`oneboxDocuments_${currentUser.id}`, JSON.stringify(savedDocuments));
-                    } else {
-                        // Server mode - use API calls
-                        if (!docData.documentId) {
-                            showToast('Document introuvable !');
-                            return;
-                        }
-                        
-                        // Delete from server
-                        await apiCall('DELETE', `/api/html/documents/${docData.documentId}`);
-                        
-                        // Update local cache
-                        delete savedDocuments[folder][docName];
-                        
-                        // Remove folder if empty
-                        if (Object.keys(savedDocuments[folder]).length === 0) {
-                            delete savedDocuments[folder];
-                        }
-                    }
-                    
-                    refreshDocuments();
-                    showToast(`Document "${docName}" supprimé ! 🗑️`);
-                    
-                } catch (error) {
-                    showToast(`Erreur lors de la suppression : ${error.message}`);
+                const savedDocs = JSON.parse(localStorage.getItem('oneboxDocuments')) || {};
+                delete savedDocs[folder][docName];
+                
+                // Remove folder if empty
+                if (Object.keys(savedDocs[folder]).length === 0) {
+                    delete savedDocs[folder];
                 }
+                
+                localStorage.setItem('oneboxDocuments', JSON.stringify(savedDocs));
+                refreshDocuments();
+                showToast(`Document "${docName}" supprimé ! 🗑️`);
             }
         }
 
@@ -3394,67 +3315,8 @@ Heure: 14:00`;
         }
 
         // Authentication Functions
+        let registeredUsers = JSON.parse(localStorage.getItem('oneboxUsers')) || {};
         let currentUser = JSON.parse(localStorage.getItem('oneboxCurrentUser')) || null;
-        let savedDocuments = {}; // Will be loaded from server or localStorage
-
-        // Detect if we're running in static mode (GitHub Pages) or server mode
-        const isStaticMode = window.location.hostname.includes('github.io') || 
-                            window.location.protocol === 'file:' || 
-                            window.ONEBOX_STATIC === true;
-        
-        console.log('OneBox Mode:', isStaticMode ? 'Static (GitHub Pages)' : 'Server (Local)');
-
-        // Centralized static mode detection
-        function isStaticMode() {
-            return window.location.hostname.includes('github.io') || 
-                   window.location.protocol === 'file:' || 
-                   window.ONEBOX_STATIC === true;
-        }
-
-        // Simple password hashing function with user-specific salt (for demo/offline use only)
-        async function hashPassword(password, username) {
-            try {
-                const encoder = new TextEncoder();
-                const salt = username + 'onebox-salt-' + username.length; // User-specific salt
-                const data = encoder.encode(password + salt);
-                const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-                const hashArray = Array.from(new Uint8Array(hashBuffer));
-                return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-            } catch (error) {
-                console.error('Crypto not available, using fallback');
-                // Fallback for environments where SubtleCrypto is not available
-                throw new Error('Password hashing not available in this environment');
-            }
-        }
-
-        // API utility function
-        async function apiCall(method, url, data = null) {
-            try {
-                const options = {
-                    method: method,
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    credentials: 'include'
-                };
-                
-                if (data) {
-                    options.body = JSON.stringify(data);
-                }
-
-                const response = await fetch(url, options);
-                const result = await response.json();
-                
-                if (!response.ok) {
-                    throw new Error(result.message || 'Something went wrong');
-                }
-                
-                return result;
-            } catch (error) {
-                console.error('API Error:', error);
-                throw error;
-            }
-        }
 
         function showRegister() {
             document.getElementById('loginForm').style.display = 'none';
@@ -3466,7 +3328,7 @@ Heure: 14:00`;
             document.getElementById('loginForm').style.display = 'block';
         }
 
-        async function registerNewUser(event) {
+        function registerNewUser(event) {
             event.preventDefault();
             
             const username = document.getElementById('regUsername').value;
@@ -3480,208 +3342,92 @@ Heure: 14:00`;
                 return;
             }
             
-            if (username.length < 3) {
-                showToast('Le nom d\'utilisateur doit contenir au moins 3 caractères !');
+            if (registeredUsers[username]) {
+                showToast('Ce nom d\'utilisateur existe déjà !');
                 return;
             }
             
-            if (password.length < 6) {
-                showToast('Le mot de passe doit contenir au moins 6 caractères !');
-                return;
-            }
+            // Save user (simplified without email)
+            registeredUsers[username] = {
+                password: password, // In real app, this would be hashed
+                faceIdEnabled: faceIdEnabled,
+                createdAt: new Date().toISOString()
+            };
             
-            try {
-                let result;
+            localStorage.setItem('oneboxUsers', JSON.stringify(registeredUsers));
+            
+            // Auto login with loading screen
+            currentUser = { username, faceIdEnabled };
+            localStorage.setItem('oneboxCurrentUser', JSON.stringify(currentUser));
+            
+            showToast(`Compte créé avec succès ! Bienvenue ${username} ! 🎉`);
+            
+            // Direct access for new users - no loading screen needed!
+            setTimeout(() => {
+                // Hide auth section
+                document.getElementById('auth').classList.remove('active');
+                document.getElementById('auth').style.display = 'none';
                 
-                // Check if we're in static mode (localStorage) or server mode
-                const isStatic = isStaticMode();
+                // Show navigation
+                document.getElementById('mainNavbar').style.display = 'block';
                 
-                if (isStatic) {
-                    // localStorage mode for GitHub Pages
-                    const users = JSON.parse(localStorage.getItem('oneboxUsers') || '{}');
-                    
-                    // Check if user already exists
-                    if (users[username]) {
-                        throw new Error('Ce nom d\'utilisateur existe déjà !');
-                    }
-                    
-                    // Create new user with hashed password
-                    const userId = Date.now(); // Simple ID generation
-                    const hashedPassword = await hashPassword(password, username);
-                    users[username] = {
-                        id: userId,
-                        username: username,
-                        password: hashedPassword, // Store hashed password
-                        faceIdEnabled: faceIdEnabled,
-                        createdAt: new Date().toISOString()
-                    };
-                    
-                    // Save users to localStorage
-                    localStorage.setItem('oneboxUsers', JSON.stringify(users));
-                    
-                    result = {
-                        userId: userId,
-                        username: username,
-                        faceIdEnabled: faceIdEnabled
-                    };
-                } else {
-                    // Server mode - use API calls
-                    result = await apiCall('POST', '/api/html/register', {
-                        username: username,
-                        password: password,
-                        faceIdEnabled: faceIdEnabled
-                    });
-                }
-                
-                // Auto login with loading screen
-                currentUser = { 
-                    id: result.userId, 
-                    username: username, 
-                    faceIdEnabled: faceIdEnabled 
-                };
-                localStorage.setItem('oneboxCurrentUser', JSON.stringify(currentUser));
-                
-                showToast(`Compte créé avec succès ! Bienvenue ${username} ! 🎉`);
-                
-                // Load user documents
-                await loadUserDocuments();
-                
-                // Direct access for new users - no loading screen needed!
-                setTimeout(() => {
-                    // Hide auth section
-                    document.getElementById('auth').classList.remove('active');
-                    document.getElementById('auth').style.display = 'none';
-                    
-                    // Show navigation
-                    document.getElementById('mainNavbar').style.display = 'block';
-                    
-                    // Show home section directly
-                    showSection('home');
-                }, 800); // Quick transition for new users
-                
-                // Update Face ID option visibility
-                updateFaceIdVisibility();
-                
-            } catch (error) {
-                showToast(error.message || 'Erreur lors de la création du compte !');
-            }
+                // Show home section directly
+                showSection('home');
+            }, 800); // Quick transition for new users
+            
+            // Update Face ID option visibility
+            updateFaceIdVisibility();
         }
 
-        async function loginWithCredentials(event) {
+        function loginWithCredentials(event) {
             event.preventDefault();
             
             const username = document.getElementById('loginUsername').value;
             const password = document.getElementById('loginPassword').value;
             const rememberMe = document.getElementById('rememberMe').checked;
             
-            try {
-                let result;
-                
-                // Check if we're in static mode (localStorage) or server mode
-                const isStatic = isStaticMode();
-                
-                if (isStatic) {
-                    // localStorage mode for GitHub Pages
-                    const users = JSON.parse(localStorage.getItem('oneboxUsers') || '{}');
-                    
-                    // Check if user exists and password matches
-                    if (!users[username]) {
-                        throw new Error('Nom d\'utilisateur introuvable !');
-                    }
-                    
-                    // Verify hashed password
-                    const hashedPassword = await hashPassword(password, username);
-                    if (users[username].password !== hashedPassword) {
-                        throw new Error('Mot de passe incorrect !');
-                    }
-                    
-                    const user = users[username];
-                    result = {
-                        user: {
-                            id: user.id,
-                            username: user.username,
-                            faceIdEnabled: user.faceIdEnabled
-                        }
-                    };
-                } else {
-                    // Server mode - use API calls
-                    result = await apiCall('POST', '/api/html/login', {
-                        username: username,
-                        password: password
-                    });
-                }
-                
-                // Login successful
-                currentUser = { 
-                    id: result.user.id,
-                    username: result.user.username, 
-                    faceIdEnabled: result.user.faceIdEnabled 
-                };
-                
-                if (rememberMe) {
-                    localStorage.setItem('oneboxCurrentUser', JSON.stringify(currentUser));
-                }
-                
-                showToast(`Connexion réussie ! Bienvenue ${username} ! 💪🏾`);
-                
-                // Load user documents
-                await loadUserDocuments();
-                
-                // Show loading screen and redirect to home  
-                showLoadingAndRedirect('home');
-                
-                // Update Face ID option visibility
-                updateFaceIdVisibility();
-                
-            } catch (error) {
-                showToast(error.message || 'Erreur de connexion !');
-            }
-        }
-
-        // Function to load user documents from server or localStorage
-        async function loadUserDocuments() {
-            if (!currentUser || !currentUser.id) {
+            // Check if user exists
+            if (!registeredUsers[username]) {
+                showToast('Nom d\'utilisateur introuvable !');
                 return;
             }
             
-            try {
-                // Check if we're in static mode (localStorage) or server mode
-                const isStatic = isStaticMode();
-                
-                if (isStatic) {
-                    // localStorage mode for GitHub Pages
-                    const userDocuments = localStorage.getItem(`oneboxDocuments_${currentUser.id}`);
-                    savedDocuments = userDocuments ? JSON.parse(userDocuments) : {};
-                } else {
-                    // Server mode - use API calls
-                    const documents = await apiCall('GET', `/api/html/documents/${currentUser.id}`);
-                    
-                    // Organize documents by folder for compatibility with existing code
-                    savedDocuments = {};
-                    documents.forEach(doc => {
-                        if (!savedDocuments[doc.folder]) {
-                            savedDocuments[doc.folder] = {};
-                        }
-                        savedDocuments[doc.folder][doc.name] = {
-                            content: doc.content,
-                            created: doc.created_at,
-                            filter: doc.filter || 'none',
-                            documentId: doc.id // Store server ID for future operations
-                        };
-                    });
-                }
-                
-                // Refresh the documents display
-                refreshDocuments();
-                
-            } catch (error) {
-                console.error('Error loading documents:', error);
-                showToast('Erreur lors du chargement des documents');
+            // Check password
+            if (registeredUsers[username].password !== password) {
+                showToast('Mot de passe incorrect !');
+                return;
             }
+            
+            // Login successful
+            const userData = registeredUsers[username];
+            currentUser = { 
+                username, 
+                faceIdEnabled: userData.faceIdEnabled 
+            };
+            
+            if (rememberMe) {
+                localStorage.setItem('oneboxCurrentUser', JSON.stringify(currentUser));
+            }
+            
+            showToast(`Connexion réussie ! Bienvenue ${username} ! 💪🏾`);
+            
+            // Show loading screen and redirect to home  
+            showLoadingAndRedirect('home');
+            setTimeout(() => loadUserFiles(), 4000); // Charger après le loading screen
+            
+            // Update Face ID option visibility
+            updateFaceIdVisibility();
         }
 
         function authenticateWithFaceId() {
-            // Face ID is now simulated - in a real app, this would be a more secure implementation
+            // Check if any user has Face ID enabled
+            const faceIdUsers = Object.entries(registeredUsers).filter(([_, user]) => user.faceIdEnabled);
+            
+            if (faceIdUsers.length === 0) {
+                showToast('Aucun utilisateur n\'a activé Face ID. Créez un compte d\'abord !');
+                return;
+            }
+            
             // Start Face ID animation
             const faceIdDiv = document.querySelector('#faceIdOption .floating-btn > div');
             faceIdDiv.style.animation = 'faceIdScanning 3s linear';
@@ -3694,35 +3440,23 @@ Heure: 14:00`;
                 faceIdDiv.style.animation = 'faceIdPulse 0.5s ease-in-out';
                 faceIdDiv.style.background = 'radial-gradient(circle, transparent 30%, rgba(0, 255, 0, 0.6) 70%)';
                 
-                // In a real implementation, this would verify with the server
-                // For now, we'll just check if there's a stored user with Face ID enabled
-                const storedUser = localStorage.getItem('oneboxCurrentUser');
-                if (storedUser) {
-                    currentUser = JSON.parse(storedUser);
-                    if (currentUser.faceIdEnabled) {
-                        localStorage.setItem('oneboxCurrentUser', JSON.stringify(currentUser));
-                        
-                        showToast(`✅ Face ID réussi ! Bienvenue ${currentUser.username} ! 🚀`);
-                        
-                        // Load user documents
-                        loadUserDocuments();
-                        
-                        // Reset Face ID animation immediately and start 3D loading
-                        faceIdDiv.style.animation = 'faceIdPulse 2s infinite';
-                        faceIdDiv.style.background = 'radial-gradient(circle, transparent 30%, rgba(6, 214, 160, 0.3) 70%)';
-                        
-                        // Show loading screen and redirect to home (exactly 3 seconds)
-                        showLoadingAndRedirect('home');
-                        return;
-                    }
-                }
+                // Auto-login first Face ID user (simulation)
+                const [username, userData] = faceIdUsers[0];
+                currentUser = { 
+                    username, 
+                    faceIdEnabled: userData.faceIdEnabled 
+                };
                 
-                // No Face ID user found
-                showToast('Aucun utilisateur Face ID trouvé. Connectez-vous d\'abord !');
+                localStorage.setItem('oneboxCurrentUser', JSON.stringify(currentUser));
                 
-                // Reset animation
+                showToast(`✅ Face ID réussi ! Bienvenue ${username} ! 🚀`);
+                
+                // Reset Face ID animation immediately and start 3D loading
                 faceIdDiv.style.animation = 'faceIdPulse 2s infinite';
                 faceIdDiv.style.background = 'radial-gradient(circle, transparent 30%, rgba(6, 214, 160, 0.3) 70%)';
+                
+                // Show loading screen and redirect to home (exactly 3 seconds)
+                showLoadingAndRedirect('home');
                 
             }, 3000);
         }
@@ -3730,8 +3464,9 @@ Heure: 14:00`;
         function updateFaceIdVisibility() {
             const faceIdOption = document.getElementById('faceIdOption');
             const hasCurrentUser = currentUser !== null;
+            const hasFaceIdUsers = Object.values(registeredUsers).some(user => user.faceIdEnabled);
             
-            if (hasCurrentUser) {
+            if (hasCurrentUser || !hasFaceIdUsers) {
                 faceIdOption.style.display = 'none';
             } else {
                 faceIdOption.style.display = 'block';
@@ -3840,82 +3575,6 @@ Heure: 14:00`;
         }
 
         // Initialize
-        // Check session on page load
-        async function checkSession() {
-            try {
-                // Check if we're in static mode (localStorage) or server mode
-                const isStatic = isStaticMode();
-                
-                if (isStatic) {
-                    // localStorage mode - check for stored user
-                    const storedUser = localStorage.getItem('oneboxCurrentUser');
-                    if (storedUser) {
-                        currentUser = JSON.parse(storedUser);
-                        
-                        // Hide auth section and show main app
-                        document.getElementById('auth').classList.remove('active');
-                        document.getElementById('auth').style.display = 'none';
-                        
-                        // Show navigation
-                        document.querySelector('.navbar').style.display = 'block';
-                        
-                        // Show home section by default
-                        showSection('home');
-                        
-                        showToast(`Bienvenue ${currentUser.username} ! Vous êtes déjà connecté 😊`);
-                        
-                        // Load user documents
-                        await loadUserDocuments();
-                        
-                        return;
-                    }
-                } else {
-                    // Server mode - use API calls
-                    const result = await apiCall('GET', '/api/html/session');
-                    if (result.user) {
-                        // User is already logged in
-                        currentUser = result.user;
-                        localStorage.setItem('oneboxCurrentUser', JSON.stringify(currentUser));
-                        
-                        // Hide auth section and show main app
-                        document.getElementById('auth').classList.remove('active');
-                        document.getElementById('auth').style.display = 'none';
-                        
-                        // Show navigation
-                        document.querySelector('.navbar').style.display = 'block';
-                        
-                        // Show files section by default
-                        showSection('files');
-                        
-                        showToast(`Bienvenue ${result.user.username} ! Vous êtes déjà connecté 😊`);
-                        
-                        return;
-                    }
-                }
-                
-                // No session found, show home page
-                showHomePage();
-                
-            } catch (error) {
-                // No session or error, show home page instead of auth
-                console.log("No session found, showing home page");
-                showHomePage();
-            }
-        }
-
-        // Function to show home page instead of forcing auth
-        function showHomePage() {
-            // Hide auth section
-            document.getElementById('auth').classList.remove('active');
-            document.getElementById('auth').style.display = 'none';
-            
-            // Show navigation
-            document.querySelector('.navbar').style.display = 'block';
-            
-            // Show home section by default
-            showSection('home');
-        }
-
         document.addEventListener('DOMContentLoaded', function() {
             // Add smooth scrolling
             document.documentElement.style.scrollBehavior = 'smooth';
@@ -3926,15 +3585,11 @@ Heure: 14:00`;
             
             setTimeout(() => {
                 document.body.style.opacity = '1';
-                // Check session after page loads
-                checkSession();
             }, 100);
             
-            // Welcome message only if not logged in
+            // Welcome message
             setTimeout(() => {
-                if (!currentUser) {
-                    showToast('Bienvenue sur OneBox ! Votre cloud personnel sécurisé 💪🏾');
-                }
+                showToast('Bienvenue sur OneBox ! Votre cloud personnel sécurisé 💪🏾');
             }, 2000);
 
             // Add keyboard shortcuts for file preview
