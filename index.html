@@ -3355,7 +3355,8 @@ Heure: 14:00`;
                     method: method,
                     headers: {
                         'Content-Type': 'application/json',
-                    }
+                    },
+                    credentials: 'include'
                 };
                 
                 if (data) {
@@ -3675,6 +3676,50 @@ Heure: 14:00`;
         }
 
         // Initialize
+        // Check session on page load
+        async function checkSession() {
+            try {
+                const result = await apiCall('GET', '/api/html/session');
+                if (result.user) {
+                    // User is already logged in
+                    currentUser = result.user;
+                    localStorage.setItem('oneboxCurrentUser', JSON.stringify(currentUser));
+                    
+                    // Hide auth section and show main app
+                    document.getElementById('auth').classList.remove('active');
+                    document.getElementById('auth').style.display = 'none';
+                    
+                    // Show navigation
+                    document.querySelector('.navbar').style.display = 'block';
+                    
+                    // Show files section by default
+                    showSection('files');
+                    
+                    showToast(`Bienvenue ${result.user.username} ! Vous êtes déjà connecté 😊`);
+                } else {
+                    // No session found, show home page instead of auth
+                    showHomePage();
+                }
+            } catch (error) {
+                // No session or error, show home page instead of auth
+                console.log("No session found, showing home page");
+                showHomePage();
+            }
+        }
+
+        // Function to show home page instead of forcing auth
+        function showHomePage() {
+            // Hide auth section
+            document.getElementById('auth').classList.remove('active');
+            document.getElementById('auth').style.display = 'none';
+            
+            // Show navigation
+            document.querySelector('.navbar').style.display = 'block';
+            
+            // Show home section by default
+            showSection('home');
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             // Add smooth scrolling
             document.documentElement.style.scrollBehavior = 'smooth';
@@ -3685,11 +3730,15 @@ Heure: 14:00`;
             
             setTimeout(() => {
                 document.body.style.opacity = '1';
+                // Check session after page loads
+                checkSession();
             }, 100);
             
-            // Welcome message
+            // Welcome message only if not logged in
             setTimeout(() => {
-                showToast('Bienvenue sur OneBox ! Votre cloud personnel sécurisé 💪🏾');
+                if (!currentUser) {
+                    showToast('Bienvenue sur OneBox ! Votre cloud personnel sécurisé 💪🏾');
+                }
             }, 2000);
 
             // Add keyboard shortcuts for file preview
