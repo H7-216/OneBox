@@ -2981,33 +2981,49 @@ Heure: 14:00`;
             }
         }
 
-        function saveDocumentToFolder() {
+        async function saveDocumentToFolder() {
+            if (!currentUser || !currentUser.id) {
+                showToast('Vous devez être connecté pour sauvegarder !');
+                return;
+            }
+            
             const name = document.getElementById('documentName').value || 'Document sans nom';
             const folder = document.getElementById('documentFolder').value;
             const content = document.getElementById('editor').innerHTML;
             
-            // Create folder structure if needed
-            if (!savedDocuments[folder]) {
-                savedDocuments[folder] = {};
+            try {
+                // Save document to server
+                const result = await apiCall('POST', '/api/html/documents', {
+                    userId: currentUser.id,
+                    name: name,
+                    folder: folder,
+                    content: content,
+                    filter: currentDocumentFilter || 'none'
+                });
+                
+                // Update local cache
+                if (!savedDocuments[folder]) {
+                    savedDocuments[folder] = {};
+                }
+                
+                const timestamp = new Date().toISOString();
+                savedDocuments[folder][name] = {
+                    content: content,
+                    created: timestamp,
+                    filter: currentDocumentFilter || 'none',
+                    documentId: result.documentId // Store server ID
+                };
+                
+                // Add to file grid (simulate)
+                addDocumentToFileGrid(name, folder);
+                
+                // Close panel and show success
+                toggleSavePanel();
+                showToast(`Document "${name}" enregistré dans ${getFolderDisplayName(folder)} ! 💪🏾`);
+                
+            } catch (error) {
+                showToast(`Erreur lors de la sauvegarde : ${error.message}`);
             }
-            
-            // Save document with timestamp
-            const timestamp = new Date().toISOString();
-            savedDocuments[folder][name] = {
-                content: content,
-                created: timestamp,
-                filter: currentDocumentFilter
-            };
-            
-            // Save to localStorage
-            localStorage.setItem('oneboxDocuments', JSON.stringify(savedDocuments));
-            
-            // Add to file grid (simulate)
-            addDocumentToFileGrid(name, folder);
-            
-            // Close panel and show success
-            toggleSavePanel();
-            showToast(`Document "${name}" enregistré dans ${getFolderDisplayName(folder)} ! 💪🏾`);
         }
 
         function getFolderDisplayName(folder) {
@@ -3031,7 +3047,7 @@ Heure: 14:00`;
 
         // Documents Management Functions
         function refreshDocuments() {
-            const savedDocs = JSON.parse(localStorage.getItem('oneboxDocuments')) || {};
+            const savedDocs = savedDocuments; // Use loaded documents from server
             const foldersGrid = document.getElementById('foldersGrid');
             const documentsList = document.getElementById('documentsList');
             const emptyState = document.getElementById('emptyState');
@@ -3170,19 +3186,33 @@ Heure: 14:00`;
             openDocument(docName, docData);
         }
 
-        function deleteDocument(docName, folder) {
+        async function deleteDocument(docName, folder) {
             if (confirm(`Supprimer définitivement le document "${docName}" ?`)) {
-                const savedDocs = JSON.parse(localStorage.getItem('oneboxDocuments')) || {};
-                delete savedDocs[folder][docName];
-                
-                // Remove folder if empty
-                if (Object.keys(savedDocs[folder]).length === 0) {
-                    delete savedDocs[folder];
+                try {
+                    // Get document ID from local cache
+                    const docData = savedDocuments[folder] && savedDocuments[folder][docName];
+                    if (!docData || !docData.documentId) {
+                        showToast('Document introuvable !');
+                        return;
+                    }
+                    
+                    // Delete from server
+                    await apiCall('DELETE', `/api/html/documents/${docData.documentId}`);
+                    
+                    // Update local cache
+                    delete savedDocuments[folder][docName];
+                    
+                    // Remove folder if empty
+                    if (Object.keys(savedDocuments[folder]).length === 0) {
+                        delete savedDocuments[folder];
+                    }
+                    
+                    refreshDocuments();
+                    showToast(`Document "${docName}" supprimé ! 🗑️`);
+                    
+                } catch (error) {
+                    showToast(`Erreur lors de la suppression : ${error.message}`);
                 }
-                
-                localStorage.setItem('oneboxDocuments', JSON.stringify(savedDocs));
-                refreshDocuments();
-                showToast(`Document "${docName}" supprimé ! 🗑️`);
             }
         }
 
@@ -3315,8 +3345,36 @@ Heure: 14:00`;
         }
 
         // Authentication Functions
-        let registeredUsers = JSON.parse(localStorage.getItem('oneboxUsers')) || {};
         let currentUser = JSON.parse(localStorage.getItem('oneboxCurrentUser')) || null;
+        let savedDocuments = {}; // Will be loaded from server
+
+        // API utility function
+        async function apiCall(method, url, data = null) {
+            try {
+                const options = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                };
+                
+                if (data) {
+                    options.body = JSON.stringify(data);
+                }
+
+                const response = await fetch(url, options);
+                const result = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(result.message || 'Something went wrong');
+                }
+                
+                return result;
+            } catch (error) {
+                console.error('API Error:', error);
+                throw error;
+            }
+        }
 
         function showRegister() {
             document.getElementById('loginForm').style.display = 'none';
@@ -3328,7 +3386,7 @@ Heure: 14:00`;
             document.getElementById('loginForm').style.display = 'block';
         }
 
-        function registerNewUser(event) {
+        async function registerNewUser(event) {
             event.preventDefault();
             
             const username = document.getElementById('regUsername').value;
@@ -3342,92 +3400,123 @@ Heure: 14:00`;
                 return;
             }
             
-            if (registeredUsers[username]) {
-                showToast('Ce nom d\'utilisateur existe déjà !');
-                return;
+            try {
+                // Call API to register user
+                const result = await apiCall('POST', '/api/html/register', {
+                    username: username,
+                    password: password,
+                    faceIdEnabled: faceIdEnabled
+                });
+                
+                // Auto login with loading screen
+                currentUser = { 
+                    id: result.userId, 
+                    username: username, 
+                    faceIdEnabled: faceIdEnabled 
+                };
+                localStorage.setItem('oneboxCurrentUser', JSON.stringify(currentUser));
+                
+                showToast(`Compte créé avec succès ! Bienvenue ${username} ! 🎉`);
+                
+                // Load user documents from server
+                await loadUserDocuments();
+                
+                // Direct access for new users - no loading screen needed!
+                setTimeout(() => {
+                    // Hide auth section
+                    document.getElementById('auth').classList.remove('active');
+                    document.getElementById('auth').style.display = 'none';
+                    
+                    // Show navigation
+                    document.getElementById('mainNavbar').style.display = 'block';
+                    
+                    // Show home section directly
+                    showSection('home');
+                }, 800); // Quick transition for new users
+                
+                // Update Face ID option visibility
+                updateFaceIdVisibility();
+                
+            } catch (error) {
+                showToast(error.message || 'Erreur lors de la création du compte !');
             }
-            
-            // Save user (simplified without email)
-            registeredUsers[username] = {
-                password: password, // In real app, this would be hashed
-                faceIdEnabled: faceIdEnabled,
-                createdAt: new Date().toISOString()
-            };
-            
-            localStorage.setItem('oneboxUsers', JSON.stringify(registeredUsers));
-            
-            // Auto login with loading screen
-            currentUser = { username, faceIdEnabled };
-            localStorage.setItem('oneboxCurrentUser', JSON.stringify(currentUser));
-            
-            showToast(`Compte créé avec succès ! Bienvenue ${username} ! 🎉`);
-            
-            // Direct access for new users - no loading screen needed!
-            setTimeout(() => {
-                // Hide auth section
-                document.getElementById('auth').classList.remove('active');
-                document.getElementById('auth').style.display = 'none';
-                
-                // Show navigation
-                document.getElementById('mainNavbar').style.display = 'block';
-                
-                // Show home section directly
-                showSection('home');
-            }, 800); // Quick transition for new users
-            
-            // Update Face ID option visibility
-            updateFaceIdVisibility();
         }
 
-        function loginWithCredentials(event) {
+        async function loginWithCredentials(event) {
             event.preventDefault();
             
             const username = document.getElementById('loginUsername').value;
             const password = document.getElementById('loginPassword').value;
             const rememberMe = document.getElementById('rememberMe').checked;
             
-            // Check if user exists
-            if (!registeredUsers[username]) {
-                showToast('Nom d\'utilisateur introuvable !');
+            try {
+                // Call API to login user
+                const result = await apiCall('POST', '/api/html/login', {
+                    username: username,
+                    password: password
+                });
+                
+                // Login successful
+                currentUser = { 
+                    id: result.user.id,
+                    username: result.user.username, 
+                    faceIdEnabled: result.user.faceIdEnabled 
+                };
+                
+                if (rememberMe) {
+                    localStorage.setItem('oneboxCurrentUser', JSON.stringify(currentUser));
+                }
+                
+                showToast(`Connexion réussie ! Bienvenue ${username} ! 💪🏾`);
+                
+                // Load user documents from server
+                await loadUserDocuments();
+                
+                // Show loading screen and redirect to home  
+                showLoadingAndRedirect('home');
+                
+                // Update Face ID option visibility
+                updateFaceIdVisibility();
+                
+            } catch (error) {
+                showToast(error.message || 'Erreur de connexion !');
+            }
+        }
+
+        // Function to load user documents from server
+        async function loadUserDocuments() {
+            if (!currentUser || !currentUser.id) {
                 return;
             }
             
-            // Check password
-            if (registeredUsers[username].password !== password) {
-                showToast('Mot de passe incorrect !');
-                return;
+            try {
+                const documents = await apiCall('GET', `/api/html/documents/${currentUser.id}`);
+                
+                // Organize documents by folder for compatibility with existing code
+                savedDocuments = {};
+                documents.forEach(doc => {
+                    if (!savedDocuments[doc.folder]) {
+                        savedDocuments[doc.folder] = {};
+                    }
+                    savedDocuments[doc.folder][doc.name] = {
+                        content: doc.content,
+                        created: doc.created_at,
+                        filter: doc.filter || 'none',
+                        documentId: doc.id // Store server ID for future operations
+                    };
+                });
+                
+                // Refresh the documents display
+                refreshDocuments();
+                
+            } catch (error) {
+                console.error('Error loading documents:', error);
+                showToast('Erreur lors du chargement des documents');
             }
-            
-            // Login successful
-            const userData = registeredUsers[username];
-            currentUser = { 
-                username, 
-                faceIdEnabled: userData.faceIdEnabled 
-            };
-            
-            if (rememberMe) {
-                localStorage.setItem('oneboxCurrentUser', JSON.stringify(currentUser));
-            }
-            
-            showToast(`Connexion réussie ! Bienvenue ${username} ! 💪🏾`);
-            
-            // Show loading screen and redirect to home  
-            showLoadingAndRedirect('home');
-            setTimeout(() => loadUserFiles(), 4000); // Charger après le loading screen
-            
-            // Update Face ID option visibility
-            updateFaceIdVisibility();
         }
 
         function authenticateWithFaceId() {
-            // Check if any user has Face ID enabled
-            const faceIdUsers = Object.entries(registeredUsers).filter(([_, user]) => user.faceIdEnabled);
-            
-            if (faceIdUsers.length === 0) {
-                showToast('Aucun utilisateur n\'a activé Face ID. Créez un compte d\'abord !');
-                return;
-            }
-            
+            // Face ID is now simulated - in a real app, this would be a more secure implementation
             // Start Face ID animation
             const faceIdDiv = document.querySelector('#faceIdOption .floating-btn > div');
             faceIdDiv.style.animation = 'faceIdScanning 3s linear';
@@ -3440,23 +3529,35 @@ Heure: 14:00`;
                 faceIdDiv.style.animation = 'faceIdPulse 0.5s ease-in-out';
                 faceIdDiv.style.background = 'radial-gradient(circle, transparent 30%, rgba(0, 255, 0, 0.6) 70%)';
                 
-                // Auto-login first Face ID user (simulation)
-                const [username, userData] = faceIdUsers[0];
-                currentUser = { 
-                    username, 
-                    faceIdEnabled: userData.faceIdEnabled 
-                };
+                // In a real implementation, this would verify with the server
+                // For now, we'll just check if there's a stored user with Face ID enabled
+                const storedUser = localStorage.getItem('oneboxCurrentUser');
+                if (storedUser) {
+                    currentUser = JSON.parse(storedUser);
+                    if (currentUser.faceIdEnabled) {
+                        localStorage.setItem('oneboxCurrentUser', JSON.stringify(currentUser));
+                        
+                        showToast(`✅ Face ID réussi ! Bienvenue ${currentUser.username} ! 🚀`);
+                        
+                        // Load user documents
+                        loadUserDocuments();
+                        
+                        // Reset Face ID animation immediately and start 3D loading
+                        faceIdDiv.style.animation = 'faceIdPulse 2s infinite';
+                        faceIdDiv.style.background = 'radial-gradient(circle, transparent 30%, rgba(6, 214, 160, 0.3) 70%)';
+                        
+                        // Show loading screen and redirect to home (exactly 3 seconds)
+                        showLoadingAndRedirect('home');
+                        return;
+                    }
+                }
                 
-                localStorage.setItem('oneboxCurrentUser', JSON.stringify(currentUser));
+                // No Face ID user found
+                showToast('Aucun utilisateur Face ID trouvé. Connectez-vous d\'abord !');
                 
-                showToast(`✅ Face ID réussi ! Bienvenue ${username} ! 🚀`);
-                
-                // Reset Face ID animation immediately and start 3D loading
+                // Reset animation
                 faceIdDiv.style.animation = 'faceIdPulse 2s infinite';
                 faceIdDiv.style.background = 'radial-gradient(circle, transparent 30%, rgba(6, 214, 160, 0.3) 70%)';
-                
-                // Show loading screen and redirect to home (exactly 3 seconds)
-                showLoadingAndRedirect('home');
                 
             }, 3000);
         }
@@ -3464,9 +3565,8 @@ Heure: 14:00`;
         function updateFaceIdVisibility() {
             const faceIdOption = document.getElementById('faceIdOption');
             const hasCurrentUser = currentUser !== null;
-            const hasFaceIdUsers = Object.values(registeredUsers).some(user => user.faceIdEnabled);
             
-            if (hasCurrentUser || !hasFaceIdUsers) {
+            if (hasCurrentUser) {
                 faceIdOption.style.display = 'none';
             } else {
                 faceIdOption.style.display = 'block';
