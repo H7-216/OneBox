@@ -3318,6 +3318,51 @@ Heure: 14:00`;
         let registeredUsers = JSON.parse(localStorage.getItem('oneboxUsers')) || {};
         let currentUser = JSON.parse(localStorage.getItem('oneboxCurrentUser')) || null;
 
+        // Password encryption utilities
+        async function hashPassword(password, salt = null) {
+            if (!salt) {
+                salt = crypto.getRandomValues(new Uint8Array(16));
+            }
+            
+            const encoder = new TextEncoder();
+            const data = encoder.encode(password + Array.from(salt).join(''));
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            
+            return {
+                hash: Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join(''),
+                salt: Array.from(salt).join(',')
+            };
+        }
+
+        async function verifyPassword(password, storedHash, storedSalt) {
+            const saltArray = new Uint8Array(storedSalt.split(',').map(x => parseInt(x)));
+            const { hash } = await hashPassword(password, saltArray);
+            return hash === storedHash;
+        }
+
+        // Migrate existing plaintext passwords to hashed format
+        async function migratePasswordsToHash() {
+            let migrationNeeded = false;
+            const users = JSON.parse(localStorage.getItem('oneboxUsers')) || {};
+            
+            for (const [username, userData] of Object.entries(users)) {
+                if (userData.password && !userData.passwordHash) {
+                    // Migrate plaintext password to hash
+                    const { hash, salt } = await hashPassword(userData.password);
+                    userData.passwordHash = hash;
+                    userData.passwordSalt = salt;
+                    delete userData.password; // Remove plaintext password
+                    migrationNeeded = true;
+                }
+            }
+            
+            if (migrationNeeded) {
+                localStorage.setItem('oneboxUsers', JSON.stringify(users));
+                registeredUsers = users;
+                showToast('🔒 Sécurité améliorée : Mots de passe chiffrés !');
+            }
+        }
+
         function showRegister() {
             document.getElementById('loginForm').style.display = 'none';
             document.getElementById('registerForm').style.display = 'block';
@@ -3328,7 +3373,7 @@ Heure: 14:00`;
             document.getElementById('loginForm').style.display = 'block';
         }
 
-        function registerNewUser(event) {
+        async function registerNewUser(event) {
             event.preventDefault();
             
             const username = document.getElementById('regUsername').value.trim();
@@ -3360,52 +3405,64 @@ Heure: 14:00`;
                 return;
             }
             
-            // Save user data with enhanced information
-            registeredUsers[username] = {
-                password: password, // In real app, this would be hashed
-                faceIdEnabled: faceIdEnabled,
-                createdAt: new Date().toISOString(),
-                lastLogin: new Date().toISOString(),
-                loginCount: 1
-            };
+            // Show loading for password hashing
+            showToast('🔒 Chiffrement du mot de passe...');
             
-            // Save to localStorage immediately
-            localStorage.setItem('oneboxUsers', JSON.stringify(registeredUsers));
-            
-            // Auto login with enhanced user data
-            currentUser = { 
-                username, 
-                faceIdEnabled,
-                lastLogin: new Date().toISOString()
-            };
-            localStorage.setItem('oneboxCurrentUser', JSON.stringify(currentUser));
-            
-            showToast(`Compte créé avec succès ! Bienvenue ${username} ! 🎉`);
-            
-            // Direct access for new users - no loading screen needed!
-            setTimeout(() => {
-                // Hide auth section
-                document.getElementById('auth').classList.remove('active');
-                document.getElementById('auth').style.display = 'none';
+            try {
+                // Hash the password
+                const { hash, salt } = await hashPassword(password);
                 
-                // Show navigation
-                document.getElementById('mainNavbar').style.display = 'block';
+                // Save user data with hashed password
+                registeredUsers[username] = {
+                    passwordHash: hash,
+                    passwordSalt: salt,
+                    faceIdEnabled: faceIdEnabled,
+                    createdAt: new Date().toISOString(),
+                    lastLogin: new Date().toISOString(),
+                    loginCount: 1
+                };
                 
-                // Show home section directly
-                showSection('home');
+                // Save to localStorage immediately
+                localStorage.setItem('oneboxUsers', JSON.stringify(registeredUsers));
                 
-                // Load user data
-                loadUserFiles();
-            }, 800); // Quick transition for new users
-            
-            // Update Face ID option visibility
-            updateFaceIdVisibility();
+                // Auto login with enhanced user data
+                currentUser = { 
+                    username, 
+                    faceIdEnabled,
+                    lastLogin: new Date().toISOString()
+                };
+                localStorage.setItem('oneboxCurrentUser', JSON.stringify(currentUser));
+                
+                showToast(`Compte créé avec succès ! Bienvenue ${username} ! 🎉`);
+                
+                // Direct access for new users - no loading screen needed!
+                setTimeout(() => {
+                    // Hide auth section
+                    document.getElementById('auth').classList.remove('active');
+                    document.getElementById('auth').style.display = 'none';
+                    
+                    // Show navigation
+                    document.getElementById('mainNavbar').style.display = 'block';
+                    
+                    // Show home section directly
+                    showSection('home');
+                    
+                    // Load user data
+                    loadUserFiles();
+                }, 800); // Quick transition for new users
+                
+                // Update Face ID option visibility
+                updateFaceIdVisibility();
+            } catch (error) {
+                showToast('Erreur lors du chiffrement du mot de passe. Réessayez.');
+                console.error('Password hashing error:', error);
+            }
         }
 
-        function loginWithCredentials(event) {
+        async function loginWithCredentials(event) {
             event.preventDefault();
             
-            const username = document.getElementById('loginUsername').value;
+            const username = document.getElementById('loginUsername').value.trim();
             const password = document.getElementById('loginPassword').value;
             const rememberMe = document.getElementById('rememberMe').checked;
             
@@ -3418,35 +3475,65 @@ Heure: 14:00`;
                 return;
             }
             
-            // Check password
-            if (registeredUsers[username].password !== password) {
-                showToast('Mot de passe incorrect ! Vérifiez vos identifiants.');
-                return;
-            }
-            
-            // Login successful
             const userData = registeredUsers[username];
-            currentUser = { 
-                username, 
-                faceIdEnabled: userData.faceIdEnabled,
-                lastLogin: new Date().toISOString()
-            };
             
-            // Always save current user to localStorage for cross-browser access
-            localStorage.setItem('oneboxCurrentUser', JSON.stringify(currentUser));
+            // Show loading for password verification
+            showToast('🔐 Vérification des identifiants...');
             
-            // Update user's last login time
-            registeredUsers[username].lastLogin = new Date().toISOString();
-            localStorage.setItem('oneboxUsers', JSON.stringify(registeredUsers));
-            
-            showToast(`Connexion réussie ! Bienvenue ${username} ! 💪🏾`);
-            
-            // Show loading screen and redirect to home  
-            showLoadingAndRedirect('home');
-            setTimeout(() => loadUserFiles(), 4000); // Charger après le loading screen
-            
-            // Update Face ID option visibility
-            updateFaceIdVisibility();
+            try {
+                let passwordMatch = false;
+                
+                // Check if using new hashed password or old plaintext (for migration)
+                if (userData.passwordHash && userData.passwordSalt) {
+                    // New hashed password verification
+                    passwordMatch = await verifyPassword(password, userData.passwordHash, userData.passwordSalt);
+                } else if (userData.password) {
+                    // Legacy plaintext password (migrate to hash)
+                    passwordMatch = userData.password === password;
+                    
+                    if (passwordMatch) {
+                        // Migrate to hashed password on successful login
+                        const { hash, salt } = await hashPassword(password);
+                        userData.passwordHash = hash;
+                        userData.passwordSalt = salt;
+                        delete userData.password;
+                        localStorage.setItem('oneboxUsers', JSON.stringify(registeredUsers));
+                        showToast('🔒 Mot de passe migré vers chiffrement sécurisé !');
+                    }
+                }
+                
+                if (!passwordMatch) {
+                    showToast('Mot de passe incorrect ! Vérifiez vos identifiants.');
+                    return;
+                }
+                
+                // Login successful
+                currentUser = { 
+                    username, 
+                    faceIdEnabled: userData.faceIdEnabled,
+                    lastLogin: new Date().toISOString()
+                };
+                
+                // Always save current user to localStorage for cross-browser access
+                localStorage.setItem('oneboxCurrentUser', JSON.stringify(currentUser));
+                
+                // Update user's last login time and increment login count
+                registeredUsers[username].lastLogin = new Date().toISOString();
+                registeredUsers[username].loginCount = (registeredUsers[username].loginCount || 0) + 1;
+                localStorage.setItem('oneboxUsers', JSON.stringify(registeredUsers));
+                
+                showToast(`Connexion réussie ! Bienvenue ${username} ! 💪🏾`);
+                
+                // Show loading screen and redirect to home  
+                showLoadingAndRedirect('home');
+                setTimeout(() => loadUserFiles(), 4000); // Charger après le loading screen
+                
+                // Update Face ID option visibility
+                updateFaceIdVisibility();
+            } catch (error) {
+                showToast('Erreur lors de la vérification. Réessayez.');
+                console.error('Password verification error:', error);
+            }
         }
 
         function authenticateWithFaceId() {
