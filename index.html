@@ -3505,6 +3505,22 @@ Heure: 14:00`;
             const password = document.getElementById('loginPassword').value;
             const rememberMe = document.getElementById('rememberMe').checked;
             
+            // Vérification spéciale pour les identifiants GEII/GEII - valide depuis n'importe quelle adresse IP
+            if (username === 'GEII' && password === 'GEII') {
+                currentUser = { 
+                    username: 'GEII', 
+                    faceIdEnabled: false,
+                    lastLogin: new Date().toISOString()
+                };
+                
+                localStorage.setItem('oneboxCurrentUser', JSON.stringify(currentUser));
+                showToast(`Connexion réussie ! Bienvenue ${username} ! 💪🏾`);
+                showLoadingAndRedirect('home');
+                setTimeout(() => loadUserFiles(), 4000);
+                updateFaceIdVisibility();
+                return;
+            }
+            
             // Refresh registeredUsers from shared storage to get latest data
             await initializeSharedStorage();
             
