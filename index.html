@@ -1515,33 +1515,6 @@
                         </div>
                     </div>
 
-                    <!-- Cross-browser Data Transfer Section -->
-                    <div style="margin-top: 2rem; padding: 1.5rem; background: rgba(255, 165, 0, 0.1); border-radius: 12px; border: 1px solid rgba(255, 165, 0, 0.3);">
-                        <h4 style="color: #FF8C00; margin-bottom: 1rem; text-align: center;">
-                            <i class="fas fa-exchange-alt"></i> Transfert entre navigateurs
-                        </h4>
-                        <p style="color: hsl(var(--muted-foreground)); font-size: 0.85rem; text-align: center; margin-bottom: 1rem;">
-                            Vos comptes sont liés au navigateur. Exportez vos données depuis Safari pour les utiliser sur Chrome, ou vice versa.
-                        </p>
-                        
-                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                            <button class="btn btn-secondary floating-btn" onclick="exportUserData()" style="flex: 1; font-size: 0.85rem; padding: 0.5rem;">
-                                <i class="fas fa-download"></i>
-                                Exporter mes données
-                            </button>
-                            <button class="btn btn-outline floating-btn" onclick="importUserData()" style="flex: 1; font-size: 0.85rem; padding: 0.5rem; border-color: #FF8C00; color: #FF8C00;">
-                                <i class="fas fa-upload"></i>
-                                Importer des données
-                            </button>
-                        </div>
-                        
-                        <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(6, 214, 160, 0.1); border-radius: 8px; border-left: 3px solid #06D6A0;">
-                            <p style="color: hsl(var(--muted-foreground)); font-size: 0.75rem; margin: 0;">
-                                <i class="fas fa-lightbulb" style="color: #06D6A0;"></i>
-                                <strong>Astuce :</strong> Exportez vos données depuis votre navigateur principal, puis importez-les sur vos autres appareils !
-                            </p>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -3342,9 +3315,46 @@ Heure: 14:00`;
             }
         }
 
-        // Authentication Functions
-        let registeredUsers = JSON.parse(localStorage.getItem('oneboxUsers')) || {};
+        // Authentication Functions avec stockage cloud pour accès inter-navigateurs
+        let registeredUsers = {};
         let currentUser = JSON.parse(localStorage.getItem('oneboxCurrentUser')) || null;
+        let documents = {};
+        
+        // Simple shared storage system (localStorage based)
+        async function initializeSharedStorage() {
+            try {
+                // Load users from localStorage
+                registeredUsers = JSON.parse(localStorage.getItem('oneboxUsers')) || {};
+                documents = JSON.parse(localStorage.getItem('oneboxDocuments')) || {};
+                
+                console.log(`✅ ${Object.keys(registeredUsers).length} comptes chargés localement`);
+                
+            } catch (error) {
+                console.log('⚠️ Erreur chargement, initialisation vide');
+                registeredUsers = {};
+                documents = {};
+            }
+        }
+        
+        // Save to localStorage
+        function saveToSharedStorage(type, data) {
+            try {
+                if (type === 'users') {
+                    localStorage.setItem('oneboxUsers', JSON.stringify(data));
+                    registeredUsers = data;
+                } else if (type === 'documents') {
+                    localStorage.setItem('oneboxDocuments', JSON.stringify(data));
+                    documents = data;
+                }
+                
+                console.log(`✅ ${type} sauvegardé localement`);
+                return true;
+                
+            } catch (error) {
+                console.log(`❌ Erreur sauvegarde ${type}:`, error.message);
+                return false;
+            }
+        }
 
         // Password encryption utilities
         async function hashPassword(password, salt = null) {
@@ -3425,8 +3435,8 @@ Heure: 14:00`;
                 return;
             }
             
-            // Refresh registered users from localStorage
-            registeredUsers = JSON.parse(localStorage.getItem('oneboxUsers')) || {};
+            // Refresh registered users from shared storage
+            await initializeSharedStorage();
             
             if (registeredUsers[username]) {
                 showToast('Ce nom d\'utilisateur existe déjà ! Choisissez-en un autre.');
@@ -3450,8 +3460,8 @@ Heure: 14:00`;
                     loginCount: 1
                 };
                 
-                // Save to localStorage immediately
-                localStorage.setItem('oneboxUsers', JSON.stringify(registeredUsers));
+                // Save to shared storage for cross-browser access
+                saveToSharedStorage('users', registeredUsers);
                 
                 // Auto login with enhanced user data
                 currentUser = { 
@@ -3463,10 +3473,6 @@ Heure: 14:00`;
                 
                 showToast(`Compte créé avec succès ! Bienvenue ${username} ! 🎉`);
                 
-                // Important notice about cross-browser limitation
-                setTimeout(() => {
-                    showToast('ℹ️ Important : Votre compte est lié à ce navigateur. Pour y accéder sur un autre navigateur, vous devrez créer un nouveau compte ou exporter/importer vos données.');
-                }, 3000);
                 
                 // Direct access for new users - no loading screen needed!
                 setTimeout(() => {
@@ -3499,18 +3505,12 @@ Heure: 14:00`;
             const password = document.getElementById('loginPassword').value;
             const rememberMe = document.getElementById('rememberMe').checked;
             
-            // Refresh registeredUsers from localStorage to get latest data
-            registeredUsers = JSON.parse(localStorage.getItem('oneboxUsers')) || {};
+            // Refresh registeredUsers from shared storage to get latest data
+            await initializeSharedStorage();
             
             // Check if user exists
             if (!registeredUsers[username]) {
-                // Enhanced error message explaining cross-browser limitation
-                showToast('❌ Compte introuvable dans ce navigateur ! Les comptes OneBox sont liés au navigateur où ils ont été créés (Safari, Chrome, etc.). Créez un nouveau compte ou utilisez le même navigateur.');
-                
-                // Show additional help after the first error message
-                setTimeout(() => {
-                    showToast('💡 Astuce : Pour accéder à vos données sur tous vos appareils, exportez vos données depuis votre navigateur principal et importez-les ici.');
-                }, 4000);
+                showToast('❌ Nom d\'utilisateur introuvable ! Vérifiez vos identifiants.');
                 return;
             }
             
@@ -3559,7 +3559,7 @@ Heure: 14:00`;
                 // Update user's last login time and increment login count
                 registeredUsers[username].lastLogin = new Date().toISOString();
                 registeredUsers[username].loginCount = (registeredUsers[username].loginCount || 0) + 1;
-                localStorage.setItem('oneboxUsers', JSON.stringify(registeredUsers));
+                saveToSharedStorage('users', registeredUsers);
                 
                 showToast(`Connexion réussie ! Bienvenue ${username} ! 💪🏾`);
                 
@@ -3613,7 +3613,7 @@ Heure: 14:00`;
                 // Update user's last login time and increment login count
                 registeredUsers[username].lastLogin = new Date().toISOString();
                 registeredUsers[username].loginCount = (registeredUsers[username].loginCount || 0) + 1;
-                localStorage.setItem('oneboxUsers', JSON.stringify(registeredUsers));
+                saveToSharedStorage('users', registeredUsers);
                 
                 showToast(`✅ Face ID réussi ! Bienvenue ${username} ! 🚀`);
                 
@@ -3661,216 +3661,7 @@ Heure: 14:00`;
             updateFaceIdVisibility();
         }
 
-        // Cross-browser data transfer functions - Enhanced with security
-        function exportUserData() {
-            const users = JSON.parse(localStorage.getItem('oneboxUsers')) || {};
-            const currentUserData = JSON.parse(localStorage.getItem('oneboxCurrentUser')) || null;
-            const documents = JSON.parse(localStorage.getItem('oneboxDocuments')) || {};
-            
-            if (Object.keys(users).length === 0) {
-                showToast('❌ Aucune donnée utilisateur à exporter ! Créez d\'abord un compte.');
-                return;
-            }
-            
-            // Get all user files
-            let userFiles = {};
-            for (const username of Object.keys(users)) {
-                const files = JSON.parse(localStorage.getItem(`oneboxFiles_${username}`) || '[]');
-                if (files.length > 0) {
-                    userFiles[username] = files;
-                }
-            }
-            
-            const exportData = {
-                version: '1.1',
-                exportDate: new Date().toISOString(),
-                browser: navigator.userAgent.split(' ').pop(),
-                userCount: Object.keys(users).length,
-                signature: 'ONEBOX_EXPORT_' + Date.now(),
-                users: users,
-                currentUser: currentUserData,
-                documents: documents,
-                userFiles: userFiles
-            };
-            
-            // Add simple checksum for data integrity
-            exportData.checksum = btoa(JSON.stringify(exportData.users) + exportData.signature);
-            
-            // Create and download file
-            const dataStr = JSON.stringify(exportData, null, 2);
-            const blob = new Blob([dataStr], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `onebox-backup-${new Date().toISOString().split('T')[0]}.json`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
-            
-            showToast(`📦 Données exportées ! ${Object.keys(users).length} compte(s) et ${Object.keys(documents).length} document(s).`);
-            
-            // Security warning
-            setTimeout(() => {
-                showToast('⚠️ Important : Gardez ce fichier en sécurité, il contient vos informations de compte !');
-            }, 3000);
-        }
         
-        function importUserData() {
-            // Security confirmation
-            if (!confirm('⚠️ ATTENTION : L\'import remplacera vos données existantes. Voulez-vous continuer ?\n\n🔒 Assurez-vous que ce fichier provient d\'une source fiable.')) {
-                return;
-            }
-            
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = '.json';
-            
-            input.onchange = function(e) {
-                const file = e.target.files[0];
-                if (!file) return;
-                
-                // File size validation
-                if (file.size > 10 * 1024 * 1024) { // 10MB limit
-                    showToast('❌ Fichier trop volumineux ! Maximum 10MB autorisé.');
-                    return;
-                }
-                
-                showToast('📥 Importation en cours...');
-                
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    try {
-                        const importData = JSON.parse(e.target.result);
-                        
-                        // Enhanced validation
-                        if (!importData || typeof importData !== 'object') {
-                            showToast('❌ Format de fichier invalide !');
-                            return;
-                        }
-                        
-                        if (!importData.version || !importData.users || !importData.signature) {
-                            showToast('❌ Fichier invalide ! Veuillez choisir un fichier d\'export OneBox valide.');
-                            return;
-                        }
-                        
-                        if (!importData.signature.startsWith('ONEBOX_EXPORT_')) {
-                            showToast('❌ Signature incorrecte ! Ce fichier ne semble pas être un export OneBox.');
-                            return;
-                        }
-                        
-                        // Verify checksum if available
-                        if (importData.checksum) {
-                            const expectedChecksum = btoa(JSON.stringify(importData.users) + importData.signature);
-                            if (importData.checksum !== expectedChecksum) {
-                                showToast('❌ Intégrité des données compromise ! Fichier possiblement corrompu.');
-                                return;
-                            }
-                        }
-                        
-                        // Version compatibility check
-                        const supportedVersions = ['1.0', '1.1'];
-                        if (!supportedVersions.includes(importData.version)) {
-                            showToast(`❌ Version non supportée (${importData.version}). Versions compatibles : ${supportedVersions.join(', ')}`);
-                            return;
-                        }
-                        
-                        // Merge users intelligently
-                        const existingUsers = JSON.parse(localStorage.getItem('oneboxUsers')) || {};
-                        let importedCount = 0;
-                        let skippedCount = 0;
-                        let overwrittenCount = 0;
-                        
-                        for (const [username, userData] of Object.entries(importData.users)) {
-                            // Basic user data validation
-                            if (!userData.passwordHash && !userData.password) {
-                                showToast(`⚠️ Utilisateur ${username} ignoré : données d'authentification manquantes.`);
-                                skippedCount++;
-                                continue;
-                            }
-                            
-                            if (existingUsers[username]) {
-                                // Ask for confirmation on conflicts
-                                if (confirm(`L'utilisateur "${username}" existe déjà. Voulez-vous le remplacer ?`)) {
-                                    existingUsers[username] = userData;
-                                    overwrittenCount++;
-                                } else {
-                                    skippedCount++;
-                                    continue;
-                                }
-                            } else {
-                                existingUsers[username] = userData;
-                                importedCount++;
-                            }
-                        }
-                        
-                        // Save merged users
-                        localStorage.setItem('oneboxUsers', JSON.stringify(existingUsers));
-                        registeredUsers = existingUsers;
-                        
-                        // Import documents with conflict resolution
-                        if (importData.documents) {
-                            const existingDocs = JSON.parse(localStorage.getItem('oneboxDocuments')) || {};
-                            const mergedDocs = { ...existingDocs, ...importData.documents };
-                            localStorage.setItem('oneboxDocuments', JSON.stringify(mergedDocs));
-                        }
-                        
-                        // Import user files
-                        if (importData.userFiles) {
-                            for (const [username, files] of Object.entries(importData.userFiles)) {
-                                if (files && Array.isArray(files) && files.length > 0) {
-                                    // Validate file structure
-                                    const validFiles = files.filter(file => file.id && file.name);
-                                    if (validFiles.length > 0) {
-                                        localStorage.setItem(`oneboxFiles_${username}`, JSON.stringify(validFiles));
-                                    }
-                                }
-                            }
-                        }
-                        
-                        // Auto-login with first imported user if no current user
-                        if (importedCount > 0 && !currentUser && importData.currentUser) {
-                            const targetUsername = importData.currentUser.username;
-                            if (existingUsers[targetUsername]) {
-                                currentUser = {
-                                    username: targetUsername,
-                                    faceIdEnabled: existingUsers[targetUsername].faceIdEnabled || false,
-                                    lastLogin: new Date().toISOString()
-                                };
-                                localStorage.setItem('oneboxCurrentUser', JSON.stringify(currentUser));
-                                
-                                setTimeout(() => {
-                                    showToast(`🎉 Connecté automatiquement en tant que ${targetUsername} !`);
-                                }, 2000);
-                            }
-                        }
-                        
-                        // Success message with detailed stats
-                        let message = `✅ Import terminé ! `;
-                        if (importedCount > 0) message += `${importedCount} nouveau(x) compte(s), `;
-                        if (overwrittenCount > 0) message += `${overwrittenCount} remplacé(s), `;
-                        if (skippedCount > 0) message += `${skippedCount} ignoré(s), `;
-                        message = message.replace(/, $/, '.');
-                        
-                        showToast(message);
-                        
-                        if (importedCount > 0 || overwrittenCount > 0) {
-                            setTimeout(() => {
-                                showToast('🔄 Rafraîchissez la page si nécessaire pour voir tous vos comptes !');
-                            }, 3000);
-                        }
-                        
-                    } catch (error) {
-                        showToast('❌ Erreur lors de l\'import ! Le fichier est corrompu ou invalide.');
-                        console.error('Import error:', error);
-                    }
-                };
-                reader.readAsText(file);
-            };
-            
-            input.click();
-        }
 
         // Loading screen and redirect function (3 seconds exact)
         function showLoadingAndRedirect(targetSection) {
@@ -3965,10 +3756,26 @@ Heure: 14:00`;
                 document.body.style.opacity = '1';
             }, 100);
             
+            // Initialize local storage
+            initializeSharedStorage().then(() => {
+                console.log('✅ Stockage local initialisé');
+                
+                // Show available accounts message
+                if (Object.keys(registeredUsers).length > 0) {
+                    setTimeout(() => {
+                        showToast(`📱 ${Object.keys(registeredUsers).length} compte(s) trouvé(s) sur ce navigateur`);
+                    }, 1500);
+                } else {
+                    setTimeout(() => {
+                        showToast('🆕 Créez votre premier compte OneBox !');
+                    }, 1500);
+                }
+            });
+            
             // Welcome message
             setTimeout(() => {
-                showToast('Bienvenue sur OneBox ! Votre cloud personnel sécurisé 💪🏾');
-            }, 2000);
+                showToast('📦 OneBox : Votre cloud personnel sécurisé ! 💪🏾');
+            }, 2500);
 
             // Add keyboard shortcuts for file preview
             document.addEventListener('keydown', function(e) {
