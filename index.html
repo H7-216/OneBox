@@ -3969,28 +3969,168 @@ Heure: 14:00`;
             console.log('💾 Stockage GEII initialisé avec succès');
         }
         
-        // ===== SYSTÈME DE PERSISTANCE ULTRA-SÉCURISÉ POUR GEII =====
+        // ===== SYSTÈME DE PERSISTANCE CLOUD ULTRA-SÉCURISÉ POUR GEII =====
         
         // Initialise un système de persistance renforcé qui garantit que les données GEII ne se perdent JAMAIS
         function initializeGEIIPersistentStorage() {
-            console.log('🔒 Initialisation du système de persistance ultra-sécurisé GEII...');
+            console.log('🔒 Initialisation du système de persistance cloud ultra-sécurisé GEII...');
             
-            // 1. Vérification et création de IndexedDB pour persistance avancée
+            // 1. Charger les données depuis le cloud au démarrage
+            loadGEIIDataFromCloud();
+            
+            // 2. Vérification et création de IndexedDB pour cache local
             initializeIndexedDBForGEII();
             
-            // 2. Système de synchronisation multiple
+            // 3. Système de synchronisation multiple (cloud + local)
             setupMultiplePersistenceLayer();
             
-            // 3. Vérification d'intégrité des données
+            // 4. Vérification d'intégrité des données
             verifyGEIIDataIntegrity();
             
-            // 4. Sauvegarde automatique renforcée (toutes les 15 secondes)
-            setupUltraSecureAutoSave();
+            // 5. Sauvegarde automatique cloud renforcée (toutes les 10 secondes)
+            setupUltraSecureCloudSync();
             
-            // 5. Création d'un hash unique pour cet appareil
+            // 6. Création d'un hash unique pour cet appareil
             setupDeviceFingerprint();
             
-            console.log('✅ Système de persistance ultra-sécurisé GEII activé ! Données 100% protégées !');
+            console.log('✅ Système de persistance cloud ultra-sécurisé GEII activé ! Synchronisation multi-appareils ON ! 🌐');
+        }
+        
+        // ===== FONCTIONS DE SYNCHRONISATION CLOUD =====
+        
+        // Charge les données GEII depuis le cloud
+        async function loadGEIIDataFromCloud() {
+            try {
+                console.log('⬇️ Chargement des données GEII depuis le cloud...');
+                
+                const response = await fetch('/api/geii/data');
+                const result = await response.json();
+                
+                if (result.success && result.data) {
+                    // Synchroniser avec localStorage
+                    if (result.data.documents) {
+                        localStorage.setItem('oneboxDocuments_GEII', JSON.stringify(result.data.documents));
+                        localStorage.setItem('oneboxDocuments', JSON.stringify(result.data.documents));
+                    }
+                    if (result.data.files) {
+                        localStorage.setItem('oneboxFiles_GEII', JSON.stringify(result.data.files));
+                    }
+                    if (result.data.settings) {
+                        localStorage.setItem('oneboxSettings_GEII', JSON.stringify(result.data.settings));
+                    }
+                    if (result.data.backups) {
+                        localStorage.setItem('oneboxBackups_GEII', JSON.stringify(result.data.backups));
+                    }
+                    
+                    console.log('✅ Données GEII synchronisées depuis le cloud !');
+                    
+                    // Actualiser l'affichage
+                    refreshDocuments();
+                    loadUserFiles();
+                } else {
+                    console.log('🆕 Aucune donnée cloud trouvée, initialisation locale...');
+                }
+            } catch (error) {
+                console.error('❌ Erreur lors du chargement cloud:', error);
+                console.log('🔄 Utilisation des données locales en fallback...');
+            }
+        }
+        
+        // Sauvegarde une donnée spécifique dans le cloud
+        async function saveToCloud(dataType, data) {
+            try {
+                const response = await fetch('/api/geii/data', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        dataType: dataType,
+                        data: data
+                    })
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    console.log(`☁️ ${dataType} sauvegardé dans le cloud !`);
+                    return true;
+                } else {
+                    console.error(`❌ Erreur sauvegarde cloud ${dataType}:`, result.error);
+                    return false;
+                }
+            } catch (error) {
+                console.error(`❌ Erreur réseau sauvegarde ${dataType}:`, error);
+                return false;
+            }
+        }
+        
+        // Sauvegarde toutes les données GEII dans le cloud
+        async function saveAllGEIIDataToCloud() {
+            try {
+                console.log('☁️ Sauvegarde complète GEII vers le cloud...');
+                
+                // Récupérer toutes les données locales
+                const documents = JSON.parse(localStorage.getItem('oneboxDocuments_GEII') || '{}');
+                const files = JSON.parse(localStorage.getItem('oneboxFiles_GEII') || '[]');
+                const settings = JSON.parse(localStorage.getItem('oneboxSettings_GEII') || '{}');
+                const backups = JSON.parse(localStorage.getItem('oneboxBackups_GEII') || '[]');
+                
+                // Sauvegarder chaque type de données
+                const promises = [
+                    saveToCloud('documents', documents),
+                    saveToCloud('files', files),
+                    saveToCloud('settings', settings),
+                    saveToCloud('backups', backups)
+                ];
+                
+                const results = await Promise.all(promises);
+                const successCount = results.filter(r => r).length;
+                
+                console.log(`✅ Sauvegarde cloud terminée: ${successCount}/4 types sauvegardés`);
+                
+                if (successCount === 4) {
+                    localStorage.setItem('GEII_last_cloud_sync', new Date().toISOString());
+                    showToast('☁️ Données synchronisées dans le cloud ! Accessible sur tous vos appareils ! 💪🏾');
+                }
+                
+                return successCount === 4;
+            } catch (error) {
+                console.error('❌ Erreur sauvegarde cloud complète:', error);
+                return false;
+            }
+        }
+        
+        // Configuration de la synchronisation cloud automatique ultra-sécurisée
+        function setupUltraSecureCloudSync() {
+            // Synchronisation cloud toutes les 10 secondes
+            setInterval(() => {
+                if (currentUser && currentUser.username === 'GEII') {
+                    saveAllGEIIDataToCloud();
+                }
+            }, 10000);
+            
+            // Sauvegarde cloud immédiate avant fermeture
+            window.addEventListener('beforeunload', () => {
+                if (currentUser && currentUser.username === 'GEII') {
+                    saveAllGEIIDataToCloud();
+                }
+            });
+            
+            // Sauvegarde cloud lors de la perte de focus
+            window.addEventListener('blur', () => {
+                if (currentUser && currentUser.username === 'GEII') {
+                    saveAllGEIIDataToCloud();
+                }
+            });
+            
+            // Synchronisation depuis le cloud au retour de focus
+            window.addEventListener('focus', () => {
+                if (currentUser && currentUser.username === 'GEII') {
+                    setTimeout(() => loadGEIIDataFromCloud(), 1000);
+                }
+            });
+            
+            console.log('⚡ Synchronisation cloud automatique ultra-sécurisée configurée !');
         }
         
         // Initialise IndexedDB pour un stockage plus robuste que localStorage
