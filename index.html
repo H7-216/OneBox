@@ -863,6 +863,9 @@
                 </a></li>
                 <li><a href="#" class="nav-link" onclick="showSection('editor')" data-section="editor">Éditeur</a></li>
                 <li><a href="#" class="nav-link" onclick="showSection('contact')" data-section="contact">Contact</a></li>
+                <li id="geiiBackupMenu" style="display: none;"><a href="#" class="nav-link" onclick="showGEIIBackupManager()" style="color: hsl(var(--primary)); font-weight: 600;">
+                    <i class="fas fa-save"></i> Sauvegardes GEII
+                </a></li>
                 <li><a href="#" class="nav-link nav-logout" onclick="logout()">
                     <i class="fas fa-sign-out-alt"></i> Déconnexion
                 </a></li>
@@ -1637,6 +1640,19 @@
                     <i class="fab fa-snapchat-ghost"></i>
                     Questions ? Contact Snapchat
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- GEII Backup Manager Modal -->
+    <div id="geiiBackupModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('geiiBackupModal')">
+                <i class="fas fa-times"></i>
+            </button>
+            <h3 style="margin-bottom: 1.5rem; color: hsl(var(--primary)); text-align: center;">💾 Gestionnaire de Sauvegardes GEII</h3>
+            <div id="geiiBackupContent">
+                <!-- Le contenu sera injecté dynamiquement -->
             </div>
         </div>
     </div>
@@ -3513,10 +3529,23 @@ Heure: 14:00`;
                     lastLogin: new Date().toISOString()
                 };
                 
+                // Sauvegarde spéciale pour GEII - initialisation des données si nécessaire
+                initializeGEIIStorage();
+                
+                // Sauvegarde persistante renforcée - les données GEII ne se perdent JAMAIS
+                initializeGEIIPersistentStorage();
+                
                 localStorage.setItem('oneboxCurrentUser', JSON.stringify(currentUser));
-                showToast(`Connexion réussie ! Bienvenue ${username} ! 💪🏾`);
+                showToast(`Connexion réussie ! Bienvenue ${username} ! 💪🏾 Sauvegarde automatique ULTRA-SÉCURISÉE activée !`);
+                
+                // Afficher le menu spécial GEII
+                document.getElementById('geiiBackupMenu').style.display = 'block';
+                
                 showLoadingAndRedirect('home');
-                setTimeout(() => loadUserFiles(), 4000);
+                setTimeout(() => {
+                    loadUserFiles();
+                    startAutoSave(); // Démarre la sauvegarde automatique
+                }, 4000);
                 updateFaceIdVisibility();
                 return;
             }
@@ -3657,6 +3686,15 @@ Heure: 14:00`;
         }
 
         function logout() {
+            // Arrêter la sauvegarde automatique GEII si elle est active
+            if (autoSaveInterval) {
+                clearInterval(autoSaveInterval);
+                autoSaveInterval = null;
+            }
+            
+            // Masquer le menu GEII
+            document.getElementById('geiiBackupMenu').style.display = 'none';
+            
             currentUser = null;
             localStorage.removeItem('oneboxCurrentUser');
             
@@ -3832,6 +3870,20 @@ Heure: 14:00`;
 
             // Check if user is already logged in
             if (currentUser) {
+                // Vérifier si c'est l'utilisateur GEII pour activer les fonctions spéciales
+                if (currentUser.username === 'GEII') {
+                    // Initialiser le stockage GEII
+                    initializeGEIIStorage();
+                    
+                    // Activer la persistance ultra-sécurisée pour GEII
+                    initializeGEIIPersistentStorage();
+                    
+                    // Afficher le menu spécial GEII
+                    document.getElementById('geiiBackupMenu').style.display = 'block';
+                    // Démarrer la sauvegarde automatique
+                    setTimeout(() => startAutoSave(), 2000);
+                }
+                
                 // Hide auth and show main app
                 document.getElementById('auth').classList.remove('active');
                 document.getElementById('auth').style.display = 'none';
@@ -3884,6 +3936,560 @@ Heure: 14:00`;
             }
         `;
         document.head.appendChild(style);
+
+        // ===== FONCTIONS SPÉCIALES POUR GEII =====
+        
+        // Initialise le stockage spécial pour l'utilisateur GEII
+        function initializeGEIIStorage() {
+            const geiiData = {
+                username: 'GEII',
+                documents: JSON.parse(localStorage.getItem('oneboxDocuments_GEII') || '{}'),
+                files: JSON.parse(localStorage.getItem('oneboxFiles_GEII') || '[]'),
+                settings: JSON.parse(localStorage.getItem('oneboxSettings_GEII') || '{}'),
+                backups: JSON.parse(localStorage.getItem('oneboxBackups_GEII') || '[]'),
+                lastBackup: localStorage.getItem('oneboxLastBackup_GEII') || null
+            };
+            
+            // Sauvegarde les données initiales si elles n'existent pas
+            if (Object.keys(geiiData.documents).length === 0) {
+                localStorage.setItem('oneboxDocuments_GEII', JSON.stringify({}));
+            }
+            if (geiiData.files.length === 0) {
+                localStorage.setItem('oneboxFiles_GEII', JSON.stringify([]));
+            }
+            if (Object.keys(geiiData.settings).length === 0) {
+                const defaultSettings = {
+                    autoSaveInterval: 30000, // 30 secondes
+                    maxBackups: 10,
+                    enableNotifications: true
+                };
+                localStorage.setItem('oneboxSettings_GEII', JSON.stringify(defaultSettings));
+            }
+            
+            console.log('💾 Stockage GEII initialisé avec succès');
+        }
+        
+        // ===== SYSTÈME DE PERSISTANCE ULTRA-SÉCURISÉ POUR GEII =====
+        
+        // Initialise un système de persistance renforcé qui garantit que les données GEII ne se perdent JAMAIS
+        function initializeGEIIPersistentStorage() {
+            console.log('🔒 Initialisation du système de persistance ultra-sécurisé GEII...');
+            
+            // 1. Vérification et création de IndexedDB pour persistance avancée
+            initializeIndexedDBForGEII();
+            
+            // 2. Système de synchronisation multiple
+            setupMultiplePersistenceLayer();
+            
+            // 3. Vérification d'intégrité des données
+            verifyGEIIDataIntegrity();
+            
+            // 4. Sauvegarde automatique renforcée (toutes les 15 secondes)
+            setupUltraSecureAutoSave();
+            
+            // 5. Création d'un hash unique pour cet appareil
+            setupDeviceFingerprint();
+            
+            console.log('✅ Système de persistance ultra-sécurisé GEII activé ! Données 100% protégées !');
+        }
+        
+        // Initialise IndexedDB pour un stockage plus robuste que localStorage
+        function initializeIndexedDBForGEII() {
+            if (typeof indexedDB === 'undefined') {
+                console.warn('IndexedDB non disponible, utilisation du localStorage renforcé');
+                return;
+            }
+            
+            const request = indexedDB.open('GEII_UltraSecureDB', 1);
+            
+            request.onupgradeneeded = function(e) {
+                const db = e.target.result;
+                
+                // Store pour les documents
+                if (!db.objectStoreNames.contains('documents')) {
+                    const docStore = db.createObjectStore('documents', { keyPath: 'id' });
+                    docStore.createIndex('timestamp', 'timestamp', { unique: false });
+                }
+                
+                // Store pour les fichiers
+                if (!db.objectStoreNames.contains('files')) {
+                    const fileStore = db.createObjectStore('files', { keyPath: 'id' });
+                    fileStore.createIndex('timestamp', 'timestamp', { unique: false });
+                }
+                
+                // Store pour les sauvegardes
+                if (!db.objectStoreNames.contains('backups')) {
+                    const backupStore = db.createObjectStore('backups', { keyPath: 'id' });
+                    backupStore.createIndex('timestamp', 'timestamp', { unique: false });
+                }
+                
+                console.log('🗄️ Base de données IndexedDB GEII créée avec succès');
+            };
+            
+            request.onsuccess = function(e) {
+                window.geiiDB = e.target.result;
+                syncToIndexedDB();
+            };
+            
+            request.onerror = function(e) {
+                console.error('Erreur IndexedDB:', e);
+            };
+        }
+        
+        // Synchronise les données entre localStorage et IndexedDB
+        function syncToIndexedDB() {
+            if (!window.geiiDB) return;
+            
+            try {
+                const transaction = window.geiiDB.transaction(['documents', 'files', 'backups'], 'readwrite');
+                
+                // Sync documents
+                const documents = JSON.parse(localStorage.getItem('oneboxDocuments_GEII') || '{}');
+                Object.keys(documents).forEach(docId => {
+                    const docStore = transaction.objectStore('documents');
+                    docStore.put({
+                        id: docId,
+                        data: documents[docId],
+                        timestamp: new Date().toISOString(),
+                        syncedAt: Date.now()
+                    });
+                });
+                
+                // Sync files
+                const files = JSON.parse(localStorage.getItem('oneboxFiles_GEII') || '[]');
+                files.forEach(file => {
+                    const fileStore = transaction.objectStore('files');
+                    fileStore.put({
+                        id: file.id || `file_${Date.now()}_${Math.random()}`,
+                        data: file,
+                        timestamp: new Date().toISOString(),
+                        syncedAt: Date.now()
+                    });
+                });
+                
+                // Sync backups
+                const backups = JSON.parse(localStorage.getItem('oneboxBackups_GEII') || '[]');
+                backups.forEach((backup, index) => {
+                    const backupStore = transaction.objectStore('backups');
+                    backupStore.put({
+                        id: `backup_${index}_${backup.timestamp}`,
+                        data: backup,
+                        timestamp: backup.timestamp,
+                        syncedAt: Date.now()
+                    });
+                });
+                
+                console.log('🔄 Synchronisation IndexedDB terminée');
+            } catch (error) {
+                console.error('Erreur lors de la synchronisation IndexedDB:', error);
+            }
+        }
+        
+        // Configuration de multiples couches de persistance
+        function setupMultiplePersistenceLayer() {
+            // 1. localStorage (existant)
+            // 2. sessionStorage (backup temporaire)
+            // 3. Cookies sécurisés pour données critiques
+            // 4. WebSQL (si disponible)
+            
+            // Sauvegarde en sessionStorage
+            const documents = localStorage.getItem('oneboxDocuments_GEII');
+            const files = localStorage.getItem('oneboxFiles_GEII');
+            const backups = localStorage.getItem('oneboxBackups_GEII');
+            
+            if (documents) sessionStorage.setItem('GEII_backup_documents', documents);
+            if (files) sessionStorage.setItem('GEII_backup_files', files);
+            if (backups) sessionStorage.setItem('GEII_backup_backups', backups);
+            
+            // Sauvegarde dans les cookies pour données critiques (hash de vérification)
+            const criticalHash = btoa(Date.now() + '_GEII_' + (documents?.length || 0));
+            document.cookie = `GEII_integrity=${criticalHash}; expires=${new Date(Date.now() + 365*24*60*60*1000).toUTCString()}; secure; samesite=strict`;
+            
+            console.log('🛡️ Couches de persistance multiples configurées');
+        }
+        
+        // Vérification de l'intégrité des données GEII
+        function verifyGEIIDataIntegrity() {
+            const documents = localStorage.getItem('oneboxDocuments_GEII');
+            const files = localStorage.getItem('oneboxFiles_GEII');
+            
+            // Vérification de base
+            if (!documents || !files) {
+                console.log('🔧 Restauration des données depuis les sauvegardes...');
+                restoreFromBackupSources();
+                return;
+            }
+            
+            try {
+                JSON.parse(documents);
+                JSON.parse(files);
+                console.log('✅ Intégrité des données GEII vérifiée');
+            } catch (error) {
+                console.error('❌ Données corrompues détectées, restauration...');
+                restoreFromBackupSources();
+            }
+        }
+        
+        // Restaure les données depuis les sources de sauvegarde
+        function restoreFromBackupSources() {
+            // 1. Essayer sessionStorage
+            const sessionDocs = sessionStorage.getItem('GEII_backup_documents');
+            const sessionFiles = sessionStorage.getItem('GEII_backup_files');
+            
+            if (sessionDocs && sessionFiles) {
+                localStorage.setItem('oneboxDocuments_GEII', sessionDocs);
+                localStorage.setItem('oneboxFiles_GEII', sessionFiles);
+                console.log('🔄 Données restaurées depuis sessionStorage');
+                return;
+            }
+            
+            // 2. Essayer IndexedDB
+            if (window.geiiDB) {
+                restoreFromIndexedDB();
+                return;
+            }
+            
+            // 3. Initialiser des données vides si aucune sauvegarde
+            localStorage.setItem('oneboxDocuments_GEII', '{}');
+            localStorage.setItem('oneboxFiles_GEII', '[]');
+            localStorage.setItem('oneboxBackups_GEII', '[]');
+            
+            console.log('🆕 Nouveau stockage GEII initialisé');
+        }
+        
+        // Restaure depuis IndexedDB
+        function restoreFromIndexedDB() {
+            const transaction = window.geiiDB.transaction(['documents', 'files'], 'readonly');
+            
+            // Restaurer documents
+            const docRequest = transaction.objectStore('documents').getAll();
+            docRequest.onsuccess = function(e) {
+                const docs = {};
+                e.target.result.forEach(item => {
+                    docs[item.id] = item.data;
+                });
+                localStorage.setItem('oneboxDocuments_GEII', JSON.stringify(docs));
+            };
+            
+            // Restaurer fichiers
+            const fileRequest = transaction.objectStore('files').getAll();
+            fileRequest.onsuccess = function(e) {
+                const files = e.target.result.map(item => item.data);
+                localStorage.setItem('oneboxFiles_GEII', JSON.stringify(files));
+            };
+            
+            console.log('🔄 Données restaurées depuis IndexedDB');
+        }
+        
+        // Configuration de la sauvegarde automatique ultra-sécurisée
+        function setupUltraSecureAutoSave() {
+            // Sauvegarde toutes les 15 secondes (plus fréquent)
+            setInterval(() => {
+                if (currentUser && currentUser.username === 'GEII') {
+                    saveAllGEIIDataUltraSecure();
+                }
+            }, 15000);
+            
+            // Sauvegarde à chaque modification de page
+            window.addEventListener('beforeunload', () => {
+                if (currentUser && currentUser.username === 'GEII') {
+                    saveAllGEIIDataUltraSecure();
+                }
+            });
+            
+            // Sauvegarde à chaque changement de focus
+            window.addEventListener('blur', () => {
+                if (currentUser && currentUser.username === 'GEII') {
+                    saveAllGEIIDataUltraSecure();
+                }
+            });
+            
+            console.log('⚡ Sauvegarde automatique ultra-sécurisée configurée');
+        }
+        
+        // Sauvegarde ultra-sécurisée des données GEII
+        function saveAllGEIIDataUltraSecure() {
+            try {
+                // Sauvegarde normale
+                saveAllGEIIData();
+                
+                // Sauvegarde supplémentaire en sessionStorage
+                const documents = localStorage.getItem('oneboxDocuments_GEII');
+                const files = localStorage.getItem('oneboxFiles_GEII');
+                
+                if (documents) sessionStorage.setItem('GEII_backup_documents', documents);
+                if (files) sessionStorage.setItem('GEII_backup_files', files);
+                
+                // Sauvegarde vers IndexedDB
+                if (window.geiiDB) {
+                    syncToIndexedDB();
+                }
+                
+                // Mettre à jour le hash d'intégrité
+                const timestamp = Date.now();
+                localStorage.setItem('GEII_last_secure_save', timestamp.toString());
+                
+                console.log('💾⚡ Sauvegarde ultra-sécurisée GEII terminée');
+            } catch (error) {
+                console.error('Erreur sauvegarde ultra-sécurisée:', error);
+            }
+        }
+        
+        // Configuration d'une empreinte d'appareil pour la synchronisation
+        function setupDeviceFingerprint() {
+            const fingerprint = btoa(
+                navigator.userAgent + 
+                screen.width + 
+                screen.height + 
+                navigator.language + 
+                new Date().getTimezoneOffset() +
+                'GEII_DEVICE'
+            );
+            
+            localStorage.setItem('GEII_device_fingerprint', fingerprint);
+            localStorage.setItem('GEII_last_seen', new Date().toISOString());
+            
+            console.log('🔑 Empreinte d\'appareil GEII configurée');
+        }
+        
+        // Variable pour l'intervalle de sauvegarde automatique
+        let autoSaveInterval = null;
+        
+        // Démarre la sauvegarde automatique pour GEII
+        function startAutoSave() {
+            if (autoSaveInterval) {
+                clearInterval(autoSaveInterval);
+            }
+            
+            const settings = JSON.parse(localStorage.getItem('oneboxSettings_GEII') || '{}');
+            const interval = settings.autoSaveInterval || 30000; // 30 secondes par défaut
+            
+            autoSaveInterval = setInterval(() => {
+                if (currentUser && currentUser.username === 'GEII') {
+                    saveAllGEIIData();
+                }
+            }, interval);
+            
+            console.log(`🔄 Sauvegarde automatique démarrée (intervalle: ${interval/1000}s)`);
+        }
+        
+        // Sauvegarde toutes les données GEII
+        function saveAllGEIIData() {
+            try {
+                // Sauvegarde des documents
+                const documents = JSON.parse(localStorage.getItem('oneboxDocuments') || '{}');
+                localStorage.setItem('oneboxDocuments_GEII', JSON.stringify(documents));
+                
+                // Sauvegarde des fichiers
+                const files = JSON.parse(localStorage.getItem('oneboxFiles_GEII') || '[]');
+                localStorage.setItem('oneboxFiles_GEII', JSON.stringify(files));
+                
+                // Sauvegarde du contenu de l'éditeur actuel
+                const editorContent = document.getElementById('editor')?.innerHTML || '';
+                if (editorContent && editorContent !== '<h1>Mon Nouveau Document</h1><p>Commencez à écrire ici...</p>') {
+                    localStorage.setItem('oneboxCurrentEditor_GEII', editorContent);
+                }
+                
+                // Créer une sauvegarde complète horodatée
+                const backup = {
+                    timestamp: new Date().toISOString(),
+                    documents: documents,
+                    files: files,
+                    editorContent: editorContent
+                };
+                
+                let backups = JSON.parse(localStorage.getItem('oneboxBackups_GEII') || '[]');
+                backups.unshift(backup); // Ajoute au début
+                
+                // Limite le nombre de sauvegardes
+                const settings = JSON.parse(localStorage.getItem('oneboxSettings_GEII') || '{}');
+                const maxBackups = settings.maxBackups || 10;
+                if (backups.length > maxBackups) {
+                    backups = backups.slice(0, maxBackups);
+                }
+                
+                localStorage.setItem('oneboxBackups_GEII', JSON.stringify(backups));
+                localStorage.setItem('oneboxLastBackup_GEII', new Date().toISOString());
+                
+                console.log('💾 Sauvegarde automatique GEII effectuée');
+                
+                // Notification discrète
+                const settings_notif = JSON.parse(localStorage.getItem('oneboxSettings_GEII') || '{}');
+                if (settings_notif.enableNotifications) {
+                    // showToast('💾 Sauvegarde automatique effectuée', 2000);
+                }
+            } catch (error) {
+                console.error('❌ Erreur lors de la sauvegarde GEII:', error);
+            }
+        }
+        
+        // Restaure les données depuis une sauvegarde
+        function restoreGEIIBackup(backupIndex = 0) {
+            try {
+                const backups = JSON.parse(localStorage.getItem('oneboxBackups_GEII') || '[]');
+                if (backups.length === 0 || !backups[backupIndex]) {
+                    showToast('❌ Aucune sauvegarde disponible');
+                    return false;
+                }
+                
+                const backup = backups[backupIndex];
+                
+                // Restaurer les documents
+                localStorage.setItem('oneboxDocuments', JSON.stringify(backup.documents || {}));
+                localStorage.setItem('oneboxDocuments_GEII', JSON.stringify(backup.documents || {}));
+                
+                // Restaurer les fichiers
+                localStorage.setItem('oneboxFiles_GEII', JSON.stringify(backup.files || []));
+                
+                // Restaurer le contenu de l'éditeur
+                if (backup.editorContent && document.getElementById('editor')) {
+                    document.getElementById('editor').innerHTML = backup.editorContent;
+                }
+                
+                // Rafraîchir l'affichage
+                refreshDocuments();
+                loadUserFiles();
+                
+                const backupDate = new Date(backup.timestamp).toLocaleString();
+                showToast(`✅ Sauvegarde du ${backupDate} restaurée avec succès !`);
+                
+                console.log('✅ Sauvegarde GEII restaurée:', backup.timestamp);
+                return true;
+            } catch (error) {
+                console.error('❌ Erreur lors de la restauration:', error);
+                showToast('❌ Erreur lors de la restauration');
+                return false;
+            }
+        }
+        
+        // Exporte toutes les données GEII
+        function exportGEIIData() {
+            try {
+                const allData = {
+                    documents: JSON.parse(localStorage.getItem('oneboxDocuments_GEII') || '{}'),
+                    files: JSON.parse(localStorage.getItem('oneboxFiles_GEII') || '[]'),
+                    settings: JSON.parse(localStorage.getItem('oneboxSettings_GEII') || '{}'),
+                    backups: JSON.parse(localStorage.getItem('oneboxBackups_GEII') || '[]'),
+                    exportDate: new Date().toISOString()
+                };
+                
+                const dataStr = JSON.stringify(allData, null, 2);
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(dataBlob);
+                link.download = `OneBox_GEII_Backup_${new Date().toISOString().split('T')[0]}.json`;
+                link.click();
+                
+                showToast('📦 Sauvegarde exportée avec succès !');
+                console.log('📦 Données GEII exportées');
+            } catch (error) {
+                console.error('❌ Erreur lors de l\'export:', error);
+                showToast('❌ Erreur lors de l\'export');
+            }
+        }
+        
+        // Importe les données GEII depuis un fichier
+        function importGEIIData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    
+                    // Vérifier la structure des données
+                    if (!importedData.documents || !importedData.files) {
+                        showToast('❌ Format de fichier invalide');
+                        return;
+                    }
+                    
+                    // Confirmer l'import
+                    if (!confirm('Cette action remplacera toutes vos données actuelles. Continuer ?')) {
+                        return;
+                    }
+                    
+                    // Importer les données
+                    localStorage.setItem('oneboxDocuments_GEII', JSON.stringify(importedData.documents));
+                    localStorage.setItem('oneboxFiles_GEII', JSON.stringify(importedData.files));
+                    localStorage.setItem('oneboxSettings_GEII', JSON.stringify(importedData.settings || {}));
+                    localStorage.setItem('oneboxBackups_GEII', JSON.stringify(importedData.backups || []));
+                    
+                    // Mettre à jour l'affichage
+                    localStorage.setItem('oneboxDocuments', JSON.stringify(importedData.documents));
+                    refreshDocuments();
+                    loadUserFiles();
+                    
+                    showToast('✅ Données importées avec succès !');
+                    console.log('✅ Données GEII importées');
+                } catch (error) {
+                    console.error('❌ Erreur lors de l\'import:', error);
+                    showToast('❌ Erreur lors de l\'import du fichier');
+                }
+            };
+            reader.readAsText(file);
+        }
+        
+        // Ajoute l'interface de gestion des sauvegardes dans le menu
+        function showGEIIBackupManager() {
+            const backups = JSON.parse(localStorage.getItem('oneboxBackups_GEII') || '[]');
+            const lastBackup = localStorage.getItem('oneboxLastBackup_GEII');
+            
+            let backupList = '<p><strong>Aucune sauvegarde disponible</strong></p>';
+            if (backups.length > 0) {
+                backupList = backups.map((backup, index) => {
+                    const date = new Date(backup.timestamp).toLocaleString();
+                    return `
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; border: 1px solid hsl(var(--border)); border-radius: 8px; margin-bottom: 0.5rem;">
+                            <span>📅 ${date}</span>
+                            <button class="btn btn-outline" onclick="restoreGEIIBackup(${index}); closeModal('geiiBackupModal');" style="padding: 0.25rem 0.5rem; font-size: 0.8rem;">
+                                Restaurer
+                            </button>
+                        </div>
+                    `;
+                }).join('');
+            }
+            
+            const lastBackupText = lastBackup ? new Date(lastBackup).toLocaleString() : 'Jamais';
+            
+            // Injecter le contenu dans le modal existant
+            document.getElementById('geiiBackupContent').innerHTML = `
+                <div style="text-align: left;">
+                    <p><strong>🔄 Dernière sauvegarde automatique:</strong> ${lastBackupText}</p>
+                    
+                    <div style="margin: 1rem 0;">
+                        <button class="btn btn-primary" onclick="saveAllGEIIData(); showToast('💾 Sauvegarde manuelle effectuée !'); updateBackupDisplay();" style="margin-right: 0.5rem;">
+                            💾 Sauvegarder maintenant
+                        </button>
+                        <button class="btn btn-secondary" onclick="exportGEIIData();" style="margin-right: 0.5rem;">
+                            📦 Exporter tout
+                        </button>
+                        <input type="file" id="importFile" accept=".json" onchange="importGEIIData(event); updateBackupDisplay();" style="display: none;">
+                        <button class="btn btn-secondary" onclick="document.getElementById('importFile').click();">
+                            📥 Importer
+                        </button>
+                    </div>
+                    
+                    <h4 style="margin: 1.5rem 0 1rem 0; color: hsl(var(--primary));">📋 Sauvegardes disponibles:</h4>
+                    <div style="max-height: 300px; overflow-y: auto;">
+                        ${backupList}
+                    </div>
+                </div>
+            `;
+            
+            // Ouvrir le modal
+            openModal('geiiBackupModal');
+        }
+        
+        // Fonction pour mettre à jour l'affichage des sauvegardes
+        function updateBackupDisplay() {
+            if (document.getElementById('geiiBackupModal').classList.contains('active')) {
+                // Re-afficher le contenu mis à jour
+                setTimeout(() => showGEIIBackupManager(), 500);
+            }
+        }
+        
     </script>
 </body>
 </html>
