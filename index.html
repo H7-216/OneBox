@@ -2710,49 +2710,257 @@ Heure: 14:00`;
         }
 
         // File management functions
-        function uploadFiles(files) {
+        async function uploadFiles(files) {
             if (files && files.length > 0) {
-                const currentUser = JSON.parse(localStorage.getItem('oneboxCurrentUser') || 'null');
-                if (!currentUser) {
+                const sessionId = localStorage.getItem('geiiSessionId');
+                if (!sessionId) {
                     showToast('Vous devez être connecté pour télécharger des fichiers !');
                     return;
                 }
                 
-                showToast(`${files.length} fichier(s) téléchargé(s) avec succès ! 💪🏾`);
-                closeModal('uploadModal');
+                showToast('Téléchargement en cours... 📤');
                 
-                // Sauvegarder les fichiers dans la session utilisateur
-                const existingFiles = JSON.parse(localStorage.getItem(`oneboxFiles_${currentUser.username}`) || '[]');
-                
-                // Ajouter les fichiers à la grille et à la session
-                const fileGrid = document.getElementById('fileGrid');
+                let successCount = 0;
+                let totalFiles = files.length;
                 
                 for (let i = 0; i < files.length; i++) {
                     const file = files[i];
-                    const fileId = Date.now() + '_' + Math.random().toString(36).substr(2, 9);
                     
-                    // Lire le fichier en base64 pour le sauvegarder
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        const fileData = {
-                            id: fileId,
-                            name: file.name,
-                            size: file.size,
-                            type: file.type,
-                            uploadDate: new Date().toISOString(),
-                            data: e.target.result // base64 data
-                        };
+                    // Créer FormData pour l'upload avec session ID
+                    const formData = new FormData();
+                    formData.append('file', file);
+                    formData.append('sessionId', sessionId);
+                    formData.append('folder', 'mes-documents');
+                    
+                    try {
+                        const response = await fetch('/api/geii/upload', {
+                            method: 'POST',
+                            body: formData
+                        });
                         
-                        existingFiles.push(fileData);
-                        localStorage.setItem(`oneboxFiles_${currentUser.username}`, JSON.stringify(existingFiles));
+                        const result = await response.json();
                         
-                        // Créer la carte de fichier
-                        const fileCard = createFileCard(fileData, true);
-                        fileCard.setAttribute('data-uploaded', 'true');
-                        fileGrid.appendChild(fileCard);
-                    };
-                    reader.readAsDataURL(file);
+                        if (result.success) {
+                            successCount++;
+                            
+                            // Ajouter le fichier à l'interface immédiatement
+                            const fileCard = createRealFileCard(result.file, null);
+                            const fileGrid = document.getElementById('fileGrid');
+                            fileGrid.appendChild(fileCard);
+                        } else {
+                            console.error('Erreur upload:', result.error);
+                            showToast(`Erreur upload ${file.name}: ${result.error}`);
+                            
+                            if (result.error.includes('Invalid session')) {
+                                logout(); // Session expirée
+                                return;
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Erreur upload:', error);
+                        showToast(`Erreur upload ${file.name}: ${error.message}`);
+                    }
                 }
+                
+                if (successCount > 0) {
+                    showToast(`${successCount}/${totalFiles} fichier(s) téléchargé(s) avec succès ! 💪🏾`);
+                    closeModal('uploadModal');
+                    // Recharger la liste des fichiers pour synchroniser
+                    await loadUserFiles();
+                } else {
+                    showToast('Aucun fichier n\'a pu être téléchargé. Réessayez.');
+                }
+            }
+        }
+        
+        // Fonction pour créer une carte de fichier réel uploadé
+        function createRealFileCard(fileInfo, originalFile) {
+            const fileCard = document.createElement('div');
+            fileCard.className = 'file-card perspective-card';
+            
+            // Détermine l'icône selon le type de fichier
+            let icon = 'fas fa-file';
+            let color = '#64748B';
+            
+            if (fileInfo.type.startsWith('image/')) {
+                icon = 'fas fa-image';
+                color = '#06D6A0';
+            } else if (fileInfo.type.includes('pdf')) {
+                icon = 'fas fa-file-pdf';
+                color = '#DC2626';
+            } else if (fileInfo.type.includes('word') || fileInfo.name.endsWith('.docx')) {
+                icon = 'fas fa-file-word';
+                color = '#2563EB';
+            } else if (fileInfo.type.includes('powerpoint') || fileInfo.name.endsWith('.pptx')) {
+                icon = 'fas fa-file-powerpoint';
+                color = '#D04423';
+            } else if (fileInfo.type.includes('video')) {
+                icon = 'fas fa-video';
+                color = '#7C3AED';
+            } else if (fileInfo.type.includes('excel') || fileInfo.name.endsWith('.xlsx')) {
+                icon = 'fas fa-file-excel';
+                color = '#059669';
+            }
+            
+            fileCard.innerHTML = `
+                <div class="file-preview-thumb">
+                    <i class="${icon}" style="font-size: 3rem; color: ${color};"></i>
+                </div>
+                <h4>${fileInfo.name}</h4>
+                <p style="color: hsl(var(--muted-foreground)); font-size: 0.9rem;">${fileInfo.size} • ${fileInfo.type.split('/')[1].toUpperCase()}</p>
+                <div class="file-actions">
+                    <button class="file-action-btn" onclick="event.stopPropagation(); downloadRealFile('${fileInfo.name}')" title="Télécharger">
+                        <i class="fas fa-download"></i>
+                    </button>
+                    <button class="file-action-btn" onclick="event.stopPropagation(); shareFile('${fileInfo.name}')" title="Partager">
+                        <i class="fas fa-share"></i>
+                    </button>
+                    <button class="file-action-btn" onclick="event.stopPropagation(); deleteRealFile('${fileInfo.name}')" title="Supprimer">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            `;
+            
+            fileCard.setAttribute('data-real-file', 'true');
+            fileCard.setAttribute('data-filename', fileInfo.name);
+            
+            return fileCard;
+        }
+        
+        // Fonction pour charger les fichiers de l'utilisateur depuis la base de données (sécurisée)
+        async function loadUserFiles() {
+            const sessionId = localStorage.getItem('geiiSessionId');
+            if (!sessionId) {
+                console.log('Aucune session active');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/geii/files', {
+                    headers: {
+                        'X-Session-Id': sessionId
+                    }
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    const fileGrid = document.getElementById('fileGrid');
+                    
+                    // Supprimer tous les fichiers réels existants (garde les fichiers de demo)
+                    const realFiles = fileGrid.querySelectorAll('[data-real-file="true"]');
+                    realFiles.forEach(file => file.remove());
+                    
+                    // Ajouter les fichiers de la base de données
+                    result.files.forEach(file => {
+                        if (file.hasFileData) {
+                            const fileCard = createRealFileCard(file, null);
+                            fileGrid.appendChild(fileCard);
+                        }
+                    });
+                    
+                    if (result.files.length > 0) {
+                        showToast(`${result.files.length} fichier(s) synchronisé(s) ! 📂`);
+                    }
+                } else {
+                    console.error('Erreur chargement fichiers:', result.error);
+                    if (result.error.includes('Invalid session')) {
+                        logout(); // Session expirée
+                    }
+                }
+            } catch (error) {
+                console.error('Erreur chargement fichiers:', error);
+            }
+        }
+        
+        // Fonction pour télécharger un fichier réel (sécurisée)
+        async function downloadRealFile(filename) {
+            const sessionId = localStorage.getItem('geiiSessionId');
+            if (!sessionId) {
+                showToast('Vous devez être connecté !');
+                return;
+            }
+            
+            try {
+                // Chercher l'ID du fichier
+                const response = await fetch('/api/geii/files', {
+                    headers: {
+                        'X-Session-Id': sessionId
+                    }
+                });
+                const result = await response.json();
+                
+                if (result.success) {
+                    const file = result.files.find(f => f.name === filename);
+                    if (file) {
+                        // Télécharger le fichier avec session ID
+                        const link = document.createElement('a');
+                        link.href = `/api/geii/download/${file.id}`;
+                        link.style.display = 'none';
+                        link.download = filename;
+                        
+                        // Ajouter headers avec session ID via fetch puis télécharger
+                        const downloadResponse = await fetch(`/api/geii/download/${file.id}`, {
+                            headers: {
+                                'X-Session-Id': sessionId
+                            }
+                        });
+                        
+                        if (downloadResponse.ok) {
+                            const blob = await downloadResponse.blob();
+                            const url = window.URL.createObjectURL(blob);
+                            link.href = url;
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                            window.URL.revokeObjectURL(url);
+                            showToast(`Téléchargement de ${filename} ! 📥`);
+                        } else {
+                            showToast('Erreur lors du téléchargement !');
+                        }
+                    } else {
+                        showToast('Fichier introuvable !');
+                    }
+                } else if (result.error.includes('Invalid session')) {
+                    logout();
+                }
+            } catch (error) {
+                console.error('Erreur téléchargement:', error);
+                showToast('Erreur lors du téléchargement !');
+            }
+        }
+        
+        // Fonction pour supprimer un fichier réel
+        async function deleteRealFile(filename) {
+            if (!confirm(`Êtes-vous sûr de vouloir supprimer "${filename}" ?`)) {
+                return;
+            }
+            
+            const currentUser = JSON.parse(localStorage.getItem('oneboxCurrentUser') || 'null');
+            if (!currentUser) {
+                showToast('Vous devez être connecté !');
+                return;
+            }
+            
+            try {
+                // Chercher et supprimer le fichier
+                const response = await fetch(`/api/geii/files/${currentUser.username}`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    const file = result.files.find(f => f.name === filename);
+                    if (file) {
+                        // TODO: Ajouter endpoint de suppression
+                        // Pour l'instant, simplement retirer de l'interface
+                        const fileCard = document.querySelector(`[data-filename="${filename}"]`);
+                        if (fileCard) {
+                            fileCard.remove();
+                            showToast(`Fichier "${filename}" supprimé ! 🗑️`);
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Erreur suppression:', error);
+                showToast('Erreur lors de la suppression !');
             }
         }
         
@@ -3451,63 +3659,44 @@ Heure: 14:00`;
                 return;
             }
             
-            // Refresh registered users from shared storage
-            await initializeSharedStorage();
-            
-            if (registeredUsers[username]) {
-                showToast('Ce nom d\'utilisateur existe déjà ! Choisissez-en un autre.');
-                return;
-            }
-            
             // Show loading for password hashing
             showToast('🔒 Chiffrement du mot de passe...');
             
             try {
-                // Hash the password
-                const { hash, salt } = await hashPassword(password);
+                // Hash the password with proper salt
+                const crypto = require('crypto') || window.crypto;
+                const salt = crypto.randomBytes ? crypto.randomBytes(16).toString('hex') : Array.from(crypto.getRandomValues(new Uint8Array(16))).map(b => b.toString(16).padStart(2, '0')).join('');
                 
-                // Save user data with hashed password
-                registeredUsers[username] = {
-                    passwordHash: hash,
-                    passwordSalt: salt,
-                    faceIdEnabled: faceIdEnabled,
-                    createdAt: new Date().toISOString(),
-                    lastLogin: new Date().toISOString(),
-                    loginCount: 1
-                };
+                // Use Web Crypto API for client-side hashing (more secure)
+                const encoder = new TextEncoder();
+                const data = encoder.encode(password + salt);
+                const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+                const hash = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
                 
-                // Save to shared storage for cross-browser access
-                saveToSharedStorage('users', registeredUsers);
+                // Register user via API
+                const response = await fetch('/api/geii/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username,
+                        passwordHash: hash,
+                        passwordSalt: salt,
+                        faceIdEnabled: faceIdEnabled.toString()
+                    })
+                });
                 
-                // Auto login with enhanced user data
-                currentUser = { 
-                    username, 
-                    faceIdEnabled,
-                    lastLogin: new Date().toISOString()
-                };
-                localStorage.setItem('oneboxCurrentUser', JSON.stringify(currentUser));
+                const result = await response.json();
                 
-                showToast(`Compte créé avec succès ! Bienvenue ${username} ! 🎉`);
-                
-                
-                // Direct access for new users - no loading screen needed!
-                setTimeout(() => {
-                    // Hide auth section
-                    document.getElementById('auth').classList.remove('active');
-                    document.getElementById('auth').style.display = 'none';
+                if (result.success) {
+                    showToast(`Compte créé avec succès ! Bienvenue ${username} ! 🎉`);
                     
-                    // Show navigation
-                    document.getElementById('mainNavbar').style.display = 'block';
-                    
-                    // Show home section directly
-                    showSection('home');
-                    
-                    // Load user data
-                    loadUserFiles();
-                }, 800); // Quick transition for new users
-                
-                // Update Face ID option visibility
-                updateFaceIdVisibility();
+                    // Auto login after registration
+                    await loginUser(username, password);
+                } else {
+                    showToast(`Erreur lors de la création du compte: ${result.error}`);
+                }
             } catch (error) {
                 showToast('Erreur lors du chiffrement du mot de passe. Réessayez.');
                 console.error('Password hashing error:', error);
@@ -3550,73 +3739,70 @@ Heure: 14:00`;
                 return;
             }
             
-            // Refresh registeredUsers from shared storage to get latest data
-            await initializeSharedStorage();
-            
-            // Check if user exists
-            if (!registeredUsers[username]) {
-                showToast('❌ Nom d\'utilisateur introuvable ! Vérifiez vos identifiants.');
-                return;
-            }
-            
-            const userData = registeredUsers[username];
-            
             // Show loading for password verification
             showToast('🔐 Vérification des identifiants...');
             
             try {
-                let passwordMatch = false;
-                
-                // Check if using new hashed password or old plaintext (for migration)
-                if (userData.passwordHash && userData.passwordSalt) {
-                    // New hashed password verification
-                    passwordMatch = await verifyPassword(password, userData.passwordHash, userData.passwordSalt);
-                } else if (userData.password) {
-                    // Legacy plaintext password (migrate to hash)
-                    passwordMatch = userData.password === password;
-                    
-                    if (passwordMatch) {
-                        // Migrate to hashed password on successful login
-                        const { hash, salt } = await hashPassword(password);
-                        userData.passwordHash = hash;
-                        userData.passwordSalt = salt;
-                        delete userData.password;
-                        localStorage.setItem('oneboxUsers', JSON.stringify(registeredUsers));
-                        showToast('🔒 Mot de passe migré vers chiffrement sécurisé !');
-                    }
-                }
-                
-                if (!passwordMatch) {
-                    showToast('Mot de passe incorrect ! Vérifiez vos identifiants.');
-                    return;
-                }
-                
-                // Login successful
-                currentUser = { 
-                    username, 
-                    faceIdEnabled: userData.faceIdEnabled,
-                    lastLogin: new Date().toISOString()
-                };
-                
-                // Always save current user to localStorage for cross-browser access
-                localStorage.setItem('oneboxCurrentUser', JSON.stringify(currentUser));
-                
-                // Update user's last login time and increment login count
-                registeredUsers[username].lastLogin = new Date().toISOString();
-                registeredUsers[username].loginCount = (registeredUsers[username].loginCount || 0) + 1;
-                saveToSharedStorage('users', registeredUsers);
-                
-                showToast(`Connexion réussie ! Bienvenue ${username} ! 💪🏾`);
-                
-                // Show loading screen and redirect to home  
-                showLoadingAndRedirect('home');
-                setTimeout(() => loadUserFiles(), 4000); // Charger après le loading screen
-                
-                // Update Face ID option visibility
-                updateFaceIdVisibility();
+                await loginUser(username, password);
             } catch (error) {
                 showToast('Erreur lors de la vérification. Réessayez.');
                 console.error('Password verification error:', error);
+            }
+        }
+
+        // Nouvelle fonction centralisée de login
+        async function loginUser(username, password) {
+            try {
+                // Login via API with plaintext password (server will hash)
+                const response = await fetch('/api/geii/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username,
+                        password // Send plaintext password, server will hash it
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Login successful - store session ID and user info
+                    currentUser = { 
+                        username: result.user.username, 
+                        faceIdEnabled: result.user.faceIdEnabled === "true",
+                        lastLogin: result.user.lastLogin,
+                        sessionId: result.sessionId
+                    };
+                    
+                    // Save user session data
+                    localStorage.setItem('oneboxCurrentUser', JSON.stringify(currentUser));
+                    localStorage.setItem('geiiSessionId', result.sessionId);
+                    
+                    showToast(`Connexion réussie ! Bienvenue ${username} ! 💪🏾`);
+                    
+                    // Hide auth section
+                    document.getElementById('auth').classList.remove('active');
+                    document.getElementById('auth').style.display = 'none';
+                    
+                    // Show navigation
+                    document.getElementById('mainNavbar').style.display = 'block';
+                    
+                    // Show home section directly
+                    showSection('home');
+                    
+                    // Load user data with session
+                    await loadUserFiles();
+                    
+                    // Update Face ID option visibility
+                    updateFaceIdVisibility();
+                } else {
+                    showToast(`❌ ${result.error || 'Identifiants incorrects'}`);
+                }
+            } catch (error) {
+                showToast('Erreur lors de la vérification. Réessayez.');
+                console.error('Login error:', error);
             }
         }
 
