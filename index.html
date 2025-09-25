@@ -998,9 +998,6 @@
                 <li><a href="#" class="nav-link" onclick="showSection('editor')" data-section="editor">
                     <i class="fas fa-edit"></i> Éditeur
                 </a></li>
-                <li><a href="#" class="nav-link" onclick="showSection('mes-documents')" data-section="mes-documents">
-                    <i class="fas fa-folder"></i> Documents
-                </a></li>
                 <li><a href="#" class="nav-link" onclick="openModal('helpModal')">
                     <i class="fas fa-question-circle"></i> Aide
                 </a></li>
@@ -1225,9 +1222,9 @@
                                     <i class="fas fa-file-pdf"></i>
                                     <span>PDF</span>
                                 </button>
-                                <button class="ribbon-btn ribbon-btn-large" onclick="saveDocument()" title="Sauvegarder">
-                                    <i class="fas fa-save"></i>
-                                    <span>Sauvegarder</span>
+                                <button class="ribbon-btn ribbon-btn-large" onclick="saveToExternalSite()" title="Sauvegarder sur h7-216.github.io/Files">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    <span>Enregistrer</span>
                                 </button>
                                 <button class="ribbon-btn ribbon-btn-large" onclick="newDocument()" title="Nouveau document">
                                     <i class="fas fa-file-plus"></i>
@@ -1259,87 +1256,6 @@
         </div>
     </section>
 
-    <!-- My Documents Section -->
-    <section id="mes-documents" class="section" style="display: none;">
-        <div class="container">
-            <div style="text-align: center; margin-bottom: 3rem;">
-                <h2 style="font-size: 2.5rem; color: hsl(var(--primary)); margin-bottom: 1rem;">
-                    <i class="fas fa-folder-open"></i> Mes Documents
-                </h2>
-                <p style="color: hsl(var(--muted-foreground)); font-size: 1.1rem;">
-                    Retrouvez tous vos documents enregistrés organisés par dossiers
-                </p>
-            </div>
-
-            <!-- Documents Stats -->
-            <div class="grid grid-3" style="margin-bottom: 3rem;">
-                <div class="card">
-                    <div style="text-align: center;">
-                        <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #06D6A0, #118AB2); border-radius: 50%; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center;">
-                            <i class="fas fa-file-alt" style="color: white; font-size: 1.5rem;"></i>
-                        </div>
-                        <h3 id="totalDocuments" style="color: hsl(var(--primary)); font-size: 2rem; margin-bottom: 0.5rem;">0</h3>
-                        <p style="color: hsl(var(--muted-foreground));">Documents Total</p>
-                    </div>
-                </div>
-                
-                <div class="card">
-                    <div style="text-align: center;">
-                        <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #FFD60A, #F77F00); border-radius: 50%; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center;">
-                            <i class="fas fa-folder" style="color: white; font-size: 1.5rem;"></i>
-                        </div>
-                        <h3 id="totalFolders" style="color: hsl(var(--primary)); font-size: 2rem; margin-bottom: 0.5rem;">0</h3>
-                        <p style="color: hsl(var(--muted-foreground));">Dossiers</p>
-                    </div>
-                </div>
-                
-                <div class="card">
-                    <div style="text-align: center;">
-                        <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #8B5CF6, #A855F7); border-radius: 50%; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center;">
-                            <i class="fas fa-clock" style="color: white; font-size: 1.5rem;"></i>
-                        </div>
-                        <h3 id="lastModified" style="color: hsl(var(--primary)); font-size: 1.2rem; margin-bottom: 0.5rem;">-</h3>
-                        <p style="color: hsl(var(--muted-foreground));">Dernière modification</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Folders Grid -->
-            <div id="foldersGrid" class="grid grid-2" style="margin-bottom: 3rem;">
-                <!-- Folders will be populated by JavaScript -->
-            </div>
-
-            <!-- Documents List -->
-            <div id="documentsContainer">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-                    <h3 style="color: hsl(var(--primary)); margin: 0;">
-                        <i class="fas fa-list"></i> Documents récents
-                    </h3>
-                    <button class="btn btn-outline" onclick="refreshDocuments()">
-                        <i class="fas fa-sync-alt"></i> Actualiser
-                    </button>
-                </div>
-                
-                <div id="documentsList" class="grid" style="gap: 1rem; grid-template-columns: 1fr;">
-                    <!-- Documents will be populated by JavaScript -->
-                </div>
-            </div>
-
-            <!-- Empty State -->
-            <div id="emptyState" style="text-align: center; padding: 3rem; display: none;">
-                <div style="width: 100px; height: 100px; background: linear-gradient(135deg, hsl(var(--muted)), hsl(var(--muted-foreground))); border-radius: 50%; margin: 0 auto 2rem; display: flex; align-items: center; justify-content: center; opacity: 0.7;">
-                    <i class="fas fa-file-plus" style="font-size: 2.5rem; color: hsl(var(--background));"></i>
-                </div>
-                <h3 style="color: hsl(var(--muted-foreground)); margin-bottom: 1rem;">Aucun document enregistré</h3>
-                <p style="color: hsl(var(--muted-foreground)); margin-bottom: 2rem;">
-                    Commencez à créer vos premiers documents avec l'éditeur !
-                </p>
-                <button class="btn btn-primary" onclick="showSection('editor')">
-                    <i class="fas fa-edit"></i> Ouvrir l'éditeur
-                </button>
-            </div>
-        </div>
-    </section>
 
     <!-- Contact Section -->
     <section id="contact" class="section" style="display: none;">
@@ -2123,7 +2039,7 @@
                     <ul>
                         <li><a href="#" onclick="showSection('home')"><i class="fas fa-home"></i> Accueil</a></li>
                         <li><a href="#" onclick="showSection('editor')"><i class="fas fa-edit"></i> Éditeur de documents</a></li>
-                        <li><a href="#" onclick="showSection('mes-documents')"><i class="fas fa-folder"></i> Mes Documents</a></li>
+                        <li><a href="#" onclick="window.open('https://h7-216.github.io/Files', '_blank')"><i class="fas fa-external-link-alt"></i> Fichiers Externes</a></li>
                         <li><a href="#" onclick="openModal('aboutModal')"><i class="fas fa-info-circle"></i> À propos</a></li>
                         <li><a href="#" onclick="openModal('loginModal')"><i class="fas fa-sign-in-alt"></i> Connexion</a></li>
                     </ul>
@@ -2222,9 +2138,10 @@
             });
             document.querySelector(`[data-section="${sectionId}"]`)?.classList.add('active');
             
-            // Special handling for documents section
+            // External files handled via external site
             if (sectionId === 'mes-documents') {
-                refreshDocuments();
+                window.open('https://h7-216.github.io/Files', '_blank');
+                return;
             }
         }
 
@@ -2320,34 +2237,86 @@
             }
         }
 
-        // Document Management
-        let savedDocuments = JSON.parse(localStorage.getItem('oneboxDocuments')) || {};
-
-        function saveDocument() {
+        // External File Management
+        function saveToExternalSite() {
             const content = document.getElementById('documentEditor').innerHTML;
-            const name = prompt('Nom du document :', 'Mon Document');
+            const plainText = content.replace(/<[^>]*>/g, '').trim();
             
-            if (name) {
-                const timestamp = new Date().toISOString();
-                
-                if (!savedDocuments['mes-documents']) {
-                    savedDocuments['mes-documents'] = {};
-                }
-                
-                savedDocuments['mes-documents'][name] = {
-                    content: content,
-                    created: timestamp
-                };
-                
-                localStorage.setItem('oneboxDocuments', JSON.stringify(savedDocuments));
-                showToast(`Document "${name}" sauvegardé avec succès !`);
+            if (!plainText) {
+                showToast('Le document est vide ! ⚠️');
+                return;
             }
+            
+            const name = prompt('Nom du fichier :', 'Document-' + new Date().toISOString().slice(0,10));
+            
+            if (!name) return;
+            
+            // Create downloadable file
+            const fileName = name.endsWith('.html') ? name : name + '.html';
+            const blob = new Blob([createHTMLFile(content, name)], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            
+            // Download file
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            // Show instructions
+            showToast(`Fichier "${fileName}" téléchargé ! Uploadez-le manuellement sur h7-216.github.io/Files 📤`);
+            
+            setTimeout(() => {
+                if (confirm('Ouvrir le site de stockage externe maintenant ?')) {
+                    window.open('https://h7-216.github.io/Files', '_blank');
+                }
+            }, 2000);
+        }
+        
+        function createHTMLFile(content, title) {
+            return `<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${title}</title>
+    <style>
+        body {
+            font-family: 'Calibri', Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #fff;
+            color: #000;
+        }
+        h1, h2, h3 { color: #2B579A; }
+        h1 { font-size: 24px; margin-bottom: 16px; }
+        h2 { font-size: 18px; margin: 16px 0 8px 0; }
+        h3 { font-size: 16px; margin: 8px 0; }
+        p { margin: 0 0 12px 0; }
+        .header { border-bottom: 2px solid #2B579A; margin-bottom: 20px; padding-bottom: 10px; }
+        .created { color: #666; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>${title}</h1>
+        <div class="created">Créé avec OneBox Editor - ${new Date().toLocaleDateString('fr-FR')} à ${new Date().toLocaleTimeString('fr-FR')}</div>
+    </div>
+    <div class="content">
+        ${content}
+    </div>
+</body>
+</html>`;
         }
 
         function newDocument() {
             if (confirm('Créer un nouveau document ? Le contenu actuel sera perdu si non sauvegardé.')) {
-                document.getElementById('documentEditor').innerHTML = '<h1>Mon Nouveau Document</h1><p>Commencez à écrire votre document ici...</p>';
-                showToast('Nouveau document créé !');
+                document.getElementById('documentEditor').innerHTML = '<h1>Mon Nouveau Document</h1><p>Commencez à écrire votre document ici. Une fois terminé, utilisez le bouton "Enregistrer" pour télécharger votre fichier et l\'uploader sur h7-216.github.io/Files</p>';
+                showToast('Nouveau document créé ! ✨');
             }
         }
 
@@ -2396,144 +2365,9 @@
             });
         }
 
-        // Documents Management
-        function refreshDocuments() {
-            const savedDocs = JSON.parse(localStorage.getItem('oneboxDocuments')) || {};
-            const foldersGrid = document.getElementById('foldersGrid');
-            const documentsList = document.getElementById('documentsList');
-            const emptyState = document.getElementById('emptyState');
-            
-            let totalDocs = 0;
-            let totalFolders = Object.keys(savedDocs).length;
-            let lastModified = null;
-            
-            foldersGrid.innerHTML = '';
-            documentsList.innerHTML = '';
-            
-            if (totalFolders === 0) {
-                emptyState.style.display = 'block';
-                document.getElementById('documentsContainer').style.display = 'none';
-                foldersGrid.style.display = 'none';
-            } else {
-                emptyState.style.display = 'none';
-                document.getElementById('documentsContainer').style.display = 'block';
-                foldersGrid.style.display = 'grid';
-                
-                Object.keys(savedDocs).forEach(folder => {
-                    const docs = savedDocs[folder];
-                    const docsCount = Object.keys(docs).length;
-                    totalDocs += docsCount;
-                    
-                    Object.values(docs).forEach(doc => {
-                        if (!lastModified || new Date(doc.created) > new Date(lastModified)) {
-                            lastModified = doc.created;
-                        }
-                    });
-                    
-                    const folderCard = document.createElement('div');
-                    folderCard.className = 'card';
-                    folderCard.style.cursor = 'pointer';
-                    folderCard.innerHTML = `
-                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
-                            <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #06D6A0, #118AB2); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
-                                <i class="fas fa-folder" style="color: white;"></i>
-                            </div>
-                            <div style="flex: 1;">
-                                <h4 style="color: hsl(var(--foreground)); margin: 0 0 0.5rem 0;">📁 ${getFolderDisplayName(folder)}</h4>
-                                <p style="color: hsl(var(--muted-foreground)); margin: 0; font-size: 0.9rem;">${docsCount} document${docsCount > 1 ? 's' : ''}</p>
-                            </div>
-                            <i class="fas fa-chevron-right" style="color: hsl(var(--muted-foreground));"></i>
-                        </div>
-                    `;
-                    foldersGrid.appendChild(folderCard);
-                    
-                    Object.entries(docs).forEach(([docName, docData]) => {
-                        const docCard = document.createElement('div');
-                        docCard.className = 'card';
-                        docCard.style.cursor = 'pointer';
-                        docCard.onclick = () => openDocument(docName, docData);
-                        
-                        const preview = docData.content.replace(/<[^>]*>/g, '').slice(0, 100);
-                        const dateFormatted = new Date(docData.created).toLocaleDateString('fr-FR', {
-                            day: 'numeric',
-                            month: 'short',
-                            year: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit'
-                        });
-                        
-                        docCard.innerHTML = `
-                            <div style="display: flex; gap: 1rem;">
-                                <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #FFD60A, #F77F00); border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                                    <i class="fas fa-file-alt" style="color: white;"></i>
-                                </div>
-                                <div style="flex: 1; min-width: 0;">
-                                    <h5 style="color: hsl(var(--foreground)); margin: 0 0 0.5rem 0; font-size: 1rem; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">${docName}</h5>
-                                    <p style="color: hsl(var(--muted-foreground)); margin: 0 0 0.5rem 0; font-size: 0.8rem; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">${preview}...</p>
-                                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                                        <span style="color: hsl(var(--muted-foreground)); font-size: 0.7rem;">${getFolderDisplayName(folder)}</span>
-                                        <span style="color: hsl(var(--muted-foreground)); font-size: 0.7rem;">${dateFormatted}</span>
-                                    </div>
-                                </div>
-                                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                                    <button class="btn" onclick="editDocument('${docName}', '${folder}'); event.stopPropagation();" style="padding: 0.25rem 0.5rem; font-size: 0.7rem;">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="btn btn-outline" onclick="deleteDocument('${docName}', '${folder}'); event.stopPropagation();" style="padding: 0.25rem 0.5rem; font-size: 0.7rem;">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        `;
-                        documentsList.appendChild(docCard);
-                    });
-                });
-            }
-            
-            document.getElementById('totalDocuments').textContent = totalDocs;
-            document.getElementById('totalFolders').textContent = totalFolders;
-            document.getElementById('lastModified').textContent = lastModified ? 
-                new Date(lastModified).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }) : '-';
-        }
-
-        function getFolderDisplayName(folder) {
-            const folders = {
-                'mes-documents': 'Mes Documents',
-                'projets': 'Projets', 
-                'personnel': 'Personnel',
-                'travail': 'Travail',
-                'ecole': 'École'
-            };
-            return folders[folder] || folder;
-        }
-
-        function openDocument(docName, docData) {
-            if (confirm(`Ouvrir le document "${docName}" dans l'éditeur ?`)) {
-                document.getElementById('documentEditor').innerHTML = docData.content;
-                showSection('editor');
-                showToast(`Document "${docName}" ouvert dans l'éditeur !`);
-            }
-        }
-
-        function editDocument(docName, folder) {
-            const savedDocs = JSON.parse(localStorage.getItem('oneboxDocuments')) || {};
-            const docData = savedDocs[folder][docName];
-            openDocument(docName, docData);
-        }
-
-        function deleteDocument(docName, folder) {
-            if (confirm(`Supprimer définitivement le document "${docName}" ?`)) {
-                const savedDocs = JSON.parse(localStorage.getItem('oneboxDocuments')) || {};
-                delete savedDocs[folder][docName];
-                
-                if (Object.keys(savedDocs[folder]).length === 0) {
-                    delete savedDocs[folder];
-                }
-                
-                localStorage.setItem('oneboxDocuments', JSON.stringify(savedDocs));
-                refreshDocuments();
-                showToast(`Document "${docName}" supprimé !`);
-            }
+        function openExternalFiles() {
+            window.open('https://h7-216.github.io/Files', '_blank');
+            showToast('Site de stockage externe ouvert dans un nouvel onglet ! 🌐');
         }
 
         // Toast Notifications
@@ -2879,8 +2713,8 @@
                                 <div style="font-size: 0.875rem; color: hsl(var(--muted-foreground));">${email}</div>
                             </div>
                             <div style="padding: 0.5rem 0;">
-                                <button onclick="showSection('mes-documents'); hideUserDropdown();" style="width: 100%; background: none; border: none; color: hsl(var(--foreground)); padding: 0.75rem 1rem; text-align: left; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; gap: 0.5rem;">
-                                    <i class="fas fa-folder"></i> Mes Documents
+                                <button onclick="window.open('https://h7-216.github.io/Files', '_blank'); hideUserDropdown();" style="width: 100%; background: none; border: none; color: hsl(var(--foreground)); padding: 0.75rem 1rem; text-align: left; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; gap: 0.5rem;">
+                                    <i class="fas fa-external-link-alt"></i> Mes Fichiers (Externe)
                                 </button>
                                 <button onclick="showAccountSettings()" style="width: 100%; background: none; border: none; color: hsl(var(--foreground)); padding: 0.75rem 1rem; text-align: left; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; gap: 0.5rem;">
                                     <i class="fas fa-cog"></i> Paramètres
@@ -3081,7 +2915,7 @@
                     switch(e.key.toLowerCase()) {
                         case 's':
                             e.preventDefault();
-                            saveDocument();
+                            saveToExternalSite();
                             break;
                         case 'n':
                             e.preventDefault();
@@ -3140,22 +2974,7 @@
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
-            // Auto-save every 30 seconds
-            setInterval(() => {
-                const content = document.getElementById('documentEditor')?.innerHTML;
-                if (content && content.length > 50) {
-                    localStorage.setItem('oneboxAutoSave', content);
-                }
-            }, 30000);
-            
-            // Load auto-saved content
-            const autoSaved = localStorage.getItem('oneboxAutoSave');
-            if (autoSaved && document.getElementById('documentEditor')) {
-                document.getElementById('documentEditor').innerHTML = autoSaved;
-            }
-            
             // Initialize all features
-            refreshDocuments();
             updateMobileMenu();
             handleResponsiveLayout();
             setupKeyboardShortcuts();
