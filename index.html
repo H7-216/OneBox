@@ -90,17 +90,88 @@
             font-size: 1.5rem;
             color: hsl(var(--foreground));
             text-decoration: none;
+            transition: all 0.4s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+            filter: drop-shadow(0 8px 25px rgba(6, 214, 160, 0.4));
         }
 
         .logo-icon {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
-            border-radius: 8px;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)), #00D4AA);
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: hsl(var(--background));
+            position: relative;
+            transform-style: preserve-3d;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            box-shadow: 
+                0 8px 16px rgba(6, 214, 160, 0.3),
+                0 4px 8px rgba(6, 214, 160, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            animation: logoFloat 3s ease-in-out infinite;
+        }
+
+        .logo-icon::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, 
+                transparent 30%, 
+                rgba(6, 214, 160, 0.5) 50%, 
+                transparent 70%);
+            border-radius: 14px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+        }
+
+        .logo:hover .logo-icon {
+            transform: perspective(1000px) rotateX(15deg) rotateY(15deg) translateZ(10px);
+            box-shadow: 
+                0 15px 35px rgba(6, 214, 160, 0.5),
+                0 8px 20px rgba(6, 214, 160, 0.3),
+                inset 0 2px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .logo:hover .logo-icon::before {
+            opacity: 1;
+            animation: shimmer 1.5s ease-in-out infinite;
+        }
+
+        .logo-text {
+            background: linear-gradient(135deg, hsl(var(--foreground)), hsl(var(--primary)));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 800;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .logo:hover .logo-text {
+            text-shadow: 0 4px 8px rgba(6, 214, 160, 0.4);
+        }
+
+        @keyframes logoFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-3px); }
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) rotate(45deg); }
+            100% { transform: translateX(200%) rotate(45deg); }
         }
 
         .nav-menu {
@@ -914,11 +985,11 @@
     <!-- Navigation -->
     <nav class="navbar">
         <div class="nav-container">
-            <a href="#" class="logo">
+            <a href="#" class="logo" onclick="showSection('home'); return false;">
                 <div class="logo-icon">
                     <i class="fas fa-cube"></i>
                 </div>
-                OneBox Editor
+                <span class="logo-text">OneBox Editor</span>
             </a>
             <ul class="nav-menu">
                 <li><a href="#" class="nav-link active" onclick="showSection('home')" data-section="home">
@@ -1437,43 +1508,30 @@
                 </div>
             </div>
 
-            <!-- Alternative Contact Methods -->
-            <div class="grid grid-3" style="margin-top: 3rem;">
+            <!-- Contact Snapchat Uniquement -->
+            <div class="grid grid-2" style="margin-top: 3rem; max-width: 800px; margin-left: auto; margin-right: auto;">                
                 <div class="card floating-btn">
                     <div style="text-align: center;">
-                        <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #06D6A0, #118AB2); border-radius: 50%; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center;">
-                            <i class="fas fa-envelope" style="color: white; font-size: 1.5rem;"></i>
+                        <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #FFFC00, #FFD700); border-radius: 50%; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 25px rgba(255, 252, 0, 0.4);">
+                            <i class="fab fa-snapchat-ghost" style="color: #000; font-size: 2rem;"></i>
                         </div>
-                        <h4 style="color: hsl(var(--primary)); margin-bottom: 1rem;">Email traditionnel</h4>
-                        <p style="color: hsl(var(--muted-foreground)); margin-bottom: 1rem;">Envoyez-nous un email si vous préférez</p>
-                        <button class="btn btn-outline" onclick="openModal('emailModal')">
-                            <i class="fas fa-paper-plane"></i> Envoyer un email
+                        <h4 style="color: hsl(var(--primary)); margin-bottom: 1rem;">Chat Snapchat Direct</h4>
+                        <p style="color: hsl(var(--muted-foreground)); margin-bottom: 1rem;">Réponse instantanée garantie via Snapchat</p>
+                        <button class="snapchat-btn floating-btn" onclick="openSnapchat()" style="width: 100%; justify-content: center; padding: 1rem;">
+                            <i class="fab fa-snapchat-ghost"></i> Ouvrir Snapchat
                         </button>
                     </div>
                 </div>
                 
                 <div class="card floating-btn">
                     <div style="text-align: center;">
-                        <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #8B5CF6, #A855F7); border-radius: 50%; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center;">
-                            <i class="fas fa-comments" style="color: white; font-size: 1.5rem;"></i>
+                        <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #FFD60A, #F77F00); border-radius: 50%; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-question-circle" style="color: white; font-size: 2rem;"></i>
                         </div>
-                        <h4 style="color: hsl(var(--primary)); margin-bottom: 1rem;">Chat en direct</h4>
-                        <p style="color: hsl(var(--muted-foreground)); margin-bottom: 1rem;">Démarrez une conversation instantanée</p>
-                        <button class="snapchat-btn" onclick="openSnapchat()">
-                            <i class="fab fa-snapchat-ghost"></i> Chat Snapchat
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="card floating-btn">
-                    <div style="text-align: center;">
-                        <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #FFD60A, #F77F00); border-radius: 50%; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center;">
-                            <i class="fas fa-question-circle" style="color: white; font-size: 1.5rem;"></i>
-                        </div>
-                        <h4 style="color: hsl(var(--primary)); margin-bottom: 1rem;">FAQ & Aide</h4>
-                        <p style="color: hsl(var(--muted-foreground)); margin-bottom: 1rem;">Trouvez rapidement des réponses</p>
-                        <button class="btn btn-primary" onclick="openModal('helpModal')">
-                            <i class="fas fa-book"></i> Voir l'aide
+                        <h4 style="color: hsl(var(--primary)); margin-bottom: 1rem;">Centre d'Aide</h4>
+                        <p style="color: hsl(var(--muted-foreground)); margin-bottom: 1rem;">Documentation et FAQ complètes</p>
+                        <button class="btn btn-primary floating-btn" onclick="openModal('helpModal')" style="width: 100%; justify-content: center; padding: 1rem;">
+                            <i class="fas fa-book"></i> Consulter l'aide
                         </button>
                     </div>
                 </div>
@@ -1597,67 +1655,323 @@
         </div>
     </div>
 
-    <!-- Email Modal -->
-    <div id="emailModal" class="modal">
+    <!-- Documentation Modal -->
+    <div id="documentationModal" class="modal">
         <div class="modal-content">
-            <button class="modal-close" onclick="closeModal('emailModal')">
+            <button class="modal-close" onclick="closeModal('documentationModal')">
                 <i class="fas fa-times"></i>
             </button>
             <h2 style="color: hsl(var(--primary)); margin-bottom: 1.5rem;">
-                <i class="fas fa-envelope"></i> Nous contacter par email
+                <i class="fas fa-file-alt"></i> Documentation OneBox
             </h2>
             
-            <form onsubmit="handleEmailContact(event)">
-                <div class="form-group">
-                    <label class="form-label" for="contactName">
-                        <i class="fas fa-user"></i> Nom complet
-                    </label>
-                    <input type="text" id="contactName" class="form-input" placeholder="Votre nom" required>
+            <div style="max-height: 60vh; overflow-y: auto;">
+                <div class="card" style="margin-bottom: 1rem;">
+                    <h3 style="color: hsl(var(--primary)); margin-bottom: 1rem;"><i class="fas fa-play-circle"></i> Guide de démarrage</h3>
+                    <ul style="color: hsl(var(--muted-foreground)); line-height: 1.8;">
+                        <li>Créer votre premier document</li>
+                        <li>Utiliser l'éditeur WYSIWYG</li>
+                        <li>Sauvegarder et organiser vos fichiers</li>
+                        <li>Exporter en PDF</li>
+                    </ul>
                 </div>
                 
-                <div class="form-group">
-                    <label class="form-label" for="contactEmail">
-                        <i class="fas fa-envelope"></i> Email
-                    </label>
-                    <input type="email" id="contactEmail" class="form-input" placeholder="votre@email.com" required>
+                <div class="card" style="margin-bottom: 1rem;">
+                    <h3 style="color: hsl(var(--primary)); margin-bottom: 1rem;"><i class="fas fa-keyboard"></i> Raccourcis clavier</h3>
+                    <div style="color: hsl(var(--muted-foreground)); line-height: 1.8;">
+                        <p><kbd>Ctrl+S</kbd> - Sauvegarder le document</p>
+                        <p><kbd>Ctrl+N</kbd> - Nouveau document</p>
+                        <p><kbd>Ctrl+P</kbd> - Exporter en PDF</p>
+                        <p><kbd>Ctrl+/</kbd> - Contact Snapchat</p>
+                        <p><kbd>Échap</kbd> - Fermer les modales</p>
+                    </div>
                 </div>
                 
-                <div class="form-group">
-                    <label class="form-label" for="contactSubject">
-                        <i class="fas fa-tag"></i> Sujet
-                    </label>
-                    <select id="contactSubject" class="form-select" required>
-                        <option value="">Choisissez un sujet</option>
-                        <option value="support">Support technique</option>
-                        <option value="bug">Signaler un bug</option>
-                        <option value="feature">Demande de fonctionnalité</option>
-                        <option value="other">Autre</option>
-                    </select>
+                <div class="card">
+                    <h3 style="color: hsl(var(--primary)); margin-bottom: 1rem;"><i class="fas fa-magic"></i> Fonctionnalités avancées</h3>
+                    <ul style="color: hsl(var(--muted-foreground)); line-height: 1.8;">
+                        <li>Formatage de texte complet</li>
+                        <li>Insertion d'images et tableaux</li>
+                        <li>Gestion des styles et couleurs</li>
+                        <li>Synchronisation automatique</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid hsl(var(--border));">
+                <button class="snapchat-btn" onclick="openSnapchat(); closeModal('documentationModal');">
+                    <i class="fab fa-snapchat-ghost"></i> Support Snapchat
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bug Report Modal -->
+    <div id="bugReportModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('bugReportModal')">
+                <i class="fas fa-times"></i>
+            </button>
+            <h2 style="color: hsl(var(--primary)); margin-bottom: 1.5rem;">
+                <i class="fas fa-bug"></i> Signaler un Bug
+            </h2>
+            
+            <div style="background: rgba(255, 193, 7, 0.1); border: 1px solid #FFC107; border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem;">
+                <p style="color: #FFC107; margin: 0; font-weight: 600;">
+                    <i class="fas fa-exclamation-triangle"></i> Pour un support rapide et personnalisé
+                </p>
+                <p style="color: hsl(var(--muted-foreground)); margin: 0.5rem 0 0 0;">
+                    Contactez-nous directement via Snapchat pour un diagnostic immédiat du problème.
+                </p>
+            </div>
+            
+            <div class="card">
+                <h3 style="color: hsl(var(--foreground)); margin-bottom: 1rem;">Comment signaler efficacement ?</h3>
+                <ol style="color: hsl(var(--muted-foreground)); line-height: 1.8;">
+                    <li>Décrivez le problème rencontré</li>
+                    <li>Indiquez les étapes pour reproduire le bug</li>
+                    <li>Mentionnez votre navigateur et système</li>
+                    <li>Joignez une capture d'écran si possible</li>
+                </ol>
+            </div>
+            
+            <div style="text-align: center; margin-top: 2rem;">
+                <button class="snapchat-btn floating-btn" onclick="openSnapchat(); closeModal('bugReportModal');" style="width: 100%; justify-content: center; padding: 1rem;">
+                    <i class="fab fa-snapchat-ghost"></i> Signaler via Snapchat
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Privacy Policy Modal -->
+    <div id="privacyModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('privacyModal')">
+                <i class="fas fa-times"></i>
+            </button>
+            <h2 style="color: hsl(var(--primary)); margin-bottom: 1.5rem;">
+                <i class="fas fa-shield-alt"></i> Politique de Confidentialité
+            </h2>
+            
+            <div style="max-height: 60vh; overflow-y: auto;">
+                <div class="card" style="margin-bottom: 1rem;">
+                    <h3 style="color: hsl(var(--primary)); margin-bottom: 1rem;">Collecte des données</h3>
+                    <p style="color: hsl(var(--muted-foreground)); line-height: 1.6;">
+                        OneBox Editor respecte votre vie privée. Nous ne collectons que les données nécessaires 
+                        au fonctionnement du service : contenu des documents, préférences utilisateur.
+                    </p>
                 </div>
                 
-                <div class="form-group">
-                    <label class="form-label" for="contactMessage">
-                        <i class="fas fa-comment"></i> Message
-                    </label>
-                    <textarea id="contactMessage" class="form-textarea" placeholder="Décrivez votre demande..." required></textarea>
+                <div class="card" style="margin-bottom: 1rem;">
+                    <h3 style="color: hsl(var(--primary)); margin-bottom: 1rem;">Stockage local</h3>
+                    <p style="color: hsl(var(--muted-foreground)); line-height: 1.6;">
+                        Vos documents sont stockés localement dans votre navigateur. Nous n'avons pas accès 
+                        à vos données personnelles sauf si vous nous contactez directement.
+                    </p>
                 </div>
                 
-                <div style="display: flex; gap: 1rem; margin-top: 2rem;">
-                    <button type="submit" class="btn btn-primary floating-btn" style="flex: 1;">
-                        <i class="fas fa-paper-plane"></i> Envoyer
-                    </button>
-                    <button type="button" class="btn btn-outline" onclick="closeModal('emailModal')" style="flex: 1;">
-                        <i class="fas fa-times"></i> Annuler
-                    </button>
+                <div class="card">
+                    <h3 style="color: hsl(var(--primary)); margin-bottom: 1rem;">Contact et support</h3>
+                    <p style="color: hsl(var(--muted-foreground)); line-height: 1.6;">
+                        Lorsque vous nous contactez via Snapchat, nous traitons vos messages uniquement 
+                        pour répondre à vos demandes de support.
+                    </p>
                 </div>
-            </form>
+            </div>
             
             <div style="text-align: center; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid hsl(var(--border));">
                 <p style="color: hsl(var(--muted-foreground)); margin-bottom: 1rem; font-size: 0.9rem;">
-                    💡 Pour une réponse plus rapide, contactez-nous via Snapchat !
+                    Des questions sur notre politique de confidentialité ?
                 </p>
-                <button class="snapchat-btn" onclick="openSnapchat(); closeModal('emailModal');">
-                    <i class="fab fa-snapchat-ghost"></i> Snapchat
+                <button class="snapchat-btn" onclick="openSnapchat(); closeModal('privacyModal');">
+                    <i class="fab fa-snapchat-ghost"></i> Contactez-nous
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Terms Modal -->
+    <div id="termsModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('termsModal')">
+                <i class="fas fa-times"></i>
+            </button>
+            <h2 style="color: hsl(var(--primary)); margin-bottom: 1.5rem;">
+                <i class="fas fa-scroll"></i> Conditions d'Utilisation
+            </h2>
+            
+            <div style="max-height: 60vh; overflow-y: auto;">
+                <div class="card" style="margin-bottom: 1rem;">
+                    <h3 style="color: hsl(var(--primary)); margin-bottom: 1rem;">Utilisation du service</h3>
+                    <p style="color: hsl(var(--muted-foreground)); line-height: 1.6;">
+                        OneBox Editor est un service gratuit d'édition de documents. Vous êtes responsable 
+                        du contenu que vous créez et stockez.
+                    </p>
+                </div>
+                
+                <div class="card" style="margin-bottom: 1rem;">
+                    <h3 style="color: hsl(var(--primary)); margin-bottom: 1rem;">Responsabilités</h3>
+                    <ul style="color: hsl(var(--muted-foreground)); line-height: 1.8;">
+                        <li>Utilisez le service de manière légale et respectueuse</li>
+                        <li>Ne partagez pas de contenu illégal ou nuisible</li>
+                        <li>Sauvegardez vos documents importants</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3 style="color: hsl(var(--primary)); margin-bottom: 1rem;">Support</h3>
+                    <p style="color: hsl(var(--muted-foreground)); line-height: 1.6;">
+                        Le support est fourni via Snapchat pour une assistance rapide et personnalisée.
+                    </p>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid hsl(var(--border));">
+                <button class="snapchat-btn" onclick="openSnapchat(); closeModal('termsModal');">
+                    <i class="fab fa-snapchat-ghost"></i> Questions ? Contactez-nous
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cookies Modal -->
+    <div id="cookiesModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('cookiesModal')">
+                <i class="fas fa-times"></i>
+            </button>
+            <h2 style="color: hsl(var(--primary)); margin-bottom: 1.5rem;">
+                <i class="fas fa-cookie-bite"></i> Gestion des Cookies
+            </h2>
+            
+            <div style="max-height: 60vh; overflow-y: auto;">
+                <div class="card" style="margin-bottom: 1rem;">
+                    <h3 style="color: hsl(var(--primary)); margin-bottom: 1rem;">Cookies utilisés</h3>
+                    <p style="color: hsl(var(--muted-foreground)); line-height: 1.6;">
+                        OneBox Editor utilise le stockage local de votre navigateur pour sauvegarder 
+                        vos documents et préférences. Aucun cookie de tracking n'est utilisé.
+                    </p>
+                </div>
+                
+                <div class="card" style="margin-bottom: 1rem;">
+                    <h3 style="color: hsl(var(--primary)); margin-bottom: 1rem;">Stockage local</h3>
+                    <ul style="color: hsl(var(--muted-foreground)); line-height: 1.8;">
+                        <li>Sauvegarde automatique des documents</li>
+                        <li>Préférences de l'interface utilisateur</li>
+                        <li>Aucune donnée personnelle partagée</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3 style="color: hsl(var(--primary)); margin-bottom: 1rem;">Contrôle</h3>
+                    <p style="color: hsl(var(--muted-foreground)); line-height: 1.6;">
+                        Vous pouvez vider le cache de votre navigateur à tout moment pour supprimer 
+                        les données stockées localement.
+                    </p>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid hsl(var(--border));">
+                <button class="snapchat-btn" onclick="openSnapchat(); closeModal('cookiesModal');">
+                    <i class="fab fa-snapchat-ghost"></i> Plus d'infos
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Legal Modal -->
+    <div id="legalModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('legalModal')">
+                <i class="fas fa-times"></i>
+            </button>
+            <h2 style="color: hsl(var(--primary)); margin-bottom: 1.5rem;">
+                <i class="fas fa-balance-scale"></i> Mentions Légales
+            </h2>
+            
+            <div style="max-height: 60vh; overflow-y: auto;">
+                <div class="card" style="margin-bottom: 1rem;">
+                    <h3 style="color: hsl(var(--primary)); margin-bottom: 1rem;">Éditeur du site</h3>
+                    <p style="color: hsl(var(--muted-foreground)); line-height: 1.6;">
+                        OneBox Editor<br>
+                        Service d'édition de documents en ligne<br>
+                        France
+                    </p>
+                </div>
+                
+                <div class="card" style="margin-bottom: 1rem;">
+                    <h3 style="color: hsl(var(--primary)); margin-bottom: 1rem;">Hébergement</h3>
+                    <p style="color: hsl(var(--muted-foreground)); line-height: 1.6;">
+                        Application hébergée localement dans votre navigateur.<br>
+                        Aucun serveur externe ne stocke vos données.
+                    </p>
+                </div>
+                
+                <div class="card">
+                    <h3 style="color: hsl(var(--primary)); margin-bottom: 1rem;">Contact légal</h3>
+                    <p style="color: hsl(var(--muted-foreground)); line-height: 1.6;">
+                        Pour toute question juridique, contactez-nous via Snapchat 
+                        pour une réponse rapide et personnalisée.
+                    </p>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid hsl(var(--border));">
+                <button class="snapchat-btn" onclick="openSnapchat(); closeModal('legalModal');">
+                    <i class="fab fa-snapchat-ghost"></i> Contact légal
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Security Modal -->
+    <div id="securityModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('securityModal')">
+                <i class="fas fa-times"></i>
+            </button>
+            <h2 style="color: hsl(var(--primary)); margin-bottom: 1.5rem;">
+                <i class="fas fa-lock"></i> Sécurité des Données
+            </h2>
+            
+            <div style="max-height: 60vh; overflow-y: auto;">
+                <div class="card" style="margin-bottom: 1rem;">
+                    <h3 style="color: hsl(var(--primary)); margin-bottom: 1rem;">Sécurité locale</h3>
+                    <p style="color: hsl(var(--muted-foreground)); line-height: 1.6;">
+                        Vos documents sont stockés uniquement dans votre navigateur. Aucune donnée 
+                        n'est transmise à des serveurs externes, garantissant une sécurité maximale.
+                    </p>
+                </div>
+                
+                <div class="card" style="margin-bottom: 1rem;">
+                    <h3 style="color: hsl(var(--primary)); margin-bottom: 1rem;">Chiffrement</h3>
+                    <p style="color: hsl(var(--muted-foreground)); line-height: 1.6;">
+                        L'application utilise HTTPS pour toutes les communications. Le stockage local 
+                        de votre navigateur bénéficie des protections intégrées du navigateur.
+                    </p>
+                </div>
+                
+                <div class="card" style="margin-bottom: 1rem;">
+                    <h3 style="color: hsl(var(--primary)); margin-bottom: 1rem;">Recommandations</h3>
+                    <ul style="color: hsl(var(--muted-foreground)); line-height: 1.8;">
+                        <li>Utilisez un navigateur à jour</li>
+                        <li>Sauvegardez régulièrement vos documents</li>
+                        <li>Utilisez un antivirus à jour</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3 style="color: hsl(var(--primary)); margin-bottom: 1rem;">Signalement</h3>
+                    <p style="color: hsl(var(--muted-foreground)); line-height: 1.6;">
+                        En cas de problème de sécurité, contactez-nous immédiatement via Snapchat 
+                        pour une réponse prioritaire.
+                    </p>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid hsl(var(--border));">
+                <button class="snapchat-btn floating-btn" onclick="openSnapchat(); closeModal('securityModal');" style="background: linear-gradient(135deg, #dc2626, #ef4444);">
+                    <i class="fab fa-snapchat-ghost"></i> Signalement sécurité
                 </button>
             </div>
         </div>
@@ -1711,20 +2025,19 @@
                     <ul>
                         <li><a href="#" onclick="openModal('helpModal')"><i class="fas fa-question-circle"></i> Centre d'aide</a></li>
                         <li><a href="#" onclick="showSection('contact')"><i class="fab fa-snapchat-ghost"></i> Contact Snapchat</a></li>
-                        <li><a href="#" onclick="openModal('emailModal')"><i class="fas fa-envelope"></i> Contact Email</a></li>
-                        <li><a href="#"><i class="fas fa-file-alt"></i> Documentation</a></li>
-                        <li><a href="#"><i class="fas fa-bug"></i> Signaler un bug</a></li>
+                        <li><a href="#" onclick="openModal('documentationModal')"><i class="fas fa-file-alt"></i> Documentation</a></li>
+                        <li><a href="#" onclick="openModal('bugReportModal')"><i class="fas fa-bug"></i> Signaler un bug</a></li>
                     </ul>
                 </div>
                 
                 <div class="footer-section">
                     <h3><i class="fas fa-gavel"></i> Légal & Sécurité</h3>
                     <ul>
-                        <li><a href="#"><i class="fas fa-shield-alt"></i> Politique de confidentialité</a></li>
-                        <li><a href="#"><i class="fas fa-scroll"></i> Conditions d'utilisation</a></li>
-                        <li><a href="#"><i class="fas fa-cookie-bite"></i> Gestion des cookies</a></li>
-                        <li><a href="#"><i class="fas fa-balance-scale"></i> Mentions légales</a></li>
-                        <li><a href="#"><i class="fas fa-lock"></i> Sécurité des données</a></li>
+                        <li><a href="#" onclick="openModal('privacyModal')"><i class="fas fa-shield-alt"></i> Politique de confidentialité</a></li>
+                        <li><a href="#" onclick="openModal('termsModal')"><i class="fas fa-scroll"></i> Conditions d'utilisation</a></li>
+                        <li><a href="#" onclick="openModal('cookiesModal')"><i class="fas fa-cookie-bite"></i> Gestion des cookies</a></li>
+                        <li><a href="#" onclick="openModal('legalModal')"><i class="fas fa-balance-scale"></i> Mentions légales</a></li>
+                        <li><a href="#" onclick="openModal('securityModal')"><i class="fas fa-lock"></i> Sécurité des données</a></li>
                     </ul>
                 </div>
                 
