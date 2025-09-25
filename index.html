@@ -419,6 +419,146 @@
             color: hsl(var(--primary));
         }
 
+        /* Glass Effect */
+        .glass-effect {
+            background: rgba(13, 27, 42, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* 3D Effects */
+        .perspective-card {
+            transform-style: preserve-3d;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: perspective(1000px);
+        }
+
+        .perspective-card:hover {
+            transform: perspective(1000px) rotateX(8deg) rotateY(8deg) scale(1.05);
+        }
+
+        .neon-glow {
+            box-shadow: 0 0 30px rgba(6, 214, 160, 0.5), 0 0 60px rgba(6, 214, 160, 0.3);
+        }
+
+        .floating-btn {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: translateZ(0);
+        }
+
+        .floating-btn:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 12px 35px rgba(6, 214, 160, 0.6);
+        }
+
+        .snapchat-btn {
+            background: linear-gradient(135deg, #FFFC00, #FFD700);
+            color: #000;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .snapchat-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(255, 252, 0, 0.4);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            backdrop-filter: blur(10px);
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: hsl(var(--card));
+            border: 1px solid hsl(var(--border));
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9) translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: hsl(var(--muted-foreground));
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background: hsl(var(--muted));
+            color: hsl(var(--foreground));
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid hsl(var(--border));
+            border-radius: 8px;
+            background: hsl(var(--input));
+            color: hsl(var(--foreground));
+            font-size: 1rem;
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
         /* Footer */
         .footer {
             background: hsl(var(--card));
@@ -443,10 +583,17 @@
             list-style: none;
         }
 
+        .footer-section li {
+            margin-bottom: 0.5rem;
+        }
+
         .footer-section a {
             color: hsl(var(--muted-foreground));
             text-decoration: none;
             transition: color 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .footer-section a:hover {
@@ -478,6 +625,26 @@
             transform: translateY(-2px);
         }
 
+        /* Footer Bottom */
+        .footer-bottom {
+            border-top: 1px solid hsl(var(--border));
+            padding-top: 2rem;
+            text-align: center;
+            color: hsl(var(--muted-foreground));
+        }
+
+        /* Animations */
+        @keyframes rotate {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
         /* Toast Notifications */
         .toast {
             position: fixed;
@@ -497,10 +664,32 @@
             transform: translateX(0);
         }
 
-        /* Responsive */
-        @media (max-width: 768px) {
+        /* Responsive Design */
+        /* Mobile First Approach */
+        @media (max-width: 767px) {
+            /* Mobile phones */
             .nav-menu {
                 display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: rgba(13, 27, 42, 0.98);
+                flex-direction: column;
+                padding: 1rem;
+                border-radius: 0 0 12px 12px;
+                backdrop-filter: blur(20px);
+                z-index: 1001;
+            }
+            
+            .nav-menu li {
+                margin-bottom: 0.5rem;
+            }
+            
+            .nav-link {
+                padding: 1rem;
+                border-radius: 8px;
+                display: block;
             }
             
             .mobile-menu-toggle {
@@ -509,6 +698,28 @@
             
             .hero-title {
                 font-size: 2.5rem;
+                line-height: 1.2;
+            }
+            
+            .hero-subtitle {
+                font-size: 1.2rem;
+            }
+            
+            .container {
+                padding: 0 1rem;
+            }
+            
+            .grid-3 {
+                grid-template-columns: 1fr !important;
+                gap: 1rem;
+            }
+            
+            .grid-2 {
+                grid-template-columns: 1fr !important;
+            }
+            
+            .card {
+                padding: 1.5rem;
             }
             
             .ribbon-panel {
@@ -516,12 +727,166 @@
             }
             
             .document-container {
-                margin: 0 1rem;
-                max-width: calc(100% - 2rem);
+                margin: 0 0.5rem;
+                max-width: calc(100% - 1rem);
             }
             
             .document-content {
-                padding: 48px 36px;
+                padding: 24px 18px;
+            }
+            
+            .modal-content {
+                width: 95% !important;
+                margin: 1rem auto;
+                padding: 1.5rem;
+                max-height: 90vh;
+            }
+            
+            .footer-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+            
+            .footer-bottom > div {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+            
+            /* Contact section mobile adjustments */
+            .perspective-card {
+                transform: scale(1) !important;
+                padding: 1.5rem !important;
+            }
+            
+            .snapchat-btn {
+                padding: 1rem;
+                font-size: 1rem;
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* Tablets */
+        @media (min-width: 768px) and (max-width: 1024px) {
+            .container {
+                padding: 0 2rem;
+            }
+            
+            .hero-title {
+                font-size: 3.5rem;
+            }
+            
+            .grid-3 {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+            
+            .nav-menu {
+                gap: 1rem;
+            }
+            
+            .nav-link {
+                padding: 0.75rem 1rem;
+                font-size: 0.9rem;
+            }
+            
+            .document-container {
+                margin: 0 2rem;
+                max-width: calc(100% - 4rem);
+            }
+            
+            .modal-content {
+                width: 85%;
+                max-width: 600px;
+            }
+            
+            .footer-content {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            /* Ribbon adjustments for tablet */
+            .ribbon-panel {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Desktop */
+        @media (min-width: 1025px) {
+            .container {
+                max-width: 1400px;
+                padding: 0 2rem;
+            }
+            
+            .hero-title {
+                font-size: 4rem;
+            }
+            
+            .grid-3 {
+                grid-template-columns: repeat(3, 1fr) !important;
+            }
+            
+            .nav-menu {
+                gap: 2rem;
+            }
+            
+            .document-container {
+                max-width: 816px;
+            }
+            
+            .modal-content {
+                width: 90%;
+                max-width: 500px;
+            }
+            
+            .footer-content {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            }
+            
+            /* Desktop hover effects */
+            .perspective-card:hover {
+                transform: perspective(1000px) rotateX(8deg) rotateY(8deg) scale(1.05);
+            }
+            
+            .floating-btn:hover {
+                transform: translateY(-4px) scale(1.02);
+                box-shadow: 0 12px 35px rgba(6, 214, 160, 0.6);
+            }
+        }
+
+        /* Large screens */
+        @media (min-width: 1440px) {
+            .container {
+                max-width: 1600px;
+            }
+            
+            .hero-title {
+                font-size: 4.5rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1.8rem;
+            }
+        }
+
+        /* High DPI / Retina displays */
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            .logo-icon, .social-icon {
+                image-rendering: -webkit-optimize-contrast;
+            }
+        }
+
+        /* Landscape orientation adjustments */
+        @media (orientation: landscape) and (max-height: 600px) {
+            .hero {
+                padding: 40px 0;
+            }
+            
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .modal-content {
+                max-height: 85vh;
             }
         }
 
@@ -556,10 +921,27 @@
                 OneBox Editor
             </a>
             <ul class="nav-menu">
-                <li><a href="#" class="nav-link active" onclick="showSection('home')" data-section="home">Accueil</a></li>
-                <li><a href="#" class="nav-link" onclick="showSection('editor')" data-section="editor">Éditeur</a></li>
-                <li><a href="#" class="nav-link" onclick="showSection('mes-documents')" data-section="mes-documents">Mes Documents</a></li>
-                <li><a href="#" class="nav-link" onclick="showSection('contact')" data-section="contact">Contact</a></li>
+                <li><a href="#" class="nav-link active" onclick="showSection('home')" data-section="home">
+                    <i class="fas fa-home"></i> Accueil
+                </a></li>
+                <li><a href="#" class="nav-link" onclick="showSection('editor')" data-section="editor">
+                    <i class="fas fa-edit"></i> Éditeur
+                </a></li>
+                <li><a href="#" class="nav-link" onclick="showSection('mes-documents')" data-section="mes-documents">
+                    <i class="fas fa-folder"></i> Documents
+                </a></li>
+                <li><a href="#" class="nav-link" onclick="openModal('helpModal')">
+                    <i class="fas fa-question-circle"></i> Aide
+                </a></li>
+                <li><a href="#" class="nav-link" onclick="openModal('aboutModal')">
+                    <i class="fas fa-info-circle"></i> À propos
+                </a></li>
+                <li><a href="#" class="nav-link" onclick="showSection('contact')" data-section="contact">
+                    <i class="fab fa-snapchat-ghost"></i> Contact
+                </a></li>
+                <li><a href="#" class="nav-link" onclick="openModal('loginModal')">
+                    <i class="fas fa-sign-in-alt"></i> Connexion
+                </a></li>
             </ul>
             <button class="mobile-menu-toggle">
                 <i class="fas fa-bars"></i>
@@ -892,53 +1274,411 @@
     <section id="contact" class="section" style="display: none;">
         <div class="container">
             <div style="text-align: center; margin-bottom: 4rem;">
-                <h2 style="font-size: 2.5rem; color: hsl(var(--primary)); margin-bottom: 1rem;">
-                    <i class="fas fa-envelope"></i> Contactez-nous
-                </h2>
+                <!-- 3D Header with Snapchat Branding -->
+                <div class="perspective-card neon-glow" style="display: inline-block; padding: 2rem 3rem; background: linear-gradient(135deg, #FFFC00, #FFD700, #FFA500); border-radius: 25px; margin-bottom: 2rem; transform: rotateX(5deg) rotateY(-5deg); box-shadow: 0 15px 40px rgba(255, 252, 0, 0.4);">
+                    <i class="fab fa-snapchat-ghost" style="font-size: 4rem; color: #000; margin-bottom: 1rem; display: block; animation: bounce 2s infinite;"></i>
+                    <h2 style="font-size: 2.5rem; color: #000; font-weight: 800; margin: 0; text-shadow: 2px 2px 4px rgba(0,0,0,0.1);">
+                        Contactez-nous sur Snapchat ! 💪🏾
+                    </h2>
+                </div>
+                
                 <p style="font-size: 1.2rem; color: hsl(var(--muted-foreground)); max-width: 600px; margin: 0 auto;">
-                    Vous avez des questions sur l'éditeur ? Contactez notre équipe pour obtenir de l'aide.
+                    Pour un support <strong>rapide</strong> et <strong>personnalisé</strong>, contactez-nous directement via Snapchat ! 
+                    Notre équipe vous répond en temps réel avec des solutions adaptées.
                 </p>
             </div>
             
-            <div style="max-width: 600px; margin: 0 auto;">
-                <div class="card">
-                    <div style="text-align: center; margin-bottom: 2rem;">
-                        <div style="width: 80px; height: 80px; background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent))); border-radius: 50%; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center;">
-                            <i class="fas fa-headset" style="color: white; font-size: 2rem;"></i>
-                        </div>
-                        <h3 style="color: hsl(var(--foreground)); margin-bottom: 1rem;">Support Technique</h3>
-                        <p style="color: hsl(var(--muted-foreground));">Notre équipe est là pour vous aider avec l'éditeur OneBox</p>
-                    </div>
+            <!-- Main Snapchat Contact Card -->
+            <div style="max-width: 800px; margin: 0 auto;">
+                <div class="card perspective-card glass-effect neon-glow" style="background: linear-gradient(135deg, rgba(255, 252, 0, 0.1), rgba(255, 215, 0, 0.1)); border: 2px solid #FFFC00; padding: 3rem; text-align: center; transform: scale(1.05); box-shadow: 0 20px 60px rgba(255, 252, 0, 0.3);">
                     
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; text-align: center;">
-                        <div>
-                            <i class="fas fa-envelope" style="color: hsl(var(--primary)); font-size: 1.5rem; margin-bottom: 0.5rem;"></i>
-                            <p style="color: hsl(var(--foreground)); font-weight: 600;">Email</p>
-                            <p style="color: hsl(var(--muted-foreground)); font-size: 0.9rem;">support@onebox.fr</p>
+                    <!-- Snapchat Logo 3D -->
+                    <div style="position: relative; margin-bottom: 2rem;">
+                        <div class="floating-btn" style="width: 120px; height: 120px; background: linear-gradient(135deg, #FFFC00, #FFD700); border-radius: 50%; margin: 0 auto; display: flex; align-items: center; justify-content: center; border: 4px solid #FFA500; box-shadow: 0 10px 30px rgba(255, 165, 0, 0.5);">
+                            <i class="fab fa-snapchat-ghost" style="font-size: 4rem; color: #000;"></i>
                         </div>
-                        <div>
-                            <i class="fas fa-clock" style="color: hsl(var(--primary)); font-size: 1.5rem; margin-bottom: 0.5rem;"></i>
-                            <p style="color: hsl(var(--foreground)); font-weight: 600;">Horaires</p>
-                            <p style="color: hsl(var(--muted-foreground)); font-size: 0.9rem;">Lun-Ven 9h-18h</p>
+                        
+                        <!-- Animated circles around logo -->
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 140px; height: 140px; border: 2px dashed #FFFC00; border-radius: 50%; animation: rotate 10s linear infinite; opacity: 0.6;"></div>
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 160px; height: 160px; border: 1px solid #FFD700; border-radius: 50%; animation: rotate 15s linear infinite reverse; opacity: 0.4;"></div>
+                    </div>
+
+                    <h3 style="font-size: 2rem; color: hsl(var(--foreground)); margin-bottom: 1rem; font-weight: 700;">
+                        🚀 Support Instantané via Snapchat
+                    </h3>
+                    
+                    <div style="margin: 2rem 0;">
+                        <p style="font-size: 1.1rem; color: hsl(var(--muted-foreground)); margin-bottom: 1rem;">
+                            <strong>✨ Pourquoi Snapchat ?</strong>
+                        </p>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+                            <div class="perspective-card" style="background: rgba(6, 214, 160, 0.1); border-radius: 12px; padding: 1rem;">
+                                <i class="fas fa-bolt" style="color: #FFFC00; font-size: 1.5rem; margin-bottom: 0.5rem;"></i>
+                                <p style="margin: 0; color: hsl(var(--foreground)); font-weight: 600;">Réponse Instantanée</p>
+                            </div>
+                            <div class="perspective-card" style="background: rgba(6, 214, 160, 0.1); border-radius: 12px; padding: 1rem;">
+                                <i class="fas fa-camera" style="color: #FFFC00; font-size: 1.5rem; margin-bottom: 0.5rem;"></i>
+                                <p style="margin: 0; color: hsl(var(--foreground)); font-weight: 600;">Support Visuel</p>
+                            </div>
+                            <div class="perspective-card" style="background: rgba(6, 214, 160, 0.1); border-radius: 12px; padding: 1rem;">
+                                <i class="fas fa-heart" style="color: #FFFC00; font-size: 1.5rem; margin-bottom: 0.5rem;"></i>
+                                <p style="margin: 0; color: hsl(var(--foreground)); font-weight: 600;">Support Humain</p>
+                            </div>
                         </div>
+                    </div>
+
+                    <!-- Main CTA Button -->
+                    <div style="margin: 2rem 0;">
+                        <button class="floating-btn" onclick="openSnapchat()" style="background: linear-gradient(135deg, #FFFC00, #FFD700); color: #000; font-size: 1.3rem; padding: 1rem 2rem; border-radius: 50px; border: none; font-weight: 800; cursor: pointer; box-shadow: 0 10px 30px rgba(255, 252, 0, 0.5); transform: scale(1.1); transition: all 0.3s ease;">
+                            <i class="fab fa-snapchat-ghost" style="margin-right: 0.5rem; font-size: 1.5rem;"></i>
+                            Ouvrir Snapchat - Support OneBox
+                        </button>
+                    </div>
+
+                    <!-- Quick Info -->
+                    <div style="background: rgba(0, 0, 0, 0.2); border-radius: 12px; padding: 1.5rem; margin-top: 2rem;">
+                        <div style="display: flex; align-items: center; justify-content: center; gap: 1rem; margin-bottom: 1rem;">
+                            <i class="fas fa-clock" style="color: #FFFC00;"></i>
+                            <span style="color: hsl(var(--foreground)); font-weight: 600;">Support disponible 24h/24 - 7j/7</span>
+                        </div>
+                        <p style="color: hsl(var(--muted-foreground)); margin: 0; font-size: 0.95rem;">
+                            📱 Scannez, envoyez un message ou cliquez directement sur le bouton ci-dessus !<br>
+                            Notre équipe OneBox vous accompagne instantanément pour toute question ou problème.
+                        </p>
+                    </div>
+
+                    <!-- Alternative if Snapchat not available -->
+                    <div style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid rgba(255, 252, 0, 0.3);">
+                        <p style="color: hsl(var(--muted-foreground)); font-size: 0.9rem; margin-bottom: 1rem;">
+                            Snapchat non disponible ? Pas de problème !
+                        </p>
+                        <button class="btn btn-outline floating-btn" onclick="copySnapchatLink()" style="margin-right: 1rem;">
+                            <i class="fas fa-copy"></i>
+                            Copier le lien
+                        </button>
+                        <button class="btn btn-secondary floating-btn" onclick="shareSnapchatLink()">
+                            <i class="fas fa-share"></i>
+                            Partager
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
+    <!-- Contact Section -->
+    <section id="contact" class="section" style="display: none;">
+        <div class="container">
+            <div style="text-align: center; margin-bottom: 4rem;">
+                <!-- 3D Header with Snapchat Branding -->
+                <div class="perspective-card neon-glow" style="display: inline-block; padding: 2rem 3rem; background: linear-gradient(135deg, #FFFC00, #FFD700, #FFA500); border-radius: 25px; margin-bottom: 2rem; transform: rotateX(5deg) rotateY(-5deg); box-shadow: 0 15px 40px rgba(255, 252, 0, 0.4);">
+                    <i class="fab fa-snapchat-ghost" style="font-size: 4rem; color: #000; margin-bottom: 1rem; display: block; animation: bounce 2s infinite;"></i>
+                    <h2 style="font-size: 2.5rem; color: #000; font-weight: 800; margin: 0; text-shadow: 2px 2px 4px rgba(0,0,0,0.1);">
+                        Contactez-nous sur Snapchat ! 💪🏾
+                    </h2>
+                </div>
+                
+                <p style="font-size: 1.2rem; color: hsl(var(--muted-foreground)); max-width: 600px; margin: 0 auto;">
+                    Pour un support <strong>rapide</strong> et <strong>personnalisé</strong>, contactez-nous directement via Snapchat ! 
+                    Notre équipe vous répond en temps réel avec des solutions adaptées.
+                </p>
+            </div>
+            
+            <!-- Main Snapchat Contact Card -->
+            <div style="max-width: 800px; margin: 0 auto;">
+                <div class="card perspective-card glass-effect neon-glow" style="background: linear-gradient(135deg, rgba(255, 252, 0, 0.1), rgba(255, 215, 0, 0.1)); border: 2px solid #FFFC00; padding: 3rem; text-align: center; transform: scale(1.05); box-shadow: 0 20px 60px rgba(255, 252, 0, 0.3);">
+                    
+                    <!-- Snapchat Logo 3D -->
+                    <div style="position: relative; margin-bottom: 2rem;">
+                        <div class="floating-btn" style="width: 120px; height: 120px; background: linear-gradient(135deg, #FFFC00, #FFD700); border-radius: 50%; margin: 0 auto; display: flex; align-items: center; justify-content: center; border: 4px solid #FFA500; box-shadow: 0 10px 30px rgba(255, 165, 0, 0.5);">
+                            <i class="fab fa-snapchat-ghost" style="font-size: 4rem; color: #000;"></i>
+                        </div>
+                        
+                        <!-- Animated circles around logo -->
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 140px; height: 140px; border: 2px dashed #FFFC00; border-radius: 50%; animation: rotate 10s linear infinite; opacity: 0.6;"></div>
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 160px; height: 160px; border: 1px solid #FFD700; border-radius: 50%; animation: rotate 15s linear infinite reverse; opacity: 0.4;"></div>
+                    </div>
+
+                    <h3 style="font-size: 2rem; color: hsl(var(--foreground)); margin-bottom: 1rem; font-weight: 700;">
+                        🚀 Support Instantané via Snapchat
+                    </h3>
+                    
+                    <div style="margin: 2rem 0;">
+                        <p style="font-size: 1.1rem; color: hsl(var(--muted-foreground)); margin-bottom: 1rem;">
+                            <strong>✨ Pourquoi Snapchat ?</strong>
+                        </p>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+                            <div class="perspective-card" style="background: rgba(6, 214, 160, 0.1); border-radius: 12px; padding: 1rem;">
+                                <i class="fas fa-bolt" style="color: #FFFC00; font-size: 1.5rem; margin-bottom: 0.5rem;"></i>
+                                <p style="margin: 0; color: hsl(var(--foreground)); font-weight: 600;">Réponse Instantanée</p>
+                            </div>
+                            <div class="perspective-card" style="background: rgba(6, 214, 160, 0.1); border-radius: 12px; padding: 1rem;">
+                                <i class="fas fa-camera" style="color: #FFFC00; font-size: 1.5rem; margin-bottom: 0.5rem;"></i>
+                                <p style="margin: 0; color: hsl(var(--foreground)); font-weight: 600;">Support Visuel</p>
+                            </div>
+                            <div class="perspective-card" style="background: rgba(6, 214, 160, 0.1); border-radius: 12px; padding: 1rem;">
+                                <i class="fas fa-heart" style="color: #FFFC00; font-size: 1.5rem; margin-bottom: 0.5rem;"></i>
+                                <p style="margin: 0; color: hsl(var(--foreground)); font-weight: 600;">Support Humain</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Main CTA Button -->
+                    <div style="margin: 2rem 0;">
+                        <button class="snapchat-btn floating-btn" onclick="openSnapchat()" style="font-size: 1.2rem; padding: 1rem 2rem; box-shadow: 0 10px 30px rgba(255, 252, 0, 0.4);">
+                            <i class="fab fa-snapchat-ghost" style="font-size: 1.5rem;"></i>
+                            Ouvrir Snapchat pour nous contacter
+                        </button>
+                    </div>
+
+                    <p style="color: hsl(var(--muted-foreground)); font-size: 0.9rem; margin-top: 1rem;">
+                        Scan le QR code ou clique sur le bouton pour nous contacter directement !
+                    </p>
+                </div>
+            </div>
+
+            <!-- Alternative Contact Methods -->
+            <div class="grid grid-3" style="margin-top: 3rem;">
+                <div class="card floating-btn">
+                    <div style="text-align: center;">
+                        <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #06D6A0, #118AB2); border-radius: 50%; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-envelope" style="color: white; font-size: 1.5rem;"></i>
+                        </div>
+                        <h4 style="color: hsl(var(--primary)); margin-bottom: 1rem;">Email traditionnel</h4>
+                        <p style="color: hsl(var(--muted-foreground)); margin-bottom: 1rem;">Envoyez-nous un email si vous préférez</p>
+                        <button class="btn btn-outline" onclick="openModal('emailModal')">
+                            <i class="fas fa-paper-plane"></i> Envoyer un email
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="card floating-btn">
+                    <div style="text-align: center;">
+                        <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #8B5CF6, #A855F7); border-radius: 50%; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-comments" style="color: white; font-size: 1.5rem;"></i>
+                        </div>
+                        <h4 style="color: hsl(var(--primary)); margin-bottom: 1rem;">Chat en direct</h4>
+                        <p style="color: hsl(var(--muted-foreground)); margin-bottom: 1rem;">Démarrez une conversation instantanée</p>
+                        <button class="snapchat-btn" onclick="openSnapchat()">
+                            <i class="fab fa-snapchat-ghost"></i> Chat Snapchat
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="card floating-btn">
+                    <div style="text-align: center;">
+                        <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #FFD60A, #F77F00); border-radius: 50%; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-question-circle" style="color: white; font-size: 1.5rem;"></i>
+                        </div>
+                        <h4 style="color: hsl(var(--primary)); margin-bottom: 1rem;">FAQ & Aide</h4>
+                        <p style="color: hsl(var(--muted-foreground)); margin-bottom: 1rem;">Trouvez rapidement des réponses</p>
+                        <button class="btn btn-primary" onclick="openModal('helpModal')">
+                            <i class="fas fa-book"></i> Voir l'aide
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modals -->
+    <!-- About Modal -->
+    <div id="aboutModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('aboutModal')">
+                <i class="fas fa-times"></i>
+            </button>
+            <h2 style="color: hsl(var(--primary)); margin-bottom: 1.5rem;">
+                <i class="fas fa-info-circle"></i> À propos d'OneBox Editor
+            </h2>
+            <p style="margin-bottom: 1rem;">
+                OneBox Editor est un éditeur de documents professionnel conçu pour offrir une expérience similaire à Word Online,
+                entièrement en français et optimisé pour les utilisateurs francophones.
+            </p>
+            <div style="margin: 1.5rem 0;">
+                <h4 style="color: hsl(var(--primary)); margin-bottom: 0.5rem;">Fonctionnalités principales :</h4>
+                <ul style="list-style: none; padding: 0;">
+                    <li style="margin-bottom: 0.5rem;"><i class="fas fa-check" style="color: #06D6A0; margin-right: 0.5rem;"></i> Interface Word Online familière</li>
+                    <li style="margin-bottom: 0.5rem;"><i class="fas fa-check" style="color: #06D6A0; margin-right: 0.5rem;"></i> Formatage de texte avancé</li>
+                    <li style="margin-bottom: 0.5rem;"><i class="fas fa-check" style="color: #06D6A0; margin-right: 0.5rem;"></i> Export PDF intégré</li>
+                    <li style="margin-bottom: 0.5rem;"><i class="fas fa-check" style="color: #06D6A0; margin-right: 0.5rem;"></i> Sauvegarde automatique</li>
+                    <li style="margin-bottom: 0.5rem;"><i class="fas fa-check" style="color: #06D6A0; margin-right: 0.5rem;"></i> Support Snapchat intégré</li>
+                </ul>
+            </div>
+            <p style="color: hsl(var(--muted-foreground)); font-size: 0.9rem;">
+                Version 1.0.0 - Développé avec ❤️ pour la communauté francophone
+            </p>
+        </div>
+    </div>
+
+    <!-- Help Modal -->
+    <div id="helpModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('helpModal')">
+                <i class="fas fa-times"></i>
+            </button>
+            <h2 style="color: hsl(var(--primary)); margin-bottom: 1.5rem;">
+                <i class="fas fa-question-circle"></i> Aide & Documentation
+            </h2>
+            
+            <div style="margin-bottom: 2rem;">
+                <h4 style="color: hsl(var(--primary)); margin-bottom: 1rem;">🚀 Démarrage rapide</h4>
+                <ol style="padding-left: 1.5rem; color: hsl(var(--muted-foreground));">
+                    <li style="margin-bottom: 0.5rem;">Cliquez sur "Éditeur" dans le menu</li>
+                    <li style="margin-bottom: 0.5rem;">Utilisez la barre d'outils pour formater votre texte</li>
+                    <li style="margin-bottom: 0.5rem;">Sauvegardez avec Ctrl+S ou l'icône de sauvegarde</li>
+                    <li style="margin-bottom: 0.5rem;">Exportez en PDF avec le bouton d'export</li>
+                </ol>
+            </div>
+
+            <div style="margin-bottom: 2rem;">
+                <h4 style="color: hsl(var(--primary)); margin-bottom: 1rem;">💬 Support Snapchat</h4>
+                <p style="color: hsl(var(--muted-foreground)); margin-bottom: 1rem;">
+                    Notre équipe support est disponible via Snapchat pour vous aider en temps réel !
+                </p>
+                <button class="snapchat-btn floating-btn" onclick="openSnapchat(); closeModal('helpModal');">
+                    <i class="fab fa-snapchat-ghost"></i> Contacter le support
+                </button>
+            </div>
+
+            <div>
+                <h4 style="color: hsl(var(--primary)); margin-bottom: 1rem;">⌨️ Raccourcis clavier</h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; font-size: 0.9rem;">
+                    <div><kbd style="background: hsl(var(--muted)); padding: 2px 6px; border-radius: 4px;">Ctrl+B</kbd> - Gras</div>
+                    <div><kbd style="background: hsl(var(--muted)); padding: 2px 6px; border-radius: 4px;">Ctrl+I</kbd> - Italique</div>
+                    <div><kbd style="background: hsl(var(--muted)); padding: 2px 6px; border-radius: 4px;">Ctrl+U</kbd> - Souligné</div>
+                    <div><kbd style="background: hsl(var(--muted)); padding: 2px 6px; border-radius: 4px;">Ctrl+S</kbd> - Sauvegarder</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('loginModal')">
+                <i class="fas fa-times"></i>
+            </button>
+            <h2 style="color: hsl(var(--primary)); margin-bottom: 1.5rem; text-align: center;">
+                <i class="fas fa-sign-in-alt"></i> Connexion OneBox
+            </h2>
+            
+            <form onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label class="form-label" for="loginEmail">
+                        <i class="fas fa-envelope"></i> Email
+                    </label>
+                    <input type="email" id="loginEmail" class="form-input" placeholder="votre@email.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="loginPassword">
+                        <i class="fas fa-lock"></i> Mot de passe
+                    </label>
+                    <input type="password" id="loginPassword" class="form-input" placeholder="••••••••" required>
+                </div>
+                
+                <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                    <button type="submit" class="btn btn-primary floating-btn" style="flex: 1;">
+                        <i class="fas fa-sign-in-alt"></i> Se connecter
+                    </button>
+                    <button type="button" class="btn btn-outline" onclick="closeModal('loginModal')" style="flex: 1;">
+                        <i class="fas fa-times"></i> Annuler
+                    </button>
+                </div>
+            </form>
+            
+            <div style="text-align: center; margin-top: 2rem; padding-top: 1rem; border-top: 1px solid hsl(var(--border));">
+                <p style="color: hsl(var(--muted-foreground)); margin-bottom: 1rem;">Ou connectez-vous avec</p>
+                <button class="snapchat-btn floating-btn" onclick="openSnapchat(); closeModal('loginModal');">
+                    <i class="fab fa-snapchat-ghost"></i> Connexion Snapchat
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Email Modal -->
+    <div id="emailModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('emailModal')">
+                <i class="fas fa-times"></i>
+            </button>
+            <h2 style="color: hsl(var(--primary)); margin-bottom: 1.5rem;">
+                <i class="fas fa-envelope"></i> Nous contacter par email
+            </h2>
+            
+            <form onsubmit="handleEmailContact(event)">
+                <div class="form-group">
+                    <label class="form-label" for="contactName">
+                        <i class="fas fa-user"></i> Nom complet
+                    </label>
+                    <input type="text" id="contactName" class="form-input" placeholder="Votre nom" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="contactEmail">
+                        <i class="fas fa-envelope"></i> Email
+                    </label>
+                    <input type="email" id="contactEmail" class="form-input" placeholder="votre@email.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="contactSubject">
+                        <i class="fas fa-tag"></i> Sujet
+                    </label>
+                    <select id="contactSubject" class="form-select" required>
+                        <option value="">Choisissez un sujet</option>
+                        <option value="support">Support technique</option>
+                        <option value="bug">Signaler un bug</option>
+                        <option value="feature">Demande de fonctionnalité</option>
+                        <option value="other">Autre</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="contactMessage">
+                        <i class="fas fa-comment"></i> Message
+                    </label>
+                    <textarea id="contactMessage" class="form-textarea" placeholder="Décrivez votre demande..." required></textarea>
+                </div>
+                
+                <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                    <button type="submit" class="btn btn-primary floating-btn" style="flex: 1;">
+                        <i class="fas fa-paper-plane"></i> Envoyer
+                    </button>
+                    <button type="button" class="btn btn-outline" onclick="closeModal('emailModal')" style="flex: 1;">
+                        <i class="fas fa-times"></i> Annuler
+                    </button>
+                </div>
+            </form>
+            
+            <div style="text-align: center; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid hsl(var(--border));">
+                <p style="color: hsl(var(--muted-foreground)); margin-bottom: 1rem; font-size: 0.9rem;">
+                    💡 Pour une réponse plus rapide, contactez-nous via Snapchat !
+                </p>
+                <button class="snapchat-btn" onclick="openSnapchat(); closeModal('emailModal');">
+                    <i class="fab fa-snapchat-ghost"></i> Snapchat
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
                 <div class="footer-section">
-                    <h3>OneBox Editor</h3>
+                    <h3><i class="fas fa-cube" style="color: hsl(var(--primary));"></i> OneBox Editor</h3>
                     <p style="color: hsl(var(--muted-foreground)); margin-bottom: 1rem;">
-                        Éditeur de documents professionnel avec interface moderne et fonctionnalités avancées.
+                        Votre éditeur de documents professionnel en ligne avec support Snapchat intégré.
+                        Créez, modifiez et partagez vos documents en toute simplicité.
                     </p>
                     <div class="social-icons">
-                        <a href="#" class="social-icon" title="GitHub">
-                            <i class="fab fa-github"></i>
+                        <a href="#" class="social-icon" title="Snapchat - Contact direct" onclick="openSnapchat()">
+                            <i class="fab fa-snapchat-ghost"></i>
+                        </a>
+                        <a href="#" class="social-icon" title="Facebook">
+                            <i class="fab fa-facebook-f"></i>
                         </a>
                         <a href="#" class="social-icon" title="Twitter">
                             <i class="fab fa-twitter"></i>
@@ -946,34 +1686,94 @@
                         <a href="#" class="social-icon" title="LinkedIn">
                             <i class="fab fa-linkedin-in"></i>
                         </a>
+                        <a href="#" class="social-icon" title="Instagram">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="social-icon" title="TikTok">
+                            <i class="fab fa-tiktok"></i>
+                        </a>
                     </div>
                 </div>
                 
                 <div class="footer-section">
-                    <h3>Fonctionnalités</h3>
+                    <h3><i class="fas fa-link"></i> Navigation</h3>
                     <ul>
-                        <li><a href="#">Éditeur Word Online</a></li>
-                        <li><a href="#">Export PDF</a></li>
-                        <li><a href="#">Sauvegarde automatique</a></li>
-                        <li><a href="#">Formatage avancé</a></li>
+                        <li><a href="#" onclick="showSection('home')"><i class="fas fa-home"></i> Accueil</a></li>
+                        <li><a href="#" onclick="showSection('editor')"><i class="fas fa-edit"></i> Éditeur de documents</a></li>
+                        <li><a href="#" onclick="showSection('mes-documents')"><i class="fas fa-folder"></i> Mes Documents</a></li>
+                        <li><a href="#" onclick="openModal('aboutModal')"><i class="fas fa-info-circle"></i> À propos</a></li>
+                        <li><a href="#" onclick="openModal('loginModal')"><i class="fas fa-sign-in-alt"></i> Connexion</a></li>
                     </ul>
                 </div>
                 
                 <div class="footer-section">
-                    <h3>Support</h3>
+                    <h3><i class="fas fa-headset"></i> Support & Aide</h3>
                     <ul>
-                        <li><a href="#">Documentation</a></li>
-                        <li><a href="#">FAQ</a></li>
-                        <li><a href="#">Contact</a></li>
-                        <li><a href="#">Aide</a></li>
+                        <li><a href="#" onclick="openModal('helpModal')"><i class="fas fa-question-circle"></i> Centre d'aide</a></li>
+                        <li><a href="#" onclick="showSection('contact')"><i class="fab fa-snapchat-ghost"></i> Contact Snapchat</a></li>
+                        <li><a href="#" onclick="openModal('emailModal')"><i class="fas fa-envelope"></i> Contact Email</a></li>
+                        <li><a href="#"><i class="fas fa-file-alt"></i> Documentation</a></li>
+                        <li><a href="#"><i class="fas fa-bug"></i> Signaler un bug</a></li>
                     </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3><i class="fas fa-gavel"></i> Légal & Sécurité</h3>
+                    <ul>
+                        <li><a href="#"><i class="fas fa-shield-alt"></i> Politique de confidentialité</a></li>
+                        <li><a href="#"><i class="fas fa-scroll"></i> Conditions d'utilisation</a></li>
+                        <li><a href="#"><i class="fas fa-cookie-bite"></i> Gestion des cookies</a></li>
+                        <li><a href="#"><i class="fas fa-balance-scale"></i> Mentions légales</a></li>
+                        <li><a href="#"><i class="fas fa-lock"></i> Sécurité des données</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3><i class="fas fa-bell"></i> Restez connecté</h3>
+                    <p style="color: hsl(var(--muted-foreground)); margin-bottom: 1rem;">
+                        Recevez les dernières mises à jour et fonctionnalités directement.
+                    </p>
+                    
+                    <!-- Snapchat Priority Contact -->
+                    <div style="background: linear-gradient(135deg, rgba(255, 252, 0, 0.1), rgba(255, 215, 0, 0.1)); border: 1px solid #FFFC00; border-radius: 12px; padding: 1rem; margin-bottom: 1rem;">
+                        <h4 style="color: #FFFC00; margin-bottom: 0.5rem; font-size: 0.9rem;">
+                            <i class="fab fa-snapchat-ghost"></i> Contact prioritaire
+                        </h4>
+                        <button class="snapchat-btn" onclick="openSnapchat()" style="width: 100%; justify-content: center;">
+                            <i class="fab fa-snapchat-ghost"></i> Ouvrir Snapchat
+                        </button>
+                    </div>
+                    
+                    <!-- Email Newsletter -->
+                    <div style="margin-top: 1rem;">
+                        <label style="color: hsl(var(--muted-foreground)); font-size: 0.9rem; margin-bottom: 0.5rem; display: block;">
+                            <i class="fas fa-envelope"></i> Newsletter email
+                        </label>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <input type="email" id="newsletterEmail" placeholder="votre@email.com" style="flex: 1; padding: 8px; border: 1px solid hsl(var(--border)); border-radius: 4px; background: hsl(var(--input)); color: hsl(var(--foreground)); font-size: 0.9rem;">
+                            <button class="btn btn-primary" onclick="subscribeNewsletter()" style="padding: 8px 12px; font-size: 0.9rem;">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
             
-            <div style="text-align: center; padding-top: 2rem; border-top: 1px solid hsl(var(--border));">
-                <p style="color: hsl(var(--muted-foreground));">
-                    © 2024 OneBox Editor. Tous droits réservés.
-                </p>
+            <div class="footer-bottom">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                    <div>
+                        <p style="margin: 0; color: hsl(var(--muted-foreground));">
+                            &copy; 2024 OneBox Editor. Tous droits réservés. 
+                            <span style="color: hsl(var(--primary));">Fait avec ❤️ en France</span>
+                        </p>
+                    </div>
+                    <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+                        <span style="color: hsl(var(--muted-foreground)); font-size: 0.8rem;">Version 1.0.0</span>
+                        <button class="snapchat-btn" onclick="openSnapchat()" style="padding: 0.5rem 1rem; font-size: 0.8rem;">
+                            <i class="fab fa-snapchat-ghost"></i> Support rapide
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </footer>
@@ -1333,11 +2133,264 @@
             }, 3000);
         }
 
+        // Modal Functions
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden'; // Prevent background scrolling
+            }
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.remove('active');
+                document.body.style.overflow = 'auto'; // Restore scrolling
+            }
+        }
+
+        // Close modal when clicking outside
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal')) {
+                e.target.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            }
+        });
+
+        // Snapchat Integration Functions
+        function openSnapchat() {
+            // Try to open Snapchat app first, fallback to web
+            const snapchatUrl = 'https://snapchat.com/add/onebox-support';
+            const snapchatAppUrl = 'snapchat://add/onebox-support';
+            
+            // Show loading message
+            showToast('Ouverture de Snapchat... 💪🏾');
+            
+            // Try to open the app
+            const fallback = setTimeout(() => {
+                window.open(snapchatUrl, '_blank');
+            }, 1000);
+            
+            try {
+                window.location.href = snapchatAppUrl;
+                clearTimeout(fallback);
+            } catch (e) {
+                // If app fails, the timeout will handle the web fallback
+            }
+        }
+
+        // Contact Form Handlers
+        function handleLogin(event) {
+            event.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            if (email && password) {
+                showToast('Connexion en cours... 🔐');
+                
+                // Simulate login
+                setTimeout(() => {
+                    showToast('Connexion réussie ! Bienvenue dans OneBox 💪🏾');
+                    closeModal('loginModal');
+                    
+                    // Update UI to show logged in state
+                    updateUIForLoggedInUser(email);
+                }, 1500);
+            }
+        }
+
+        function handleEmailContact(event) {
+            event.preventDefault();
+            const name = document.getElementById('contactName').value;
+            const email = document.getElementById('contactEmail').value;
+            const subject = document.getElementById('contactSubject').value;
+            const message = document.getElementById('contactMessage').value;
+            
+            if (name && email && subject && message) {
+                showToast('Envoi de votre message... 📧');
+                
+                // Simulate email sending
+                setTimeout(() => {
+                    showToast('Message envoyé avec succès ! Nous vous répondrons rapidement 💪🏾');
+                    closeModal('emailModal');
+                    
+                    // Reset form
+                    document.getElementById('contactName').value = '';
+                    document.getElementById('contactEmail').value = '';
+                    document.getElementById('contactSubject').value = '';
+                    document.getElementById('contactMessage').value = '';
+                    
+                    // Suggest Snapchat for faster response
+                    setTimeout(() => {
+                        if (confirm('💡 Pour une réponse encore plus rapide, voulez-vous nous contacter via Snapchat ?')) {
+                            openSnapchat();
+                        }
+                    }, 2000);
+                }, 1500);
+            }
+        }
+
+        function subscribeNewsletter() {
+            const email = document.getElementById('newsletterEmail').value;
+            
+            if (email && email.includes('@')) {
+                showToast('Inscription à la newsletter en cours... 📬');
+                
+                setTimeout(() => {
+                    showToast('Inscription réussie ! Merci de rejoindre la communauté OneBox 💪🏾');
+                    document.getElementById('newsletterEmail').value = '';
+                }, 1000);
+            } else {
+                showToast('Veuillez entrer une adresse email valide ⚠️');
+            }
+        }
+
+        function updateUIForLoggedInUser(email) {
+            // Update navigation to show user is logged in
+            const loginLink = document.querySelector('[onclick="openModal(\'loginModal\')"]');
+            if (loginLink) {
+                loginLink.innerHTML = '<i class="fas fa-user"></i> ' + email.split('@')[0];
+                loginLink.onclick = () => showToast('Déjà connecté ! 😊');
+            }
+        }
+
+        // Enhanced Responsive Design
+        function updateMobileMenu() {
+            const mobileToggle = document.querySelector('.mobile-menu-toggle');
+            const navMenu = document.querySelector('.nav-menu');
+            
+            if (mobileToggle && navMenu) {
+                mobileToggle.addEventListener('click', () => {
+                    navMenu.style.display = navMenu.style.display === 'flex' ? 'none' : 'flex';
+                    if (navMenu.style.display === 'flex') {
+                        navMenu.style.position = 'absolute';
+                        navMenu.style.top = '100%';
+                        navMenu.style.left = '0';
+                        navMenu.style.right = '0';
+                        navMenu.style.background = 'rgba(13, 27, 42, 0.98)';
+                        navMenu.style.flexDirection = 'column';
+                        navMenu.style.padding = '1rem';
+                        navMenu.style.borderRadius = '0 0 12px 12px';
+                        navMenu.style.backdropFilter = 'blur(20px)';
+                        navMenu.style.zIndex = '1001';
+                    }
+                });
+            }
+        }
+
+        // Enhanced Responsive Media Queries
+        function handleResponsiveLayout() {
+            const isMobile = window.innerWidth <= 768;
+            const isTablet = window.innerWidth > 768 && window.innerWidth <= 1024;
+            const isDesktop = window.innerWidth > 1024;
+            
+            // Adjust grid layouts based on screen size
+            const grids = document.querySelectorAll('.grid-3');
+            grids.forEach(grid => {
+                if (isMobile) {
+                    grid.style.gridTemplateColumns = '1fr';
+                } else if (isTablet) {
+                    grid.style.gridTemplateColumns = 'repeat(2, 1fr)';
+                } else {
+                    grid.style.gridTemplateColumns = 'repeat(3, 1fr)';
+                }
+            });
+            
+            // Adjust modal sizes for mobile
+            const modalContents = document.querySelectorAll('.modal-content');
+            modalContents.forEach(modal => {
+                if (isMobile) {
+                    modal.style.width = '95%';
+                    modal.style.margin = '1rem auto';
+                    modal.style.maxHeight = '90vh';
+                } else {
+                    modal.style.width = '90%';
+                    modal.style.maxWidth = '500px';
+                }
+            });
+            
+            // Adjust contact section layout for mobile
+            const contactSection = document.getElementById('contact');
+            if (contactSection && isMobile) {
+                const snapchatCard = contactSection.querySelector('.perspective-card');
+                if (snapchatCard) {
+                    snapchatCard.style.transform = 'scale(1)';
+                    snapchatCard.style.padding = '2rem';
+                }
+            }
+        }
+
+        // Enhanced Keyboard Shortcuts
+        function setupKeyboardShortcuts() {
+            document.addEventListener('keydown', function(e) {
+                // Ctrl/Cmd + shortcuts
+                if (e.ctrlKey || e.metaKey) {
+                    switch(e.key.toLowerCase()) {
+                        case 's':
+                            e.preventDefault();
+                            saveDocument();
+                            break;
+                        case 'n':
+                            e.preventDefault();
+                            newDocument();
+                            break;
+                        case 'p':
+                            e.preventDefault();
+                            exportToPDF();
+                            break;
+                        case 'h':
+                            e.preventDefault();
+                            openModal('helpModal');
+                            break;
+                        case '/':
+                            e.preventDefault();
+                            openSnapchat();
+                            break;
+                    }
+                }
+                
+                // Escape to close modals
+                if (e.key === 'Escape') {
+                    const activeModal = document.querySelector('.modal.active');
+                    if (activeModal) {
+                        activeModal.classList.remove('active');
+                        document.body.style.overflow = 'auto';
+                    }
+                }
+            });
+        }
+
+        // Performance Optimizations
+        function optimizePerformance() {
+            // Lazy load images
+            const images = document.querySelectorAll('img[data-src]');
+            const imageObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        img.src = img.dataset.src;
+                        img.classList.remove('lazy');
+                        observer.unobserve(img);
+                    }
+                });
+            });
+            
+            images.forEach(img => imageObserver.observe(img));
+            
+            // Debounce resize events
+            let resizeTimer;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(handleResponsiveLayout, 250);
+            });
+        }
+
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
             // Auto-save every 30 seconds
             setInterval(() => {
-                const content = document.getElementById('documentEditor').innerHTML;
+                const content = document.getElementById('documentEditor')?.innerHTML;
                 if (content && content.length > 50) {
                     localStorage.setItem('oneboxAutoSave', content);
                 }
@@ -1345,12 +2398,26 @@
             
             // Load auto-saved content
             const autoSaved = localStorage.getItem('oneboxAutoSave');
-            if (autoSaved) {
+            if (autoSaved && document.getElementById('documentEditor')) {
                 document.getElementById('documentEditor').innerHTML = autoSaved;
             }
             
-            // Refresh documents on load
+            // Initialize all features
             refreshDocuments();
+            updateMobileMenu();
+            handleResponsiveLayout();
+            setupKeyboardShortcuts();
+            optimizePerformance();
+            
+            // Show welcome message
+            showToast('Bienvenue dans OneBox Editor ! 💪🏾');
+            
+            // Add cache control for better performance
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/sw.js').catch(e => {
+                    console.log('Service Worker registration failed');
+                });
+            }
         });
     </script>
 </body>
