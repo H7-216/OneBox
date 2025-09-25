@@ -1617,9 +1617,21 @@
             <button class="modal-close" onclick="closeModal('loginModal')">
                 <i class="fas fa-times"></i>
             </button>
-            <h2 style="color: hsl(var(--primary)); margin-bottom: 1.5rem; text-align: center;">
+            <h2 style="color: hsl(var(--primary)); margin-bottom: 1rem; text-align: center;">
                 <i class="fas fa-sign-in-alt"></i> Connexion OneBox
             </h2>
+            
+            <!-- Demo Warning -->
+            <div style="background: rgba(255, 193, 7, 0.1); border: 1px solid #ffc107; color: #856404; padding: 0.75rem; border-radius: 6px; margin-bottom: 1.5rem; font-size: 0.875rem; text-align: center;">
+                <i class="fas fa-info-circle"></i>
+                <strong>Démonstration uniquement</strong> - Ce système d'authentification est à des fins de démonstration et ne fournit pas de sécurité réelle.
+            </div>
+            
+            <!-- Error Message Container -->
+            <div id="loginError" style="display: none; background: rgba(220, 53, 69, 0.1); border: 1px solid #dc3545; color: #dc3545; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; text-align: center;">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span id="loginErrorText"></span>
+            </div>
             
             <form onsubmit="handleLogin(event)">
                 <div class="form-group">
@@ -1627,18 +1639,53 @@
                         <i class="fas fa-envelope"></i> Email
                     </label>
                     <input type="email" id="loginEmail" class="form-input" placeholder="votre@email.com" required>
+                    <div id="emailError" class="field-error" style="display: none; color: #dc3545; font-size: 0.875rem; margin-top: 0.5rem;">
+                        <i class="fas fa-exclamation-circle"></i> <span></span>
+                    </div>
                 </div>
                 
                 <div class="form-group">
                     <label class="form-label" for="loginPassword">
                         <i class="fas fa-lock"></i> Mot de passe
                     </label>
-                    <input type="password" id="loginPassword" class="form-input" placeholder="••••••••" required>
+                    <div style="position: relative;">
+                        <input type="password" id="loginPassword" class="form-input" placeholder="••••••••" required>
+                        <button type="button" id="togglePassword" onclick="togglePasswordVisibility()" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: hsl(var(--muted-foreground)); cursor: pointer; padding: 0.5rem;">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <div id="passwordError" class="field-error" style="display: none; color: #dc3545; font-size: 0.875rem; margin-top: 0.5rem;">
+                        <i class="fas fa-exclamation-circle"></i> <span></span>
+                    </div>
+                    <div id="passwordStrength" style="display: none; margin-top: 0.5rem;">
+                        <div style="display: flex; gap: 2px; margin-bottom: 0.25rem;">
+                            <div class="strength-bar" id="strength1" style="flex: 1; height: 4px; background: #e0e0e0; border-radius: 2px;"></div>
+                            <div class="strength-bar" id="strength2" style="flex: 1; height: 4px; background: #e0e0e0; border-radius: 2px;"></div>
+                            <div class="strength-bar" id="strength3" style="flex: 1; height: 4px; background: #e0e0e0; border-radius: 2px;"></div>
+                            <div class="strength-bar" id="strength4" style="flex: 1; height: 4px; background: #e0e0e0; border-radius: 2px;"></div>
+                        </div>
+                        <span id="strengthText" style="font-size: 0.75rem; color: hsl(var(--muted-foreground));">Force du mot de passe</span>
+                    </div>
+                </div>
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; color: hsl(var(--muted-foreground)); font-size: 0.875rem; opacity: 0.6;" title="Fonctionnalité de démonstration uniquement">
+                        <input type="checkbox" id="rememberMe" style="width: auto;" disabled>
+                        <span>Se souvenir de moi (démo)</span>
+                    </label>
+                    <button type="button" onclick="showForgotPassword()" style="background: none; border: none; color: hsl(var(--primary)); cursor: pointer; font-size: 0.875rem; text-decoration: underline; opacity: 0.8;" title="Fonctionnalité de démonstration">
+                        Mot de passe oublié ? (démo)
+                    </button>
                 </div>
                 
                 <div style="display: flex; gap: 1rem; margin-top: 2rem;">
-                    <button type="submit" class="btn btn-primary floating-btn" style="flex: 1;">
-                        <i class="fas fa-sign-in-alt"></i> Se connecter
+                    <button type="submit" id="loginSubmitBtn" class="btn btn-primary floating-btn" style="flex: 1; position: relative;">
+                        <span id="loginBtnText">
+                            <i class="fas fa-sign-in-alt"></i> Se connecter
+                        </span>
+                        <span id="loginBtnLoading" style="display: none;">
+                            <i class="fas fa-spinner fa-spin"></i> Connexion...
+                        </span>
                     </button>
                     <button type="button" class="btn btn-outline" onclick="closeModal('loginModal')" style="flex: 1;">
                         <i class="fas fa-times"></i> Annuler
@@ -1646,10 +1693,72 @@
                 </div>
             </form>
             
-            <div style="text-align: center; margin-top: 2rem; padding-top: 1rem; border-top: 1px solid hsl(var(--border));">
-                <p style="color: hsl(var(--muted-foreground)); margin-bottom: 1rem;">Ou connectez-vous avec</p>
-                <button class="snapchat-btn floating-btn" onclick="openSnapchat(); closeModal('loginModal');">
-                    <i class="fab fa-snapchat-ghost"></i> Connexion Snapchat
+            <div style="text-align: center; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid hsl(var(--border));">
+                <button type="button" onclick="showDemoCredentials()" style="background: rgba(40, 167, 69, 0.1); border: 1px solid #28a745; color: #28a745; padding: 0.75rem 1rem; border-radius: 6px; cursor: pointer; font-size: 0.875rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; margin: 0 auto 1rem;">
+                    <i class="fas fa-key"></i> Voir les identifiants de démonstration
+                </button>
+                <p style="color: hsl(var(--muted-foreground)); margin-bottom: 1rem; font-size: 0.875rem;">Ou connectez-vous avec</p>
+                <button class="snapchat-btn floating-btn" onclick="openSnapchat(); closeModal('loginModal');" style="opacity: 0.7;" title="Fonctionnalité de démonstration">
+                    <i class="fab fa-snapchat-ghost"></i> Connexion Snapchat (démo)
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Forgot Password Modal -->
+    <div id="forgotPasswordModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('forgotPasswordModal')">
+                <i class="fas fa-times"></i>
+            </button>
+            <h2 style="color: hsl(var(--primary)); margin-bottom: 1.5rem; text-align: center;">
+                <i class="fas fa-key"></i> Réinitialiser le mot de passe
+            </h2>
+            
+            <div id="forgotPasswordError" style="display: none; background: rgba(220, 53, 69, 0.1); border: 1px solid #dc3545; color: #dc3545; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; text-align: center;">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span id="forgotPasswordErrorText"></span>
+            </div>
+            
+            <div id="forgotPasswordSuccess" style="display: none; background: rgba(40, 167, 69, 0.1); border: 1px solid #28a745; color: #28a745; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; text-align: center;">
+                <i class="fas fa-check-circle"></i>
+                <span id="forgotPasswordSuccessText"></span>
+            </div>
+            
+            <div style="background: rgba(255, 193, 7, 0.1); border: 1px solid #ffc107; color: #856404; padding: 0.75rem; border-radius: 6px; margin-bottom: 1rem; font-size: 0.875rem; text-align: center;">
+                <i class="fas fa-exclamation-triangle"></i>
+                <strong>Fonction de démonstration</strong> - Aucun email ne sera réellement envoyé.
+            </div>
+            <p style="color: hsl(var(--muted-foreground)); margin-bottom: 1.5rem; text-align: center;">
+                Entrez votre adresse email pour tester la fonctionnalité (démonstration uniquement).
+            </p>
+            
+            <form onsubmit="handleForgotPassword(event)">
+                <div class="form-group">
+                    <label class="form-label" for="forgotEmail">
+                        <i class="fas fa-envelope"></i> Adresse email
+                    </label>
+                    <input type="email" id="forgotEmail" class="form-input" placeholder="votre@email.com" required>
+                </div>
+                
+                <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                    <button type="submit" id="forgotPasswordBtn" class="btn btn-primary floating-btn" style="flex: 1;">
+                        <span id="forgotPasswordBtnText">
+                            <i class="fas fa-paper-plane"></i> Envoyer le lien
+                        </span>
+                        <span id="forgotPasswordBtnLoading" style="display: none;">
+                            <i class="fas fa-spinner fa-spin"></i> Envoi en cours...
+                        </span>
+                    </button>
+                    <button type="button" class="btn btn-outline" onclick="closeModal('forgotPasswordModal')" style="flex: 1;">
+                        <i class="fas fa-times"></i> Annuler
+                    </button>
+                </div>
+            </form>
+            
+            <div style="text-align: center; margin-top: 1.5rem;">
+                <button type="button" onclick="closeModal('forgotPasswordModal'); openModal('loginModal');" style="background: none; border: none; color: hsl(var(--primary)); cursor: pointer; font-size: 0.875rem; text-decoration: underline;">
+                    <i class="fas fa-arrow-left"></i> Retour à la connexion
                 </button>
             </div>
         </div>
@@ -2493,24 +2602,221 @@
             }
         }
 
-        // Contact Form Handlers
-        function handleLogin(event) {
-            event.preventDefault();
+        // Authentication System (DEMO ONLY - NOT SECURE)
+        // WARNING: This is a client-side demonstration only.
+        // Real applications should never store credentials client-side!
+        let userDatabase = {
+            'test@onebox.fr': { password: 'Test123!', name: 'Utilisateur Test' },
+            'admin@onebox.fr': { password: 'Admin123!', name: 'Administrateur' },
+            'demo@onebox.fr': { password: 'Demo123!', name: 'Demo User' }
+        };
+        
+        // Demo credentials info
+        const demoCredentials = {
+            'Compte Test': { email: 'test@onebox.fr', password: 'Test123!' },
+            'Compte Admin': { email: 'admin@onebox.fr', password: 'Admin123!' },
+            'Compte Demo': { email: 'demo@onebox.fr', password: 'Demo123!' }
+        };
+
+        // Initialize authentication on page load
+        window.addEventListener('load', function() {
+            checkLoginStatus();
+            setupPasswordStrengthChecker();
+        });
+
+        function checkLoginStatus() {
+            // Check demo session (using sessionStorage for demo security)
+            const userData = sessionStorage.getItem('oneboxUser');
+            if (userData) {
+                const user = JSON.parse(userData);
+                updateUIForLoggedInUser(user.email, user.name);
+                // Show demo warning
+                setTimeout(() => {
+                    if (user.isDemo) {
+                        showDemoInfo();
+                    }
+                }, 2000);
+            }
+        }
+
+        function togglePasswordVisibility() {
+            const passwordInput = document.getElementById('loginPassword');
+            const toggleBtn = document.getElementById('togglePassword');
+            const icon = toggleBtn.querySelector('i');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.className = 'fas fa-eye-slash';
+            } else {
+                passwordInput.type = 'password';
+                icon.className = 'fas fa-eye';
+            }
+        }
+
+        function setupPasswordStrengthChecker() {
+            const passwordInput = document.getElementById('loginPassword');
+            if (passwordInput) {
+                passwordInput.addEventListener('input', checkPasswordStrength);
+            }
+        }
+
+        function checkPasswordStrength() {
+            const password = document.getElementById('loginPassword').value;
+            const strengthContainer = document.getElementById('passwordStrength');
+            const strengthText = document.getElementById('strengthText');
+            const strengthBars = document.querySelectorAll('.strength-bar');
+            
+            if (password.length === 0) {
+                strengthContainer.style.display = 'none';
+                return;
+            }
+            
+            strengthContainer.style.display = 'block';
+            
+            let score = 0;
+            let feedback = [];
+            
+            // Length check
+            if (password.length >= 8) score++;
+            else feedback.push('8+ caractères');
+            
+            // Uppercase check
+            if (/[A-Z]/.test(password)) score++;
+            else feedback.push('majuscule');
+            
+            // Lowercase check
+            if (/[a-z]/.test(password)) score++;
+            else feedback.push('minuscule');
+            
+            // Number or special char check
+            if (/[0-9!@#$%^&*(),.?\":{}|<>]/.test(password)) score++;
+            else feedback.push('chiffre/symbole');
+            
+            // Update bars
+            strengthBars.forEach((bar, index) => {
+                bar.style.background = index < score ? 
+                    ['#dc3545', '#fd7e14', '#ffc107', '#28a745'][score - 1] : '#e0e0e0';
+            });
+            
+            // Update text
+            const strengthLevels = ['Très faible', 'Faible', 'Moyen', 'Fort'];
+            const colors = ['#dc3545', '#fd7e14', '#ffc107', '#28a745'];
+            
+            if (score === 0) {
+                strengthText.textContent = 'Entrez un mot de passe';
+                strengthText.style.color = 'hsl(var(--muted-foreground))';
+            } else {
+                strengthText.textContent = strengthLevels[score - 1] + 
+                    (feedback.length > 0 ? ' (Manque: ' + feedback.join(', ') + ')' : '');
+                strengthText.style.color = colors[score - 1];
+            }
+        }
+
+        function validateLoginForm() {
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
+            const emailError = document.getElementById('emailError');
+            const passwordError = document.getElementById('passwordError');
+            const loginError = document.getElementById('loginError');
             
-            if (email && password) {
-                showToast('Connexion en cours... 🔐');
-                
-                // Simulate login
-                setTimeout(() => {
+            // Reset errors
+            emailError.style.display = 'none';
+            passwordError.style.display = 'none';
+            loginError.style.display = 'none';
+            
+            let isValid = true;
+            
+            // Email validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!email) {
+                showFieldError('emailError', 'L\'adresse email est requise');
+                isValid = false;
+            } else if (!emailRegex.test(email)) {
+                showFieldError('emailError', 'Format d\'email invalide');
+                isValid = false;
+            }
+            
+            // Password validation
+            if (!password) {
+                showFieldError('passwordError', 'Le mot de passe est requis');
+                isValid = false;
+            } else if (password.length < 6) {
+                showFieldError('passwordError', 'Le mot de passe doit contenir au moins 6 caractères');
+                isValid = false;
+            }
+            
+            return isValid;
+        }
+
+        function showFieldError(fieldId, message) {
+            const errorField = document.getElementById(fieldId);
+            errorField.querySelector('span').textContent = message;
+            errorField.style.display = 'block';
+        }
+
+        function showLoginError(message) {
+            const loginError = document.getElementById('loginError');
+            const loginErrorText = document.getElementById('loginErrorText');
+            loginErrorText.textContent = message;
+            loginError.style.display = 'block';
+        }
+
+        function handleLogin(event) {
+            event.preventDefault();
+            
+            if (!validateLoginForm()) {
+                return;
+            }
+            
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const rememberMe = document.getElementById('rememberMe').checked;
+            
+            // Show loading state
+            const submitBtn = document.getElementById('loginSubmitBtn');
+            const btnText = document.getElementById('loginBtnText');
+            const btnLoading = document.getElementById('loginBtnLoading');
+            
+            submitBtn.disabled = true;
+            btnText.style.display = 'none';
+            btnLoading.style.display = 'inline-block';
+            
+            // Simulate authentication delay
+            setTimeout(() => {
+                // Check credentials
+                if (userDatabase[email] && userDatabase[email].password === password) {
+                    // Success
+                    const userData = {
+                        email: email,
+                        name: userDatabase[email].name,
+                        loginTime: new Date().toISOString(),
+                        isDemo: true // Mark as demo session
+                    };
+                    
+                    // Store session (DEMO ONLY - insecure in real applications)
+                    sessionStorage.setItem('oneboxUser', JSON.stringify(userData));
+                    
                     showToast('Connexion réussie ! Bienvenue dans OneBox 💪🏾');
                     closeModal('loginModal');
+                    updateUIForLoggedInUser(email, userDatabase[email].name);
                     
-                    // Update UI to show logged in state
-                    updateUIForLoggedInUser(email);
-                }, 1500);
-            }
+                    // Reset form
+                    document.getElementById('loginEmail').value = '';
+                    document.getElementById('loginPassword').value = '';
+                    document.getElementById('rememberMe').checked = false;
+                    
+                } else {
+                    // Failed authentication
+                    showLoginError('Email ou mot de passe incorrect. Vérifiez vos identifiants.');
+                    showToast('Échec de la connexion. Vérifiez vos identifiants ⚠️');
+                }
+                
+                // Reset button state
+                submitBtn.disabled = false;
+                btnText.style.display = 'inline-block';
+                btnLoading.style.display = 'none';
+                
+            }, 1500);
         }
 
         function handleEmailContact(event) {
@@ -2559,14 +2865,147 @@
             }
         }
 
-        function updateUIForLoggedInUser(email) {
+        function updateUIForLoggedInUser(email, name) {
             // Update navigation to show user is logged in
             const loginLink = document.querySelector('[onclick="openModal(\'loginModal\')"]');
             if (loginLink) {
-                loginLink.innerHTML = '<i class="fas fa-user"></i> ' + email.split('@')[0];
-                loginLink.onclick = () => showToast('Déjà connecté ! 😊');
+                const username = name || email.split('@')[0];
+                loginLink.innerHTML = `
+                    <div style="position: relative; display: inline-block;">
+                        <i class="fas fa-user-circle"></i> ${username}
+                        <div id="userDropdown" style="display: none; position: absolute; top: 100%; right: 0; background: hsl(var(--card)); border: 1px solid hsl(var(--border)); border-radius: 8px; min-width: 200px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 10000; margin-top: 0.5rem;">
+                            <div style="padding: 1rem; border-bottom: 1px solid hsl(var(--border));">
+                                <div style="font-weight: 600; color: hsl(var(--foreground));">${name || 'Utilisateur'}</div>
+                                <div style="font-size: 0.875rem; color: hsl(var(--muted-foreground));">${email}</div>
+                            </div>
+                            <div style="padding: 0.5rem 0;">
+                                <button onclick="showSection('mes-documents'); hideUserDropdown();" style="width: 100%; background: none; border: none; color: hsl(var(--foreground)); padding: 0.75rem 1rem; text-align: left; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; gap: 0.5rem;">
+                                    <i class="fas fa-folder"></i> Mes Documents
+                                </button>
+                                <button onclick="showAccountSettings()" style="width: 100%; background: none; border: none; color: hsl(var(--foreground)); padding: 0.75rem 1rem; text-align: left; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; gap: 0.5rem;">
+                                    <i class="fas fa-cog"></i> Paramètres
+                                </button>
+                                <hr style="border: none; border-top: 1px solid hsl(var(--border)); margin: 0.5rem 0;">
+                                <button onclick="handleLogout()" style="width: 100%; background: none; border: none; color: #dc3545; padding: 0.75rem 1rem; text-align: left; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; gap: 0.5rem;">
+                                    <i class="fas fa-sign-out-alt"></i> Déconnexion
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                loginLink.onclick = () => toggleUserDropdown();
             }
         }
+
+        function toggleUserDropdown() {
+            const dropdown = document.getElementById('userDropdown');
+            if (dropdown) {
+                dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+            }
+        }
+
+        function hideUserDropdown() {
+            const dropdown = document.getElementById('userDropdown');
+            if (dropdown) {
+                dropdown.style.display = 'none';
+            }
+        }
+
+        function handleLogout() {
+            if (confirm('Êtes-vous sûr de vouloir vous déconnecter ?')) {
+                sessionStorage.removeItem('oneboxUser');
+                showToast('Déconnexion réussie. À bientôt ! 👋');
+                
+                // Reset UI to logged out state
+                const loginLink = document.querySelector('.nav-link');
+                const navMenu = loginLink.closest('.nav-menu');
+                const lastNavItem = navMenu.querySelector('li:last-child a');
+                if (lastNavItem) {
+                    lastNavItem.innerHTML = '<i class="fas fa-sign-in-alt"></i> Connexion';
+                    lastNavItem.onclick = () => openModal('loginModal');
+                }
+                
+                // Redirect to home
+                showSection('home');
+                hideUserDropdown();
+            }
+        }
+
+        function showAccountSettings() {
+            showToast('Fonctionnalité en développement ! 🔧');
+            hideUserDropdown();
+        }
+
+        function showForgotPassword() {
+            closeModal('loginModal');
+            openModal('forgotPasswordModal');
+        }
+
+        function handleForgotPassword(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('forgotEmail').value;
+            const errorDiv = document.getElementById('forgotPasswordError');
+            const successDiv = document.getElementById('forgotPasswordSuccess');
+            const btn = document.getElementById('forgotPasswordBtn');
+            const btnText = document.getElementById('forgotPasswordBtnText');
+            const btnLoading = document.getElementById('forgotPasswordBtnLoading');
+            
+            // Reset states
+            errorDiv.style.display = 'none';
+            successDiv.style.display = 'none';
+            
+            if (!email) {
+                document.getElementById('forgotPasswordErrorText').textContent = 'Veuillez entrer votre adresse email';
+                errorDiv.style.display = 'block';
+                return;
+            }
+            
+            // Show loading
+            btn.disabled = true;
+            btnText.style.display = 'none';
+            btnLoading.style.display = 'inline-block';
+            
+            setTimeout(() => {
+                if (userDatabase[email]) {
+                    document.getElementById('forgotPasswordSuccessText').textContent = 
+                        'Démonstration: Un lien de réinitialisation serait envoyé à votre adresse email dans un vrai système.';
+                    successDiv.style.display = 'block';
+                    showToast('Simulation d\'envoi d\'email effectuée ! 📧 (Démo)');
+                } else {
+                    document.getElementById('forgotPasswordErrorText').textContent = 
+                        'Aucun compte trouvé avec cette adresse email dans la base de démonstration.';
+                    errorDiv.style.display = 'block';
+                }
+                
+                // Reset button
+                btn.disabled = false;
+                btnText.style.display = 'inline-block';
+                btnLoading.style.display = 'none';
+            }, 2000);
+        }
+
+        function showDemoCredentials() {
+            const credentialsInfo = Object.entries(demoCredentials)
+                .map(([name, creds]) => `• <strong>${name}</strong>: ${creds.email} / ${creds.password}`)
+                .join('<br>');
+            
+            showToast(`📋 Identifiants de démonstration :<br><br>${credentialsInfo}<br><br>⚠️ Ces comptes sont uniquement pour la démonstration !`);
+        }
+        
+        function showDemoInfo() {
+            showToast('💡 Vous utilisez un système de démonstration. Les données ne sont pas sécurisées et disparaîtront à la fermeture du navigateur.');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('userDropdown');
+            const userMenu = document.querySelector('[onclick*="toggleUserDropdown"]');
+            
+            if (dropdown && !dropdown.contains(event.target) && !userMenu?.contains(event.target)) {
+                dropdown.style.display = 'none';
+            }
+        });
 
         // Enhanced Responsive Design
         function updateMobileMenu() {
